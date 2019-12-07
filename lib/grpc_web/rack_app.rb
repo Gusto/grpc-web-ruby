@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'rack/builder'
 require 'grpc_web/rack_handler'
 
 module GRPCWeb

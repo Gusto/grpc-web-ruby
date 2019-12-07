@@ -1,0 +1,6 @@
+#!/bin/bash
+
+BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null && pwd )"
+
+rm -rf $BASE_DIR/spec/pb-ruby/*
+docker run -v $BASE_DIR/spec:/defs namely/protoc-all -d /defs/pb-src -o /defs/pb-ruby -l ruby

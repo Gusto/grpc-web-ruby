@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'base64'
+require 'active_support/core_ext/string'
 require 'grpc_web/grpc_web_response'
 
 module GRPCWeb::GRPCRequestProcessor
