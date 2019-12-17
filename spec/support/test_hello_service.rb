@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'hello_services_pb'
 
 class TestHelloService < HelloService::Service
