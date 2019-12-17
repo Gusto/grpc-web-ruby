@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['James Shkolnik']
   spec.email         = ['js@gusto.com']
 
-  spec.summary       = 'Mount gRPC services in a Rack or Rails app as gRPC-Web endpoints (over HTTP/1)'
+  spec.summary       = 'Host gRPC-Web endpoints for Ruby gRPC services in a Rack or Rails app (over HTTP/1.1). Client included.'
   spec.description   = spec.summary
   spec.homepage      = 'https://github.com/gusto/grpc-web-ruby'
   spec.license       = 'MIT'
