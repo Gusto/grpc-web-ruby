@@ -6,9 +6,12 @@ module.exports = {
   resolve: {
     modules: [
       path.resolve(__dirname),
-      path.resolve(__dirname, "../pb-js"),
       path.resolve(__dirname, "node_modules"),
     ],
+    alias: {
+      'pb-grpc-web': path.resolve(__dirname, '../pb-js-grpc-web'),
+      'pb-grpc-web-text': path.resolve(__dirname, '../pb-js-grpc-web-text')
+    }
   },
   output: {
     path: path.resolve(__dirname, "../js-client"),

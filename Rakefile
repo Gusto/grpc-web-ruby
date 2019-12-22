@@ -7,16 +7,26 @@ CLEAN.include('spec/pb-ruby/*.rb')
 CLEAN.include('spec/pb-js/*.js')
 CLEAN.include('spec/js-client/main.js')
 
+module RakeHelpers
+  def self.compile_protos_js_cmd(mode, output_dir)
+    [
+      'docker run',
+      "-v \"#{File.expand_path('spec/pb-src', __dir__)}:/protofile\"",
+      "-v \"#{File.expand_path('spec', __dir__)}:/spec\"",
+      '-e "protofile=hello.proto"',
+      "-e \"output=#{output_dir}\"",
+      '-e "import_style=commonjs"',
+      "-e \"mode=#{mode}\"",
+      'juanjodiaz/grpc-web-generator',
+    ].join(' ')
+  end
+end
+
 task :compile_protos_js do
-  sh [
-    'docker run',
-    "-v \"#{File.expand_path('spec/pb-src', __dir__)}:/protofile\"",
-    "-v \"#{File.expand_path('spec', __dir__)}:/spec\"",
-    '-e "protofile=hello.proto"',
-    '-e "output=/spec/pb-js"',
-    '-e "import_style=commonjs"',
-    'juanjodiaz/grpc-web-generator',
-  ].join(' ')
+  sh RakeHelpers.compile_protos_js_cmd('grpcwebtext', '/spec/pb-js-grpc-web-text')
+  touch 'spec/pb-js-grpc-web-text/.gitkeep'
+  sh RakeHelpers.compile_protos_js_cmd('grpcweb', '/spec/pb-js-grpc-web')
+  touch 'spec/pb-js-grpc-web/.gitkeep'
 end
 
 task :compile_protos_ruby do
