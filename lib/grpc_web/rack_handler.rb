@@ -2,6 +2,7 @@
 
 require 'rack/request'
 require 'grpc_web/grpc_request_processor'
+require 'grpc_web/grpc_web_request'
 
 module GRPCWeb
   module RackHandler
@@ -13,7 +14,11 @@ module GRPCWeb
         rack_request = Rack::Request.new(env)
         return not_found_response(rack_request.path) unless post?(rack_request)
 
-        response = GRPCRequestProcessor.process(service, service_method, rack_request)
+        request_format = rack_request.content_type
+        body = rack_request.body.read
+        request = GRPCWebRequest.new(service, service_method, request_format, body)
+        response = GRPCRequestProcessor.process(request)
+
         [200, {'Content-Type' => response.content_type}, [response.body]]
 
       rescue Google::Protobuf::ParseError => e
