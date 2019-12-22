@@ -29,7 +29,3 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rack-cors'
   spec.add_development_dependency 'rake'
 end
-
-# TODO
-# Remove active support
-# Create GRPCWebRequest struct and reorganize processor
