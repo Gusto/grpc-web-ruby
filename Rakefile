@@ -4,7 +4,8 @@ require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec)
 
 CLEAN.include('spec/pb-ruby/*.rb')
-CLEAN.include('spec/pb-js/*.js')
+CLEAN.include('spec/pb-js-grpc-web/*.js')
+CLEAN.include('spec/pb-js-grpc-web-text/*.js')
 CLEAN.include('spec/js-client/main.js')
 
 module RakeHelpers

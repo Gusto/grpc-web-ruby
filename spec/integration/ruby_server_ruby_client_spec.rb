@@ -8,8 +8,7 @@ describe 'connecting to a ruby server from a ruby client', type: :feature do
   let(:name) { 'James' }
 
   it 'returns the expected response from the service' do
-    Capybara.current_session
-    result = client.say_hello(name: 'James')
-    expect(result).to eq(HelloResponse.new(message: 'Hello James'))
+    result = client.say_hello(name: name)
+    expect(result).to eq(HelloResponse.new(message: "Hello #{name}"))
   end
 end
