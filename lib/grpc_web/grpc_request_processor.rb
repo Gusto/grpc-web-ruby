@@ -3,6 +3,7 @@
 require 'base64'
 require 'active_support/core_ext/string'
 require 'grpc_web/grpc_web_response'
+require 'grpc_web/message_framing'
 
 module GRPCWeb::GRPCRequestProcessor
   GRPC_PROTO_CONTENT_TYPE = 'application/grpc-web+proto'
@@ -60,31 +61,12 @@ module GRPCWeb::GRPCRequestProcessor
       end
     end
 
-    # GRPC Web uses a simple 5 byte framing scheme. The first byte represents
-    # flags indicating what type of frame this is. The next 4 bytes indicate the
-    # byte length of the frame body.
-    def frame_response(response, flags = "\x00")
-      length_bytes = [response.bytesize].pack('N')
-      "#{flags}#{length_bytes}#{response}"
+    def unframe_request(content)
+      ::GRPCWeb::MessageFraming.unframe_content(content)
     end
 
-    def unframe_request(body)
-      raise "Invalid request format" if body[0] != "\x00"
-
-      msg_length = body[1..4].unpack("N").first
-      raise "Invalid message length" if msg_length <= 0
-
-      body[5..(5 + msg_length)]
-    end
-
-    # If needed, trailers can be appended to the response as a 2nd
-    # base64 encoded string with independent framing.
-    def generate_trailers
-      frame_response([
-        'grpc-status:0',
-        'grpc-message:OK',
-        'x-grpc-web:1',
-      ].join("\r\n"), "\x80")
+    def frame_response(content)
+      ::GRPCWeb::MessageFraming.frame_content(content)
     end
   end
 end

@@ -4,6 +4,7 @@ require 'active_support/core_ext/string'
 require 'json'
 require 'net/http'
 require 'uri'
+require 'grpc_web/message_framing'
 
 module GRPCWeb
   class Client
@@ -31,24 +32,16 @@ module GRPCWeb
 
       uri = URI(File.join(base_url, service_class.service_name, service_method))
       req = Net::HTTP::Post.new(uri, 'Accept' => GRPC_PROTO_CONTENT_TYPE, 'Content-Type' => GRPC_PROTO_CONTENT_TYPE)
-      req.body = frame_request(req_proto.to_proto)
+      req.body = ::GRPCWeb::MessageFraming.frame_content(req_proto.to_proto)
 
       resp_proto = nil
       res = Net::HTTP.start(uri.hostname, uri.port) do |http|
         resp = http.request(req)
-        unframed_response = resp.body[5..-1]
+        unframed_response = ::GRPCWeb::MessageFraming.unframe_content(resp.body)
         resp_proto = rpc_desc.output.decode(unframed_response)
       end
 
       resp_proto
-    end
-
-    # GRPC-Web uses a simple 5 byte framing scheme. The first byte represents
-    # flags indicating what type of frame this is. The next 4 bytes indicate the
-    # byte length of the frame body.
-    def frame_request(response, flags = "\x00")
-      length_bytes = [response.bytesize].pack('N')
-      "#{flags}#{length_bytes}#{response}"
     end
   end
 end
