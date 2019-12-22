@@ -5,6 +5,7 @@ require 'rack/cors'
 require 'grpc-web'
 require 'test_hello_service'
 
+# Used to build a Rack app hosting the HelloService for integration testing.
 module TestGRPCWebApp
   def self.build
     grpc_app = GRPCWeb::RackApp.for_services([

@@ -490,6 +490,11 @@ W.MethodType={UNARY:"unary",SERVER_STREAMING:"server_streaming"};
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
+// This file is used to build a gRPC-Web javascript client for the
+// HelloService in order to support javascript -> ruby integration specs.
+//
+// It must be compiled with webpack to generate spec/js-client/main.js
+
 const {HelloRequest} = __webpack_require__(1);
 const {HelloServiceClient} = __webpack_require__(9);
 
@@ -498,11 +503,6 @@ grpc.web = __webpack_require__(2);
 
 window.HelloRequest = HelloRequest;
 window.HelloServiceClient = HelloServiceClient;
-// window.helloService = new HelloServiceClient('http://localhost:8080', null, null);
-//
-// x = new HelloRequest()
-// x.setName("James")
-// window.helloService.sayHello(x, {}, function(err, response){ console.log(err, response); });
 
 
 /***/ }),

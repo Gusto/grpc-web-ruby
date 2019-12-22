@@ -1,3 +1,8 @@
+// This file is used to build a gRPC-Web javascript client for the
+// HelloService in order to support javascript -> ruby integration specs.
+//
+// It must be compiled with webpack to generate spec/js-client/main.js
+
 const {HelloRequest} = require('hello_pb.js');
 const {HelloServiceClient} = require('hello_grpc_web_pb.js');
 
@@ -6,8 +11,3 @@ grpc.web = require('grpc-web');
 
 window.HelloRequest = HelloRequest;
 window.HelloServiceClient = HelloServiceClient;
-// window.helloService = new HelloServiceClient('http://localhost:8080', null, null);
-//
-// x = new HelloRequest()
-// x.setName("James")
-// window.helloService.sayHello(x, {}, function(err, response){ console.log(err, response); });
