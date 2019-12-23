@@ -37,8 +37,10 @@ module GRPCWeb
       resp_proto = nil
       res = Net::HTTP.start(uri.hostname, uri.port) do |http|
         resp = http.request(req)
-        unframed_response = ::GRPCWeb::MessageFraming.unframe_content(resp.body)
-        resp_proto = rpc_desc.output.decode(unframed_response)
+        frames = ::GRPCWeb::MessageFraming.unframe_content(resp.body)
+        header_frame = frames.find{|f| f.frame_type == ::GRPCWeb::HEADER_FRAME_TYPE}
+        response_payload = frames.find{|f| f.frame_type == ::GRPCWeb::PAYLOAD_FRAME_TYPE}.body
+        resp_proto = rpc_desc.output.decode(response_payload)
       end
 
       resp_proto

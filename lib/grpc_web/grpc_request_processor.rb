@@ -35,12 +35,13 @@ module GRPCWeb::GRPCRequestProcessor
         body = Base64.decode64(body)
       end
 
-      message = unframe_request(body)
+      frames = unframe_request(body)
+      input_payload = frames.find{|f| f.frame_type == ::GRPCWeb::PAYLOAD_FRAME_TYPE}.body
 
       if content_type == GRPC_JSON_CONTENT_TYPE
-        proto_class.decode_json(message)
+        proto_class.decode_json(input_payload)
       else
-        proto_class.decode(message)
+        proto_class.decode(input_payload)
       end
     end
 
