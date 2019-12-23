@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe 'connecting to a ruby server from a javascript client', type: :feature do
   subject(:perform_request) do
-    visit(test_page)
-    execute_script(js_script)
+    visit(test_page) # Visit a static HTML page that loads the gRPC-Web client JS
+    execute_script(js_script) # Make a gRPC-Web Request
     response # Wait for result
     nil
   end
