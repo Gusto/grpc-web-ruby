@@ -8,12 +8,6 @@ module GRPCWeb
     class << self
       def for_services(services)
         builder = Rack::Builder.new
-        # builder.use Rack::Cors do
-        #   allow do
-        #      origins '*'
-        #      resource '*', :headers => :any, :methods => [:post, :options]
-        #    end
-        # end
         services.each do |service_or_proc|
           add_service_to_app(builder, service_or_proc)
         end
