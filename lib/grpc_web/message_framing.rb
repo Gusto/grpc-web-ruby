@@ -17,7 +17,7 @@ module GRPCWeb
         msg_length = content[1..4].unpack("N").first
         raise "Invalid message length" if msg_length <= 0
 
-        content[5..(5 + msg_length)]
+        content[5...(5 + msg_length)]
       end
 
       # If needed, trailers can be appended to the response as a 2nd
