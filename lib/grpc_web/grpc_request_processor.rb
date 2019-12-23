@@ -10,56 +10,80 @@ module GRPCWeb::GRPCRequestProcessor
   GRPC_JSON_CONTENT_TYPE = 'application/grpc-web+json'
   GRPC_TEXT_CONTENT_TYPE = 'application/grpc-web-text'
   GRPC_TEXT_PROTO_CONTENT_TYPE = 'application/grpc-web-text+proto'
+  BASE64_CONTENT_TYPES = [GRPC_TEXT_CONTENT_TYPE, GRPC_TEXT_PROTO_CONTENT_TYPE].freeze
 
   class << self
     def process(grpc_web_request)
-      service = grpc_web_request.service
-      service_class = service.class
-      service_method = grpc_web_request.service_method
-
-      request_proto_class = service_class.rpc_descs[service_method.to_sym].input
-      request_content_type = grpc_web_request.content_type
-      request_body = grpc_web_request.body
-
-      request_proto = parse_request(request_proto_class, request_content_type, request_body)
-      response_proto = call_service(service, service_method, request_proto)
-      generate_response(response_proto, request_content_type)
+      grpc_web_request = decode_request(grpc_web_request)
+      grpc_web_request = parse_request(grpc_web_request)
+      grpc_web_response = call_service(grpc_web_request)
+      grpc_web_response = serialize_response(grpc_web_response)
+      encode_response(grpc_web_response)
     end
 
     private
 
-    def parse_request(proto_class, content_type, body)
-      content_type = GRPC_PROTO_CONTENT_TYPE if content_type.blank?
-
-      if content_type == GRPC_TEXT_CONTENT_TYPE || content_type == GRPC_TEXT_PROTO_CONTENT_TYPE
-        body = Base64.decode64(body)
-      end
-
-      frames = unframe_request(body)
+    def parse_request(request)
+      service_class = request.service.class
+      request_proto_class = service_class.rpc_descs[request.service_method.to_sym].input
+      frames = unframe_request(request.body)
       input_payload = find_payload_frame(frames).body
 
-      if content_type == GRPC_JSON_CONTENT_TYPE
-        proto_class.decode_json(input_payload)
+      if request.content_type == GRPC_JSON_CONTENT_TYPE
+        request_proto = request_proto_class.decode_json(input_payload)
       else
-        proto_class.decode(input_payload)
+        request_proto = request_proto_class.decode(input_payload)
       end
+
+      ::GRPCWeb::GRPCWebRequest.new(
+          request.service, request.service_method, request.content_type, request_proto)
     end
 
-    def call_service(service, service_method, request_proto)
-      service.send(service_method.to_s.underscore, request_proto)
-    end
-
-    def generate_response(response_proto, content_type)
+    def call_service(request)
+      # TODO Validate content_types
+      content_type = request.content_type
       content_type = GRPC_PROTO_CONTENT_TYPE if content_type.blank?
 
-      if content_type == GRPC_JSON_CONTENT_TYPE
-        ::GRPCWeb::GRPCWebResponse.new(GRPC_JSON_CONTENT_TYPE, frame_response(response_proto.to_json))
-      elsif [GRPC_TEXT_CONTENT_TYPE, GRPC_TEXT_PROTO_CONTENT_TYPE].include?(content_type)
-        response = frame_response(response_proto.to_proto)
-        ::GRPCWeb::GRPCWebResponse.new(GRPC_TEXT_PROTO_CONTENT_TYPE, Base64.strict_encode64(response))
+      service_method_sym = request.service_method.to_s.underscore
+      response = request.service.send(service_method_sym, request.body)
+
+      ::GRPCWeb::GRPCWebResponse.new(content_type, response)
+    end
+
+    def decode_request(request)
+      return request unless BASE64_CONTENT_TYPES.include?(request.content_type)
+      decoded = Base64.decode64(request.body)
+      ::GRPCWeb::GRPCWebRequest.new(
+          request.service, request.service_method, request.content_type, decoded)
+      # TODO Handle multiple base64 encoded frames
+    end
+
+    def encode_response(response)
+      return response unless BASE64_CONTENT_TYPES.include?(response.content_type)
+      encoded = Base64.strict_encode64(response.body)
+      ::GRPCWeb::GRPCWebResponse.new(response.content_type, encoded)
+      # TODO Handle multiple frames
+    end
+
+    def serialize_response(response)
+      if response.content_type == GRPC_JSON_CONTENT_TYPE
+        payload = response.body.to_json
       else
-        ::GRPCWeb::GRPCWebResponse.new(GRPC_PROTO_CONTENT_TYPE, frame_response(response_proto.to_proto))
+        payload = response.body.to_proto
       end
+      ::GRPCWeb::GRPCWebResponse.new(response.content_type, frame_response(payload))
+    end
+
+    # If needed, trailers can be appended to the response as a 2nd
+    # base64 encoded string with independent framing.
+    def generate_headers(status, message)
+      header_str = [
+        "grpc-status:#{status}",
+        "grpc-message:#{message}",
+        'x-grpc-web:1',
+        nil # for trailing newline
+      ].join("\r\n")
+      framed = ::GRPCWeb::MessageFraming.frame_content(header_str, "\x80")
     end
 
     def unframe_request(content)
