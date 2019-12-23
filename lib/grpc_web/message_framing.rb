@@ -14,7 +14,6 @@ module GRPCWeb
       end
 
       def unframe_content(content)
-        # raise "Invalid request format" if content[0] != "\x00"
         frames = []
         remaining_content = content
         while remaining_content.length > 0
@@ -22,7 +21,7 @@ module GRPCWeb
           raise "Invalid message length" if msg_length <= 0
 
           frame_end = 5 + msg_length
-          frames << ::GRPCWeb::MessageFrame.new(remaining_content[0], remaining_content[5...frame_end])
+          frames << ::GRPCWeb::MessageFrame.new(remaining_content[0].bytes[0], remaining_content[5...frame_end])
           remaining_content = remaining_content[frame_end..-1]
         end
         frames
