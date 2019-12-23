@@ -36,7 +36,7 @@ module GRPCWeb::GRPCRequestProcessor
       end
 
       frames = unframe_request(body)
-      input_payload = frames.find{|f| f.frame_type == ::GRPCWeb::PAYLOAD_FRAME_TYPE}.body
+      input_payload = find_payload_frame(frames).body
 
       if content_type == GRPC_JSON_CONTENT_TYPE
         proto_class.decode_json(input_payload)
@@ -68,6 +68,10 @@ module GRPCWeb::GRPCRequestProcessor
 
     def frame_response(content)
       ::GRPCWeb::MessageFraming.frame_content(content)
+    end
+
+    def find_payload_frame(frames)
+      ::GRPCWeb::MessageFraming.find_payload_frame(frames)
     end
   end
 end

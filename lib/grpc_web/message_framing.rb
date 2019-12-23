@@ -7,6 +7,9 @@ module GRPCWeb
   # flags indicating what type of frame this is. The next 4 bytes indicate the
   # byte length of the frame body.
   module MessageFraming
+    PAYLOAD_FRAME_TYPE = "\x00".bytes[0]
+    HEADER_FRAME_TYPE = "\x80".bytes[0]
+
     class << self
       def frame_content(content, flags = "\x00")
         length_bytes = [content.bytesize].pack('N')
@@ -27,14 +30,12 @@ module GRPCWeb
         frames
       end
 
-      # If needed, trailers can be appended to the response as a 2nd
-      # base64 encoded string with independent framing.
-      def generate_trailers
-        frame_response([
-          'grpc-status:0',
-          'grpc-message:OK',
-          'x-grpc-web:1',
-        ].join("\r\n"), "\x80")
+      def find_payload_frame(frames)
+        frames.find{|f| f.frame_type == PAYLOAD_FRAME_TYPE}
+      end
+
+      def find_header_frame(frames)
+        frames.find{|f| f.frame_type == HEADER_FRAME_TYPE}
       end
     end
   end
