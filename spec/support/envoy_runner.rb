@@ -67,7 +67,7 @@ class EnvoyRunner
 
     def log(msg)
       formatted_msg = "[ENVOY] #{msg}"
-      puts formatted_msg
+      # puts formatted_msg
     end
 
     def envoy_is_running?
