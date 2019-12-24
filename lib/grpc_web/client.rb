@@ -40,11 +40,11 @@ module GRPCWeb
         resp = http.request(req)
         frames = ::GRPCWeb::MessageFraming.unframe_content(resp.body)
 
-        header_frame = ::GRPCWeb::MessageFraming.find_header_frame(frames)
+        header_frame = frames.find(&:header?)
         headers = parse_headers(header_frame.body) if header_frame
         raise_on_error(headers)
 
-        response_payload = ::GRPCWeb::MessageFraming.find_payload_frame(frames).body
+        response_payload = frames.find(&:payload?).body
         resp_proto = rpc_desc.output.decode(response_payload)
       end
 

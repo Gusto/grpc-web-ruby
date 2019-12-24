@@ -15,7 +15,7 @@ module GRPCWeb::MessageSerialization
       service_class = request.service.class
       request_proto_class = service_class.rpc_descs[request.service_method.to_sym].input
       frames = framing.unframe_content(request.body)
-      input_payload = framing.find_payload_frame(frames).body
+      input_payload = frames.find(&:payload?).body
 
       if request.content_type == GRPC_JSON_CONTENT_TYPE
         request_proto = request_proto_class.decode_json(input_payload)
