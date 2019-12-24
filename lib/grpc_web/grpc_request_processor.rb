@@ -17,14 +17,7 @@ module GRPCWeb::GRPCRequestProcessor
     def process(grpc_web_request)
       grpc_web_request = decode_request(grpc_web_request)
       grpc_web_request = parse_request(grpc_web_request)
-
-      begin
-        grpc_web_response = call_service(grpc_web_request)
-      rescue => e
-        error_response = generate_error_response(grpc_web_request.content_type, e)
-        return encode_response(error_response)
-      end
-
+      grpc_web_response = call_service(grpc_web_request)
       grpc_web_response = serialize_response(grpc_web_response)
       encode_response(grpc_web_response)
     end
@@ -51,10 +44,13 @@ module GRPCWeb::GRPCRequestProcessor
       # TODO Validate content_types
       content_type = request.content_type
       content_type = GRPC_PROTO_CONTENT_TYPE if content_type.blank?
-
       service_method_sym = request.service_method.to_s.underscore
-      response = request.service.send(service_method_sym, request.body)
 
+      begin
+        response = request.service.send(service_method_sym, request.body)
+      rescue => e
+        response = e # Return exception as body if one is raised
+      end
       ::GRPCWeb::GRPCWebResponse.new(content_type, response)
     end
 
@@ -74,6 +70,14 @@ module GRPCWeb::GRPCRequestProcessor
     end
 
     def serialize_response(response)
+      if response.body.is_a?(Exception)
+        serialize_error_response(response)
+      else
+        serialize_success_response(response)
+      end
+    end
+
+    def serialize_success_response(response)
       if response.content_type == GRPC_JSON_CONTENT_TYPE
         payload = response.body.to_json
       else
@@ -84,15 +88,14 @@ module GRPCWeb::GRPCRequestProcessor
       ::GRPCWeb::GRPCWebResponse.new(response.content_type, body)
     end
 
-    def generate_error_response(content_type, e)
-      if e.is_a?(::GRPC::BadStatus)
-        header_str = generate_headers(e.code, e.details)
+    def serialize_error_response(response)
+      ex = response.body
+      if ex.is_a?(::GRPC::BadStatus)
+        header_str = generate_headers(ex.code, ex.details)
       else
-        header_str = generate_headers(GRPC::BadStatus::UNKNOWN, "#{e.class.to_s}: #{e.message}")
+        header_str = generate_headers(GRPC::BadStatus::UNKNOWN, "#{ex.class.to_s}: #{ex.message}")
       end
-
-      framed = frame_header(header_str)
-      ::GRPCWeb::GRPCWebResponse.new(content_type, framed)
+      ::GRPCWeb::GRPCWebResponse.new(response.content_type, frame_header(header_str))
     end
 
     # If needed, trailers can be appended to the response as a 2nd
