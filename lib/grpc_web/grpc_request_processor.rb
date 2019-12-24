@@ -3,17 +3,15 @@
 require 'active_support/core_ext/string'
 require 'base64'
 require 'grpc/errors'
+require 'grpc_web/content_types'
 require 'grpc_web/grpc_web_response'
 require 'grpc_web/message_framing'
+require 'grpc_web/text_coder'
 
 module GRPCWeb::GRPCRequestProcessor
-  GRPC_PROTO_CONTENT_TYPE = 'application/grpc-web+proto'
-  GRPC_JSON_CONTENT_TYPE = 'application/grpc-web+json'
-  GRPC_TEXT_CONTENT_TYPE = 'application/grpc-web-text'
-  GRPC_TEXT_PROTO_CONTENT_TYPE = 'application/grpc-web-text+proto'
-  BASE64_CONTENT_TYPES = [GRPC_TEXT_CONTENT_TYPE, GRPC_TEXT_PROTO_CONTENT_TYPE].freeze
-
   class << self
+    include ::GRPCWeb::ContentTypes
+
     def process(grpc_web_request)
       grpc_web_request = decode_request(grpc_web_request)
       grpc_web_request = parse_request(grpc_web_request)
@@ -55,18 +53,11 @@ module GRPCWeb::GRPCRequestProcessor
     end
 
     def decode_request(request)
-      return request unless BASE64_CONTENT_TYPES.include?(request.content_type)
-      # Body can be several base64 "chunks" concatenated together
-      base64_chunks = request.body.scan(/[a-zA-Z0-9+\/]+={0,2}/)
-      decoded = base64_chunks.map{|chunk| Base64.decode64(chunk)}.join
-      ::GRPCWeb::GRPCWebRequest.new(
-          request.service, request.service_method, request.content_type, decoded)
+      ::GRPCWeb::TextCoder.decode_request(request)
     end
 
     def encode_response(response)
-      return response unless BASE64_CONTENT_TYPES.include?(response.content_type)
-      encoded = Base64.strict_encode64(response.body)
-      ::GRPCWeb::GRPCWebResponse.new(response.content_type, encoded)
+      ::GRPCWeb::TextCoder.encode_response(response)
     end
 
     def serialize_response(response)
