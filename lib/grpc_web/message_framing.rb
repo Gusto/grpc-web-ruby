@@ -7,8 +7,9 @@ module GRPCWeb
   # flags indicating what type of frame this is. The next 4 bytes indicate the
   # byte length of the frame body.
   module MessageFraming
+    HEADER_FRAME_TYPE_STR = "\x80"
     PAYLOAD_FRAME_TYPE = "\x00".bytes[0]
-    HEADER_FRAME_TYPE = "\x80".bytes[0]
+    HEADER_FRAME_TYPE = HEADER_FRAME_TYPE_STR.bytes[0]
 
     class << self
       def frame_content(content, flags = "\x00")
@@ -16,6 +17,10 @@ module GRPCWeb
         "#{flags}#{length_bytes}#{content}"
       end
 
+      def frame_header(header)
+        frame_content(header, HEADER_FRAME_TYPE_STR)
+      end
+      
       def unframe_content(content)
         frames = []
         remaining_content = content
