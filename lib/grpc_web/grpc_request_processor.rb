@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-require 'base64'
 require 'active_support/core_ext/string'
+require 'base64'
+require 'grpc/errors'
 require 'grpc_web/grpc_web_response'
 require 'grpc_web/message_framing'
 
@@ -59,17 +60,17 @@ module GRPCWeb::GRPCRequestProcessor
 
     def decode_request(request)
       return request unless BASE64_CONTENT_TYPES.include?(request.content_type)
-      decoded = Base64.decode64(request.body)
+      # Body can be several base64 "chunks" concatenated together
+      base64_chunks = request.body.scan(/[a-zA-Z0-9+\/]+={0,2}/)
+      decoded = base64_chunks.map{|chunk| Base64.decode64(chunk)}.join
       ::GRPCWeb::GRPCWebRequest.new(
           request.service, request.service_method, request.content_type, decoded)
-      # TODO Handle multiple base64 encoded frames
     end
 
     def encode_response(response)
       return response unless BASE64_CONTENT_TYPES.include?(response.content_type)
       encoded = Base64.strict_encode64(response.body)
       ::GRPCWeb::GRPCWebResponse.new(response.content_type, encoded)
-      # TODO Handle multiple frames
     end
 
     def serialize_response(response)
@@ -78,7 +79,9 @@ module GRPCWeb::GRPCRequestProcessor
       else
         payload = response.body.to_proto
       end
-      ::GRPCWeb::GRPCWebResponse.new(response.content_type, frame_response(payload))
+      header_str = generate_headers(GRPC::Core::StatusCodes::OK, 'OK')
+      body = frame_response(payload) + frame_header(header_str)
+      ::GRPCWeb::GRPCWebResponse.new(response.content_type, body)
     end
 
     def generate_error_response(content_type, e)
@@ -88,7 +91,7 @@ module GRPCWeb::GRPCRequestProcessor
         header_str = generate_headers(GRPC::BadStatus::UNKNOWN, "#{e.class.to_s}: #{e.message}")
       end
 
-      framed = ::GRPCWeb::MessageFraming.frame_content(header_str, "\x80")
+      framed = frame_header(header_str)
       ::GRPCWeb::GRPCWebResponse.new(content_type, framed)
     end
 
@@ -109,6 +112,10 @@ module GRPCWeb::GRPCRequestProcessor
 
     def frame_response(content)
       ::GRPCWeb::MessageFraming.frame_content(content)
+    end
+
+    def frame_header(content)
+      ::GRPCWeb::MessageFraming.frame_content(content, "\x80")
     end
 
     def find_payload_frame(frames)
