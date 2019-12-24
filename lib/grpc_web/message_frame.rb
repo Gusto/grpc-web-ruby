@@ -2,10 +2,16 @@
 
 module GRPCWeb
   class MessageFrame
-    PAYLOAD_FRAME_TYPE_STR = "\x00"
-    PAYLOAD_FRAME_TYPE = PAYLOAD_FRAME_TYPE_STR.bytes[0]
-    HEADER_FRAME_TYPE_STR = "\x80"
-    HEADER_FRAME_TYPE = HEADER_FRAME_TYPE_STR.bytes[0]
+    PAYLOAD_FRAME_TYPE = 0 # String: "\x00"
+    HEADER_FRAME_TYPE = 128 # String: "\x80"
+
+    def self.payload_frame(body)
+      new(PAYLOAD_FRAME_TYPE, body)
+    end
+
+    def self.header_frame(body)
+      new(HEADER_FRAME_TYPE, body)
+    end
 
     attr_accessor :frame_type, :body
 

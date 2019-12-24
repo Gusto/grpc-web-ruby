@@ -3,6 +3,7 @@
 require 'active_support/core_ext/string'
 require 'grpc_web/content_types'
 require 'grpc_web/grpc_web_response'
+require 'grpc_web/message_framing'
 require 'grpc_web/message_serialization'
 require 'grpc_web/text_coder'
 
@@ -12,18 +13,21 @@ module GRPCWeb::GRPCRequestProcessor
 
     def process(grpc_web_request)
       text_coder = ::GRPCWeb::TextCoder
+      framing = ::GRPCWeb::MessageFraming
       serialization = ::GRPCWeb::MessageSerialization
 
       grpc_web_request = text_coder.decode_request(grpc_web_request)
+      grpc_web_request = framing.unframe_request(grpc_web_request)
       grpc_web_request = serialization.deserialize_request(grpc_web_request)
-      grpc_web_response = call_service(grpc_web_request)
+      grpc_web_response = execute_request(grpc_web_request)
       grpc_web_response = serialization.serialize_response(grpc_web_response)
+      grpc_web_response = framing.frame_response(grpc_web_response)
       text_coder.encode_response(grpc_web_response)
     end
 
     private
 
-    def call_service(request)
+    def execute_request(request)
       # TODO Validate content_types
       content_type = request.content_type
       content_type = GRPC_PROTO_CONTENT_TYPE if content_type.blank?

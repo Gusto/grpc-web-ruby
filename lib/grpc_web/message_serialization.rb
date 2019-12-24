@@ -5,7 +5,7 @@ require 'grpc/errors'
 require 'grpc_web/content_types'
 require 'grpc_web/grpc_web_response'
 require 'grpc_web/grpc_web_request'
-require 'grpc_web/message_framing'
+require 'grpc_web/message_frame'
 
 module GRPCWeb::MessageSerialization
   class << self
@@ -14,13 +14,12 @@ module GRPCWeb::MessageSerialization
     def deserialize_request(request)
       service_class = request.service.class
       request_proto_class = service_class.rpc_descs[request.service_method.to_sym].input
-      frames = framing.unframe_content(request.body)
-      input_payload = frames.find(&:payload?).body
+      payload_frame = request.body.find(&:payload?)
 
       if request.content_type == GRPC_JSON_CONTENT_TYPE
-        request_proto = request_proto_class.decode_json(input_payload)
+        request_proto = request_proto_class.decode_json(payload_frame.body)
       else
-        request_proto = request_proto_class.decode(input_payload)
+        request_proto = request_proto_class.decode(payload_frame.body)
       end
 
       ::GRPCWeb::GRPCWebRequest.new(
@@ -43,9 +42,12 @@ module GRPCWeb::MessageSerialization
       else
         payload = response.body.to_proto
       end
+
       header_str = generate_headers(::GRPC::Core::StatusCodes::OK, 'OK')
-      body = framing.frame_content(payload) + framing.frame_header(header_str)
-      ::GRPCWeb::GRPCWebResponse.new(response.content_type, body)
+      payload_frame = ::GRPCWeb::MessageFrame.payload_frame(payload)
+      header_frame = ::GRPCWeb::MessageFrame.header_frame(header_str)
+
+      ::GRPCWeb::GRPCWebResponse.new(response.content_type, [payload_frame, header_frame])
     end
 
     def serialize_error_response(response)
@@ -55,7 +57,8 @@ module GRPCWeb::MessageSerialization
       else
         header_str = generate_headers(::GRPC::Core::StatusCodes::UNKNOWN, "#{ex.class.to_s}: #{ex.message}")
       end
-      ::GRPCWeb::GRPCWebResponse.new(response.content_type, framing.frame_header(header_str))
+      header_frame = ::GRPCWeb::MessageFrame.header_frame(header_str)
+      ::GRPCWeb::GRPCWebResponse.new(response.content_type, [header_frame])
     end
 
     # If needed, trailers can be appended to the response as a 2nd
@@ -67,10 +70,6 @@ module GRPCWeb::MessageSerialization
         'x-grpc-web:1',
         nil # for trailing newline
       ].join("\r\n")
-    end
-
-    def framing
-      ::GRPCWeb::MessageFraming
     end
   end
 end
