@@ -33,28 +33,28 @@ describe 'connecting to an envoy server from a ruby client', type: :feature do
   context 'for a method that raises a standard gRPC error' do
     let(:service) do
       Class.new(TestHelloService) do
-        def say_hello(request, _metadata)
+        def say_hello(request, _metadata = nil)
           raise ::GRPC::InvalidArgument, 'Test message'
         end
       end
     end
 
     it 'raises an error' do
-      expect{ subject }.to raise_error(GRPC::InvalidArgument)
+      expect{ subject }.to raise_error(GRPC::InvalidArgument, '3:Test message')
     end
   end
 
   context 'for a method that raises a custom error' do
     let(:service) do
       Class.new(TestHelloService) do
-        def say_hello(request, _metadata)
+        def say_hello(request, _metadata = nil)
           raise 'Some random error'
         end
       end
     end
 
     it 'raises an error' do
-      expect{ subject }.to raise_error(GRPC::Unknown)
+      expect{ subject }.to raise_error(GRPC::Unknown, '2:RuntimeError: Some random error')
     end
   end
 end

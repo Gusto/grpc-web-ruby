@@ -7,9 +7,9 @@ require 'test_hello_service'
 
 # Used to build a Rack app hosting the HelloService for integration testing.
 module TestGRPCWebApp
-  def self.build
+  def self.build(service_class = TestHelloService)
     grpc_app = GRPCWeb::RackApp.for_services([
-      proc { TestHelloService.new },
+      proc { service_class.new },
     ])
 
     Rack::Builder.new do

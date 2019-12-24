@@ -16,7 +16,14 @@ module GRPCWeb::GRPCRequestProcessor
     def process(grpc_web_request)
       grpc_web_request = decode_request(grpc_web_request)
       grpc_web_request = parse_request(grpc_web_request)
-      grpc_web_response = call_service(grpc_web_request)
+
+      begin
+        grpc_web_response = call_service(grpc_web_request)
+      rescue => e
+        error_response = generate_error_response(grpc_web_request.content_type, e)
+        return encode_response(error_response)
+      end
+
       grpc_web_response = serialize_response(grpc_web_response)
       encode_response(grpc_web_response)
     end
@@ -74,6 +81,17 @@ module GRPCWeb::GRPCRequestProcessor
       ::GRPCWeb::GRPCWebResponse.new(response.content_type, frame_response(payload))
     end
 
+    def generate_error_response(content_type, e)
+      if e.is_a?(::GRPC::BadStatus)
+        header_str = generate_headers(e.code, e.details)
+      else
+        header_str = generate_headers(GRPC::BadStatus::UNKNOWN, "#{e.class.to_s}: #{e.message}")
+      end
+
+      framed = ::GRPCWeb::MessageFraming.frame_content(header_str, "\x80")
+      ::GRPCWeb::GRPCWebResponse.new(content_type, framed)
+    end
+
     # If needed, trailers can be appended to the response as a 2nd
     # base64 encoded string with independent framing.
     def generate_headers(status, message)
@@ -83,7 +101,6 @@ module GRPCWeb::GRPCRequestProcessor
         'x-grpc-web:1',
         nil # for trailing newline
       ].join("\r\n")
-      framed = ::GRPCWeb::MessageFraming.frame_content(header_str, "\x80")
     end
 
     def unframe_request(content)
