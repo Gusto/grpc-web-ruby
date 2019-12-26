@@ -38,6 +38,11 @@ module GRPCWeb
       resp_proto = nil
       res = Net::HTTP.start(uri.hostname, uri.port) do |http|
         resp = http.request(req)
+
+        unless resp.is_a?(Net::HTTPSuccess)
+          raise "Received #{resp.code} #{resp.message} response: #{resp.body}"
+        end
+
         frames = ::GRPCWeb::MessageFraming.unframe_content(resp.body)
 
         header_frame = frames.find(&:header?)
