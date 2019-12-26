@@ -42,10 +42,10 @@ module GRPCWeb
       end
 
       def valid_content_types?(rack_request)
-        return false unless ALL_GRPC_CONTENT_TYPES.include?(rack_request.content_type)
+        return false unless ALL_CONTENT_TYPES.include?(rack_request.content_type)
         accept = rack_request.get_header(ACCEPT_HEADER)
         return true if ANY_CONTENT_TYPES.include?(accept)
-        return ALL_GRPC_CONTENT_TYPES.include?(accept)
+        return ALL_CONTENT_TYPES.include?(accept)
       end
 
       def not_found_response(path)

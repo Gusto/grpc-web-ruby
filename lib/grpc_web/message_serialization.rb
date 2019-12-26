@@ -16,7 +16,7 @@ module GRPCWeb::MessageSerialization
       request_proto_class = service_class.rpc_descs[request.service_method.to_sym].input
       payload_frame = request.body.find(&:payload?)
 
-      if request.content_type == GRPC_JSON_CONTENT_TYPE
+      if request.content_type == JSON_CONTENT_TYPE
         request_proto = request_proto_class.decode_json(payload_frame.body)
       else
         request_proto = request_proto_class.decode(payload_frame.body)
@@ -37,7 +37,7 @@ module GRPCWeb::MessageSerialization
     private
 
     def serialize_success_response(response)
-      if response.content_type == GRPC_JSON_CONTENT_TYPE
+      if response.content_type == JSON_CONTENT_TYPE
         payload = response.body.to_json
       else
         payload = response.body.to_proto

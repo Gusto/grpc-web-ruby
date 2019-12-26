@@ -9,7 +9,7 @@ require 'grpc_web/message_framing'
 
 module GRPCWeb
   class Client
-    GRPC_PROTO_CONTENT_TYPE = 'application/grpc-web+proto'
+    PROTO_CONTENT_TYPE = 'application/grpc-web+proto'
     SERVICE_CONST = 'Service'
 
     attr_accessor :base_url, :service_interface
@@ -32,7 +32,7 @@ module GRPCWeb
       req_proto = rpc_desc.input.new(params)
 
       uri = URI(File.join(base_url, service_class.service_name, service_method))
-      req = Net::HTTP::Post.new(uri, 'Accept' => GRPC_PROTO_CONTENT_TYPE, 'Content-Type' => GRPC_PROTO_CONTENT_TYPE)
+      req = Net::HTTP::Post.new(uri, 'Accept' => PROTO_CONTENT_TYPE, 'Content-Type' => PROTO_CONTENT_TYPE)
       req.body = ::GRPCWeb::MessageFraming.frame_content(req_proto.to_proto)
 
       resp_proto = nil
