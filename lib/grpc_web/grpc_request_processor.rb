@@ -28,9 +28,6 @@ module GRPCWeb::GRPCRequestProcessor
     private
 
     def execute_request(request)
-      # TODO Validate content_types
-      content_type = request.content_type
-      content_type = GRPC_PROTO_CONTENT_TYPE if content_type.blank?
       service_method_sym = request.service_method.to_s.underscore
 
       begin
@@ -38,7 +35,16 @@ module GRPCWeb::GRPCRequestProcessor
       rescue => e
         response = e # Return exception as body if one is raised
       end
-      ::GRPCWeb::GRPCWebResponse.new(content_type, response)
+      ::GRPCWeb::GRPCWebResponse.new(response_content_type(request), response)
+    end
+
+    # Use Accept header value if specified, otherwise use request content type
+    def response_content_type(request)
+      if request.accept.nil? || ANY_CONTENT_TYPES.include?(request.accept)
+        request.content_type
+      else
+        request.accept
+      end
     end
   end
 end

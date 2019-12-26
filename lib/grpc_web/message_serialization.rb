@@ -23,7 +23,7 @@ module GRPCWeb::MessageSerialization
       end
 
       ::GRPCWeb::GRPCWebRequest.new(
-          request.service, request.service_method, request.content_type, request_proto)
+          request.service, request.service_method, request.content_type, request.accept, request_proto)
     end
 
     def serialize_response(response)

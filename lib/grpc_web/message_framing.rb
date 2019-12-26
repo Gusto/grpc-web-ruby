@@ -13,7 +13,7 @@ module GRPCWeb
       def unframe_request(request)
         frames = unframe_content(request.body)
         ::GRPCWeb::GRPCWebRequest.new(
-          request.service, request.service_method, request.content_type, frames)
+          request.service, request.service_method, request.content_type, request.accept, frames)
       end
 
       def frame_response(response)
