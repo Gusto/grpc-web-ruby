@@ -1,5 +1,6 @@
 ## TODOs
 
+1. Add README and license
 1. Integration test for invalid request payload
 1. Wrap connection/network layer errors?
 1. text (base64) mode for Ruby client
