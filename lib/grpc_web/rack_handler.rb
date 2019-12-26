@@ -2,6 +2,7 @@
 
 require 'rack/request'
 require 'grpc_web/content_types'
+require 'grpc_web/error_callback'
 require 'grpc_web/grpc_request_processor'
 require 'grpc_web/grpc_web_request'
 
@@ -31,8 +32,9 @@ module GRPCWeb
 
       rescue Google::Protobuf::ParseError => e
         invalid_response(e.message)
-      # rescue => e
-      #   error_response
+      rescue => e
+        ::GRPCWeb.on_error.call(e, service, service_method)
+        error_response
       end
 
       private

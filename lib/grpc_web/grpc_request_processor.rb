@@ -2,6 +2,7 @@
 
 require 'active_support/core_ext/string'
 require 'grpc_web/content_types'
+require 'grpc_web/error_callback'
 require 'grpc_web/grpc_web_response'
 require 'grpc_web/message_framing'
 require 'grpc_web/message_serialization'
@@ -33,6 +34,7 @@ module GRPCWeb::GRPCRequestProcessor
       begin
         response = request.service.send(service_method_sym, request.body)
       rescue => e
+        ::GRPCWeb.on_error.call(e, request.service, request.service_method)
         response = e # Return exception as body if one is raised
       end
       ::GRPCWeb::GRPCWebResponse.new(response_content_type(request), response)

@@ -1,6 +1,5 @@
 ## TODOs
 
-1. Where does error catching (Bugsnag) go?
 1. Integration test for invalid request payload
 1. Wrap connection/network layer errors?
 1. text (base64) mode for Ruby client
