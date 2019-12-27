@@ -11,6 +11,9 @@ module GRPCWeb::ClientExecutor
   class << self
     include ::GRPCWeb::ContentTypes
 
+    GRPC_STATUS_HEADER = 'grpc-status'
+    GRPC_MESSAGE_HEADER = 'grpc-message'
+
     def request(uri, rpc_desc, params = {})
       req_proto = rpc_desc.input.new(params)
 
@@ -66,11 +69,11 @@ module GRPCWeb::ClientExecutor
 
     def raise_on_error(headers)
       return unless headers
-      status_str = headers['grpc-status']
+      status_str = headers[GRPC_STATUS_HEADER]
       status_code = status_str.to_i if status_str && status_str == status_str.to_i.to_s
 
       if status_code && status_code != 0
-        raise ::GRPC::BadStatus.new_status_exception(status_code, headers['grpc-message'])
+        raise ::GRPC::BadStatus.new_status_exception(status_code, headers[GRPC_MESSAGE_HEADER])
       end
     end
   end
