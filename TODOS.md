@@ -1,7 +1,9 @@
 ## TODOs
 
 1. Add README and license
+1. Test server errors in JS
 1. Integration test for invalid request payload
+1. Add logging
 1. Wrap connection/network layer errors?
 1. text (base64) mode for Ruby client
 1. Add OpenTelemetry/OpenCensus instrumentation

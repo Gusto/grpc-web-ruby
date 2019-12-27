@@ -3,14 +3,14 @@
 require 'rack'
 require 'rack/cors'
 require 'grpc-web'
+require 'hello_services_pb'
 require 'test_hello_service'
 
 # Used to build a Rack app hosting the HelloService for integration testing.
 module TestGRPCWebApp
   def self.build(service_class = TestHelloService)
-    grpc_app = GRPCWeb::RackApp.for_services([
-      proc { service_class.new },
-    ])
+    grpc_app = GRPCWeb::RackApp.new
+    grpc_app.handle(service_class)
 
     Rack::Builder.new do
       use Rack::Cors do

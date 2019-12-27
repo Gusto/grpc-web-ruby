@@ -4,40 +4,66 @@ require 'rack/builder'
 require 'grpc_web/rack_handler'
 
 module GRPCWeb
-  module RackApp
-    class << self
-      def for_services(services)
-        builder = Rack::Builder.new
-        services.each do |service_or_proc|
-          add_service_to_app(builder, service_or_proc)
-        end
-        builder
+  class RackApp < ::Rack::Builder
+
+    # Can be given a service class, an instance of a service class, or a
+    # service interface class with a block to lazily initialize the service.
+    #
+    # Example 1:
+    #   app.handle(TestHelloService)
+    #
+    # Example 2:
+    #   app.handle(TestHelloService.new)
+    #
+    # Example 3:
+    #   app.handle(HelloService::Service) do
+    #     require 'test_hello_service'
+    #     TestHelloService.new
+    #   end
+    #
+    def handle(service_or_class, &lazy_init_block)
+      service_class = service_or_class.is_a?(Class) ? service_or_class : service_or_class.class
+      service_config = lazy_init_block || service_or_class
+
+      service_class.rpc_descs.keys.each do |service_method|
+        add_service_method_to_app(service_class.service_name, service_config, service_method)
+      end
+    end
+
+    private
+
+    # Map a path with Rack::Builder corresponding to the service method
+    def add_service_method_to_app(service_name, service_config, service_method)
+      map("/#{service_name}/#{service_method}") do
+        run(RouteHandler.new(service_config, service_method))
+      end
+    end
+
+    class RouteHandler
+      def initialize(service_config, service_method)
+        self.service_config = service_config
+        self.service_method = service_method
       end
 
-      def call_if_proc(service_or_proc)
-        if service_or_proc.is_a?(Proc)
-          service_or_proc.call
-        else
-          service_or_proc
-        end
+      def call(env)
+        ::GRPCWeb::RackHandler.call(service, service_method, env)
       end
 
       private
 
-      def add_service_to_app(builder, service_or_proc)
-        service_class = call_if_proc(service_or_proc).class
-        base_path = service_class.service_name
+      attr_accessor :service_config, :service_method
 
-        service_class.rpc_descs.keys.each do |service_method|
-          builder.map "/#{base_path}/#{service_method}" do
-            run ->(env) do
-              service = ::GRPCWeb::RackApp.call_if_proc(service_or_proc)
-              ::GRPCWeb::RackHandler.call(service, service_method, env)
-            end
-          end
+      def service
+        case service_config
+        when Proc
+          service_config.call
+        when Class
+          service_config.new
+        else
+          service_config
         end
       end
-
     end
+
   end
 end
