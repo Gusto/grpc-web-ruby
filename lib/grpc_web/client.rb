@@ -17,32 +17,24 @@ module GRPCWeb
     def initialize(base_url, service_interface)
       self.base_url = base_url
       self.service_interface = service_interface
-      self.methods_to_rpc_descs = {}
+
       service_class.rpc_descs.each do |method, rpc_desc|
-        methods_to_rpc_descs[::GRPC::GenericService.underscore(method.to_s)] = rpc_desc
+        ruby_method_name = ::GRPC::GenericService.underscore(method.to_s)
+        define_singleton_method(ruby_method_name.to_sym) do |params = {}|
+          perform_request(rpc_desc, params)
+        end
       end
-    end
-
-    def method_missing(method, params = {})
-      super unless respond_to_missing?(method)
-      perform_request(method.to_s, params)
-    end
-
-    def respond_to_missing?(method, include_private = false)
-      methods_to_rpc_descs.has_key?(method.to_s)
     end
 
     private
 
     attr_writer :base_url, :service_interface
-    attr_accessor :methods_to_rpc_descs
 
     def service_class
       service_interface.const_get(SERVICE_CONST)
     end
 
-    def perform_request(method, params = {})
-      rpc_desc = methods_to_rpc_descs[method]
+    def perform_request(rpc_desc, params = {})
       req_proto = rpc_desc.input.new(params)
 
       uri = URI(File.join(base_url, service_class.service_name, rpc_desc.name.to_s))
