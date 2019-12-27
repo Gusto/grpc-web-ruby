@@ -46,7 +46,8 @@ class EnvoyRunner
     end
 
     def docker_container_sha_for_envoy
-      `docker ps -q -f name=#{DOCKER_CONTAINER_NAME}`&.strip&.presence
+      result = `docker ps -q -f name=#{DOCKER_CONTAINER_NAME}`&.strip
+      result unless result == ''
     end
 
     def stop_envoy
@@ -71,7 +72,7 @@ class EnvoyRunner
     end
 
     def envoy_is_running?
-      envoy_pid && docker_container_sha_for_envoy.present?
+      envoy_pid && docker_container_sha_for_envoy
     end
 
     def envoy_port_in_use?
@@ -88,7 +89,7 @@ class EnvoyRunner
 
     def stop_existing_container_if_running
       existing_container_sha = docker_container_sha_for_envoy
-      if existing_container_sha.present?
+      if existing_container_sha
         log "Found old Envoy container #{existing_container_sha} still running..."
         stop_envoy
         log "Stopped old Envoy container #{existing_container_sha}."
