@@ -19,7 +19,6 @@ Gem::Specification.new do |spec|
   spec.files         = Dir['lib/**/*']
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'activesupport', '>= 4.0', '< 7.0'
   spec.add_dependency 'grpc', '~> 1.0'
   spec.add_dependency 'rack', '>= 1.6.0', '< 3.0'
 
