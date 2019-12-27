@@ -37,6 +37,7 @@ module GRPCWeb
 
       resp_proto = nil
       res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+        http.use_ssl = (uri.scheme == 'https')
         resp = http.request(req)
 
         unless resp.is_a?(Net::HTTPSuccess)

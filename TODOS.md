@@ -1,6 +1,5 @@
 ## TODOs
 
-1. HTTPS support for Client
 1. HTTP basic auth support client/server
 1. Integration test for invalid request payload
 1. Add logging
