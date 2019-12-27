@@ -3,3 +3,4 @@ spec/pb-js-grpc-web/*.js
 spec/pb-js-grpc-web-text/*.js
 spec/js-client-src/node_modules
 spec/js-client/main.js
+coverage

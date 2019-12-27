@@ -5,6 +5,9 @@ $LOAD_PATH.unshift(support_path) unless $LOAD_PATH.include?(support_path)
 $LOAD_PATH.unshift(pb_path) unless $LOAD_PATH.include?(pb_path)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
+require 'simplecov'
+SimpleCov.start
+
 require 'capybara/rspec'
 Capybara.server = :webrick
 

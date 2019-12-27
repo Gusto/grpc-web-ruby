@@ -28,4 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'apparition'
   spec.add_development_dependency 'rack-cors'
   spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'simplecov'
 end
