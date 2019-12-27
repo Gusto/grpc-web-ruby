@@ -12,26 +12,40 @@ module GRPCWeb
     PROTO_CONTENT_TYPE = 'application/grpc-web+proto'
     SERVICE_CONST = 'Service'
 
-    attr_accessor :base_url, :service_interface
+    attr_reader :base_url, :service_interface
 
     def initialize(base_url, service_interface)
       self.base_url = base_url
       self.service_interface = service_interface
+      self.methods_to_rpc_descs = {}
+      service_class.rpc_descs.each do |method, rpc_desc|
+        methods_to_rpc_descs[::GRPC::GenericService.underscore(method.to_s)] = rpc_desc
+      end
     end
 
     def method_missing(method, params = {})
-      rpc_name = method.to_s.camelize
-      perform_request(rpc_name, params)
+      super unless respond_to_missing?(method)
+      perform_request(method.to_s, params)
+    end
+
+    def respond_to_missing?(method, include_private = false)
+      methods_to_rpc_descs.has_key?(method.to_s)
     end
 
     private
 
-    def perform_request(service_method, params = {})
-      service_class = service_interface.const_get(SERVICE_CONST)
-      rpc_desc = service_class.rpc_descs[service_method.to_sym]
+    attr_writer :base_url, :service_interface
+    attr_accessor :methods_to_rpc_descs
+
+    def service_class
+      service_interface.const_get(SERVICE_CONST)
+    end
+
+    def perform_request(method, params = {})
+      rpc_desc = methods_to_rpc_descs[method]
       req_proto = rpc_desc.input.new(params)
 
-      uri = URI(File.join(base_url, service_class.service_name, service_method))
+      uri = URI(File.join(base_url, service_class.service_name, rpc_desc.name.to_s))
       req = Net::HTTP::Post.new(uri, 'Accept' => PROTO_CONTENT_TYPE, 'Content-Type' => PROTO_CONTENT_TYPE)
       req.body = ::GRPCWeb::MessageFraming.frame_content(req_proto.to_proto)
 

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'active_support/core_ext/string'
 require 'grpc_web/content_types'
 require 'grpc_web/error_callback'
 require 'grpc_web/grpc_web_response'
@@ -29,10 +28,10 @@ module GRPCWeb::GRPCRequestProcessor
     private
 
     def execute_request(request)
-      service_method_sym = request.service_method.to_s.underscore
+      service_method = ::GRPC::GenericService.underscore(request.service_method.to_s)
 
       begin
-        response = request.service.send(service_method_sym, request.body)
+        response = request.service.send(service_method, request.body)
       rescue => e
         ::GRPCWeb.on_error.call(e, request.service, request.service_method)
         response = e # Return exception as body if one is raised
