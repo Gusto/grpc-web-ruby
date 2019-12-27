@@ -188,7 +188,7 @@ The gRPC-Web Ruby client is tested to be compatible with both the gRPC-Web Ruby 
 require 'grpc_web/client'
 require 'hello_services_pb'
 
-$client = GRPCWeb::Client.new("http://localhost:3000/grpc", HelloService)
+$client = GRPCWeb::Client.new("http://localhost:3000/grpc", HelloService::Service)
 ```
 
 #### Calling a method

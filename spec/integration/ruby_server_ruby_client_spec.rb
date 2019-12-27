@@ -8,7 +8,7 @@ describe 'connecting to a ruby server from a ruby client', type: :feature do
   let(:browser) { Capybara::Session.new(Capybara.default_driver, rack_app) }
   let(:server) { browser.server }
 
-  let(:client) { GRPCWeb::Client.new("http://#{server.host}:#{server.port}", HelloService) }
+  let(:client) { GRPCWeb::Client.new("http://#{server.host}:#{server.port}", HelloService::Service) }
   let(:name) { 'James' }
 
   subject(:response) { client.say_hello(name: name) }

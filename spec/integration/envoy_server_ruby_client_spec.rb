@@ -22,7 +22,7 @@ describe 'connecting to an envoy server from a ruby client', type: :feature do
   subject { client.say_hello(name: name) }
 
   let(:service) { TestHelloService }
-  let(:client) { GRPCWeb::Client.new("http://localhost:8080", HelloService) }
+  let(:client) { GRPCWeb::Client.new("http://localhost:8080", HelloService::Service) }
   let(:name) { 'Jamesasdfasdfasdfas' }
 
   it 'returns the expected response from the service' do

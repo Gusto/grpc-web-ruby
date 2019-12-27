@@ -5,7 +5,6 @@ require 'grpc_web/client_executor'
 
 module GRPCWeb
   class Client
-    SERVICE_CONST = 'Service'
 
     attr_reader :base_url, :service_interface
 
@@ -13,7 +12,7 @@ module GRPCWeb
       self.base_url = base_url
       self.service_interface = service_interface
 
-      service_class.rpc_descs.each do |rpc_method, rpc_desc|
+      service_interface.rpc_descs.each do |rpc_method, rpc_desc|
         define_rpc_method(rpc_method, rpc_desc)
       end
     end
@@ -21,10 +20,6 @@ module GRPCWeb
     private
 
     attr_writer :base_url, :service_interface
-
-    def service_class
-      service_interface.const_get(SERVICE_CONST)
-    end
 
     def define_rpc_method(rpc_method, rpc_desc)
       ruby_method = ::GRPC::GenericService.underscore(rpc_method.to_s).to_sym
@@ -35,7 +30,7 @@ module GRPCWeb
     end
 
     def endpoint_uri(rpc_desc)
-      URI(File.join(base_url, service_class.service_name, rpc_desc.name.to_s))
+      URI(File.join(base_url, service_interface.service_name, rpc_desc.name.to_s))
     end
 
   end
