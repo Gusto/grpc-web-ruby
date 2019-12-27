@@ -36,7 +36,7 @@ gRPC-Web Ruby includes integration tests between the following implementations o
 ## Getting Started
 Add the gem to your Gemfile:
 ```ruby
-gem 'grpc-ruby'
+gem 'grpc-web'
 ```
 
 ### Implement a gRPC Service in Ruby
