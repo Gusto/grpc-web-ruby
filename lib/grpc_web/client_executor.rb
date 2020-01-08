@@ -16,14 +16,11 @@ module GRPCWeb::ClientExecutor
 
     def request(uri, rpc_desc, params = {})
       req_proto = rpc_desc.input.new(params)
-
       request_body = ::GRPCWeb::MessageFraming.frame_content(req_proto.to_proto)
 
       resp = post_request(uri, request_body)
       resp_body = handle_response(resp)
-      resp_proto = rpc_desc.output.decode(resp_body)
-
-      resp_proto
+      rpc_desc.output.decode(resp_body)
     end
 
     private
