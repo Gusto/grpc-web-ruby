@@ -107,9 +107,11 @@ class EnvoyRunner
     end
 
     def run_cmd_in_background(cmd)
-      Thread.new do
-        PTY.spawn(cmd) do |_stdout, _stdin, pty_pid|
-          ::EnvoyRunner.envoy_pid = pty_pid
+      begin
+        Thread.new do
+          PTY.spawn(cmd) do |_stdout, _stdin, pty_pid|
+            ::EnvoyRunner.envoy_pid = pty_pid
+          end
         end
       rescue PTY::ChildExited
         log 'The Envoy child PTY process exited!'

@@ -25,9 +25,10 @@ end
 
 task :compile_protos_js do
   sh RakeHelpers.compile_protos_js_cmd('grpcwebtext', '/spec/pb-js-grpc-web-text')
-  touch 'spec/pb-js-grpc-web-text/.gitkeep'
+  sh 'ls -laR spec'
+  #touch 'spec/pb-js-grpc-web-text/.gitkeep'
   sh RakeHelpers.compile_protos_js_cmd('grpcweb', '/spec/pb-js-grpc-web')
-  touch 'spec/pb-js-grpc-web/.gitkeep'
+  #touch 'spec/pb-js-grpc-web/.gitkeep'
 end
 
 task :compile_protos_ruby do
@@ -41,6 +42,10 @@ task :compile_protos_ruby do
   ].join(' ')
 end
 
+task :docker_pull_envoy do
+  sh 'docker pull envoyproxy/envoy:latest'
+end
+
 task compile_js_client: [:compile_protos_js] do
   Dir.chdir('spec/js-client-src') do
     system('yarn install')
@@ -48,4 +53,4 @@ task compile_js_client: [:compile_protos_js] do
   end
 end
 
-task default: [:clean, :compile_protos_ruby, :compile_js_client, :spec]
+task default: [:clean, :compile_protos_ruby, :compile_js_client, :docker_pull_envoy, :spec]
