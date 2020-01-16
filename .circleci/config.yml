@@ -9,7 +9,7 @@ jobs:
     executor: gusto/ruby-2-5
     steps:
       - gusto/bundle-install
-      - run: bundle exec rake
+#      - run: bundle exec rake
 
 workflows:
   version: 2
