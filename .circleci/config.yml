@@ -1,0 +1,18 @@
+version: 2.1
+
+# See latest version of Gusto orbs at https://circleci.com/orbs/registry/orb/gusto/gusto
+orbs:
+  gusto: gusto/gusto@0.0.12
+
+jobs:
+  ruby-test:
+    executor: gusto/ruby-2-5
+    steps:
+      - gusto/bundle-install
+      - run: bundle exec rake
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - ruby-test
