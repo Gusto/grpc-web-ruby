@@ -13,7 +13,7 @@ describe 'connecting to a ruby server from a javascript client', type: :feature 
   # Script to initialize a JS client in the browser and make a request
   let(:js_script) do
     <<-EOF
-    var helloService = new #{js_client_class}('http://#{server.host}:#{server.port}', null, null);
+    var helloService = new window.#{js_client_class}('http://#{server.host}:#{server.port}', null, null);
     var x = new HelloRequest();
     x.setName('#{name}');
     window.grpcResponse = null;
