@@ -7,7 +7,13 @@ require 'hello_services_pb'
 require 'test_grpc_server'
 require 'test_hello_service'
 
+<<<<<<< HEAD
 describe 'connecting to an envoy server from a ruby client', type: :feature do
+=======
+RSpec.describe 'connecting to an envoy server from a ruby client', type: :feature do
+  subject { client.say_hello(name: name) }
+
+>>>>>>> Fix rspecs
   # In order to perform these tests we need to run both a ruby gRPC Server
   # thread and an Envoy proxy (in docker) to proxy gRPC Web -> gRPC.
 <<<<<<< HEAD
