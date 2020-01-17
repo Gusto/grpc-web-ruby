@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe 'connecting to a ruby server from a javascript client', type: :feature do
@@ -28,6 +30,7 @@ describe 'connecting to a ruby server from a javascript client', type: :feature 
     20.times do # 2 sec timeout
       result = evaluate_script(script)
       break unless result.nil?
+
       sleep 0.1
     end
     result
@@ -53,7 +56,7 @@ describe 'connecting to a ruby server from a javascript client', type: :feature 
     context 'for a method that raises a standard gRPC error' do
       let(:service) do
         Class.new(TestHelloService) do
-          def say_hello(request, _metadata = nil)
+          def say_hello(_request, _metadata = nil)
             raise ::GRPC::InvalidArgument, 'Test message'
           end
         end
@@ -61,14 +64,14 @@ describe 'connecting to a ruby server from a javascript client', type: :feature 
 
       it 'returns an error' do
         perform_request
-        expect(js_error).to include('code' => 3, 'message' => "Test message")
+        expect(js_error).to include('code' => 3, 'message' => 'Test message')
       end
     end
 
     context 'for a method that raises a custom error' do
       let(:service) do
         Class.new(TestHelloService) do
-          def say_hello(request, _metadata = nil)
+          def say_hello(_request, _metadata = nil)
             raise 'Some random error'
           end
         end
@@ -76,7 +79,7 @@ describe 'connecting to a ruby server from a javascript client', type: :feature 
 
       it 'raises an error' do
         perform_request
-        expect(js_error).to include('code' => 2, 'message' => "RuntimeError: Some random error")
+        expect(js_error).to include('code' => 2, 'message' => 'RuntimeError: Some random error')
       end
     end
   end
@@ -87,7 +90,7 @@ describe 'connecting to a ruby server from a javascript client', type: :feature 
     it 'makes a request using application/grpc-web-text content type' do
       expect(GRPCWeb::GRPCRequestProcessor).to \
         receive(:process) \
-        .with(have_attributes(content_type: "application/grpc-web-text")) \
+        .with(have_attributes(content_type: 'application/grpc-web-text')) \
         .and_call_original
       perform_request
     end
@@ -101,7 +104,7 @@ describe 'connecting to a ruby server from a javascript client', type: :feature 
     it 'makes a request using application/grpc-web+proto content type' do
       expect(GRPCWeb::GRPCRequestProcessor).to \
         receive(:process) \
-        .with(have_attributes(content_type: "application/grpc-web+proto")) \
+        .with(have_attributes(content_type: 'application/grpc-web+proto')) \
         .and_call_original
       perform_request
     end

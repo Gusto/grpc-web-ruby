@@ -23,7 +23,12 @@ module GRPCWeb::MessageSerialization
       end
 
       ::GRPCWeb::GRPCWebRequest.new(
-          request.service, request.service_method, request.content_type, request.accept, request_proto)
+        request.service,
+        request.service_method,
+        request.content_type,
+        request.accept,
+        request_proto,
+      )
     end
 
     def serialize_response(response)
@@ -55,7 +60,10 @@ module GRPCWeb::MessageSerialization
       if ex.is_a?(::GRPC::BadStatus)
         header_str = generate_headers(ex.code, ex.details)
       else
-        header_str = generate_headers(::GRPC::Core::StatusCodes::UNKNOWN, "#{ex.class.to_s}: #{ex.message}")
+        header_str = generate_headers(
+          ::GRPC::Core::StatusCodes::UNKNOWN,
+          "#{ex.class}: #{ex.message}",
+        )
       end
       header_frame = ::GRPCWeb::MessageFrame.header_frame(header_str)
       ::GRPCWeb::GRPCWebResponse.new(response.content_type, [header_frame])
@@ -68,7 +76,7 @@ module GRPCWeb::MessageSerialization
         "grpc-status:#{status}",
         "grpc-message:#{message}",
         'x-grpc-web:1',
-        nil # for trailing newline
+        nil, # for trailing newline
       ].join("\r\n")
     end
   end

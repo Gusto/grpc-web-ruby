@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rake/clean'
 require 'rspec/core/rake_task'
 
@@ -48,4 +50,4 @@ task compile_js_client: [:compile_protos_js] do
   end
 end
 
-task default: [:clean, :compile_protos_ruby, :compile_js_client, :spec]
+task default: %i[clean compile_protos_ruby compile_js_client spec]

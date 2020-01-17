@@ -69,6 +69,7 @@ module GRPCWeb::ClientExecutor
 
     def raise_on_error(headers)
       return unless headers
+
       status_str = headers[GRPC_STATUS_HEADER]
       status_code = status_str.to_i if status_str && status_str == status_str.to_i.to_s
 

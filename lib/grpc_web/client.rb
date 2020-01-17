@@ -5,7 +5,6 @@ require 'grpc_web/client_executor'
 
 module GRPCWeb
   class Client
-
     attr_reader :base_url, :service_interface
 
     def initialize(base_url, service_interface)
@@ -32,6 +31,5 @@ module GRPCWeb
     def endpoint_uri(rpc_desc)
       URI(File.join(base_url, service_interface.service_name, rpc_desc.name.to_s))
     end
-
   end
 end

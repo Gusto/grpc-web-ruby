@@ -32,7 +32,7 @@ module GRPCWeb::GRPCRequestProcessor
 
       begin
         response = request.service.send(service_method, request.body)
-      rescue => e
+      rescue StandardError => e
         ::GRPCWeb.on_error.call(e, request.service, request.service_method)
         response = e # Return exception as body if one is raised
       end

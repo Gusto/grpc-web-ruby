@@ -2,7 +2,7 @@
 
 module GRPCWeb
   class << self
-    NOOP_ON_ERROR = Proc.new {|ex, service, service_method| }
+    NOOP_ON_ERROR = proc { |ex, service, service_method| }
 
     def on_error(&block)
       if block_given?

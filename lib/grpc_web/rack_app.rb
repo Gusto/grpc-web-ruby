@@ -5,7 +5,6 @@ require 'grpc_web/rack_handler'
 
 module GRPCWeb
   class RackApp < ::Rack::Builder
-
     # Can be given a service class, an instance of a service class, or a
     # service interface class with a block to lazily initialize the service.
     #
@@ -74,6 +73,5 @@ module GRPCWeb
         end
       end
     end
-
   end
 end
