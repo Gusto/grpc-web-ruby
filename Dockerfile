@@ -2,7 +2,7 @@ FROM ruby:2.5.7
 
 # Install dependency packages
 RUN apt-get update && apt-get install -y \
-  docker \
+  curl \
   fonts-liberation \
   libappindicator3-1 \
   libasound2 \
@@ -34,7 +34,6 @@ RUN wget --quiet https://dl.google.com/linux/direct/google-chrome-stable_current
 
 # Install Yarn
 ENV PATH=/root/.yarn/bin:$PATH
-RUN apk add --virtual build-yarn curl && \
 RUN touch ~/.bashrc && \
     curl -o- -L https://yarnpkg.com/install.sh | sh
 
@@ -51,18 +50,3 @@ RUN gem install bundler \
  && bundle install -j4 --retry 3 \
  # Remove unneeded files (cached *.gem, *.o, *.c)
  && rm -rf /usr/local/bundle/cache/*.gem
-
-
-# RUN gem uninstall -I google-protobuf
-# RUN gem install google-protobuf --version=3.7.0 --platform=ruby
-
-# Add rails code and compile assets
-COPY . /app/
-# RUN bin/rake assets:precompile
-
-# Add a script to be executed every time the container starts.
-# ENTRYPOINT ["/app/entrypoint.rb"]
-# EXPOSE 3000
-
-# Start the main process.
-# CMD ["/app/bin/rails","server", "-b", "0.0.0.0"]

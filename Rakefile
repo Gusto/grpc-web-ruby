@@ -44,10 +44,16 @@ task :compile_protos_ruby do
 end
 
 task compile_js_client: [:compile_protos_js] do
-  Dir.chdir('spec/js-client-src') do
-    system('yarn install')
-    system('yarn run webpack')
-  end
+  # Dir.chdir('spec/js-client-src') do
+  #   system('yarn install')
+  #   system('yarn run webpack')
+  # end
+  sh [
+    'docker-compose down',
+    'docker-compose build',
+    'docker-compose run --use-aliases ruby "cd spec/js-client-src; yarn install; yarn run webpack"',
+    'docker-compose down',
+  ].join(' && ')
 end
 
 <<<<<<< HEAD

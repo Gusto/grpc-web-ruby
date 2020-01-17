@@ -7,7 +7,7 @@ services:
     expose:
       - 9090 # Envoy connects to ruby gRPC Server on 9090
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/app
     depends_on:
       - envoy
     networks:
