@@ -6,10 +6,10 @@ orbs:
 
 jobs:
   ruby-test:
-    executor: gusto/ruby-2-5
+    machine: true
     steps:
       - gusto/bundle-install
-#      - run: bundle exec rake
+      - run: bundle exec rake
 
 workflows:
   version: 2

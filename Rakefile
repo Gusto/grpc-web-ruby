@@ -50,4 +50,17 @@ task compile_js_client: [:compile_protos_js] do
   end
 end
 
+<<<<<<< HEAD
 task default: %i[clean compile_protos_ruby compile_js_client spec]
+=======
+task :run_specs_in_docker do
+  sh [
+    'docker-compose down',
+    'docker-compose build',
+    'docker-compose run --use-aliases ruby rspec',
+    'docker-compose down',
+  ].join(' && ')
+end
+
+task default: [:clean, :compile_protos_ruby, :compile_js_client, :run_specs_in_docker]
+>>>>>>> Try running specs using docker-compose

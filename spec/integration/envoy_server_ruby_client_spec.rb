@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 
-require 'envoy_runner'
 require 'grpc_web/client'
 require 'hello_services_pb'
 require 'test_grpc_server'
@@ -11,20 +10,27 @@ require 'test_hello_service'
 describe 'connecting to an envoy server from a ruby client', type: :feature do
   # In order to perform these tests we need to run both a ruby gRPC Server
   # thread and an Envoy proxy (in docker) to proxy gRPC Web -> gRPC.
+<<<<<<< HEAD
   subject { client.say_hello(name: name) }
 
   around do |example|
     EnvoyRunner.start_envoy
+=======
+  around(:each) do |example|
+>>>>>>> Try running specs using docker-compose
     server = TestGRPCServer.new(service)
     server.start
     sleep 1
     example.run
     server.stop
-    EnvoyRunner.stop_envoy
   end
 
   let(:service) { TestHelloService }
+<<<<<<< HEAD
   let(:client) { GRPCWeb::Client.new('http://localhost:8080', HelloService::Service) }
+=======
+  let(:client) { GRPCWeb::Client.new("http://envoy:8080", HelloService::Service) }
+>>>>>>> Try running specs using docker-compose
   let(:name) { 'Jamesasdfasdfasdfas' }
 
   it 'returns the expected response from the service' do

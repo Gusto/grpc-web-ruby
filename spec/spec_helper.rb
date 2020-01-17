@@ -17,6 +17,17 @@ require 'test_grpc_web_app'
 Capybara.app = TestGRPCWebApp.build
 
 require 'capybara/apparition'
+Capybara.register_driver :apparition do |app|
+  opts = {
+    headless: true,
+    browser_options: [
+      :no_sandbox,
+      { disable_features: 'VizDisplayCompositor' },
+      :disable_gpu
+    ]
+  }
+  Capybara::Apparition::Driver.new(app, opts)
+end
 Capybara.default_driver = :apparition
 
 RSpec.configure do |config|
