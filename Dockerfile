@@ -31,19 +31,9 @@ RUN wget --quiet https://dl.google.com/linux/direct/google-chrome-stable_current
     && apt-get -f install \
     && rm -f /google-chrome-stable_current_amd64.deb
 
-# Install Yarn
-# ENV PATH=/root/.yarn/bin:$PATH
-# RUN apk add --virtual build-yarn curl && \
-# RUN touch ~/.bashrc && \
-#     curl -o- -L https://yarnpkg.com/install.sh | sh
-
 # Setup project home directory
 RUN mkdir /app
 WORKDIR /app
-
-# Install NPM packages
-# COPY package.json yarn.lock /app/
-# RUN yarn install --frozen-lockfile
 
 # Add Gemfile and cache results of bundle install
 COPY .ruby-version grpc-web.gemspec Gemfile Gemfile.lock /app/
@@ -55,17 +45,5 @@ RUN gem install bundler \
  # Remove unneeded files (cached *.gem, *.o, *.c)
  && rm -rf /usr/local/bundle/cache/*.gem
 
-
-# RUN gem uninstall -I google-protobuf
-# RUN gem install google-protobuf --version=3.7.0 --platform=ruby
-
 # Add rails code and compile assets
 COPY . /app/
-# RUN bin/rake assets:precompile
-
-# Add a script to be executed every time the container starts.
-# ENTRYPOINT ["/app/entrypoint.rb"]
-# EXPOSE 3000
-
-# Start the main process.
-# CMD ["/app/bin/rails","server", "-b", "0.0.0.0"]

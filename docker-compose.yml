@@ -3,6 +3,7 @@ version: '3.2'
 services:
   ruby:
     build: .
+    entrypoint: ./entrypoint.rb
     expose:
       - 9090 # Envoy connects to ruby gRPC Server on 9090
     volumes:
@@ -13,7 +14,6 @@ services:
       default:
         aliases:
           - ruby
-    entrypoint: ./entrypoint.rb
 
   # Used as a reference gRPC-Web server to test against
   envoy:

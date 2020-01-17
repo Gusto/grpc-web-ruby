@@ -55,6 +55,7 @@ task default: %i[clean compile_protos_ruby compile_js_client spec]
 =======
 task :run_specs_in_docker do
   sh [
+    'ls -laR',
     'docker-compose down',
     'docker-compose build',
     'docker-compose run --use-aliases ruby rspec',
