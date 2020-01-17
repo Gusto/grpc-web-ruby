@@ -28,11 +28,10 @@ module GRPCWeb
         request = GRPCWebRequest.new(service, service_method, request_format, accept, body)
         response = GRPCRequestProcessor.process(request)
 
-        [200, {'Content-Type' => response.content_type}, [response.body]]
-
+        [200, { 'Content-Type' => response.content_type }, [response.body]]
       rescue Google::Protobuf::ParseError => e
         invalid_response(e.message)
-      rescue => e
+      rescue StandardError => e
         ::GRPCWeb.on_error.call(e, service, service_method)
         error_response
       end
@@ -45,25 +44,27 @@ module GRPCWeb
 
       def valid_content_types?(rack_request)
         return false unless ALL_CONTENT_TYPES.include?(rack_request.content_type)
+
         accept = rack_request.get_header(ACCEPT_HEADER)
         return true if ANY_CONTENT_TYPES.include?(accept)
-        return ALL_CONTENT_TYPES.include?(accept)
+
+        ALL_CONTENT_TYPES.include?(accept)
       end
 
       def not_found_response(path)
-        [NOT_FOUND, { 'Content-Type' => "text/plain", "X-Cascade" => "pass" }, ["Not Found: #{path}"]]
+        [NOT_FOUND, { 'Content-Type' => 'text/plain', 'X-Cascade' => 'pass' }, ["Not Found: #{path}"]]
       end
 
       def unsupported_media_type_response
-        [UNSUPPORTED_MEDIA_TYPE, {'Content-Type' => 'text/plain'}, ['Unsupported Media Type: Invalid Content-Type or Accept header']]
+        [UNSUPPORTED_MEDIA_TYPE, { 'Content-Type' => 'text/plain' }, ['Unsupported Media Type: Invalid Content-Type or Accept header']]
       end
 
       def invalid_response(message)
-        [422, {'Content-Type' => 'text/plain'}, ["Invalid request format: #{message}"]]
+        [422, { 'Content-Type' => 'text/plain' }, ["Invalid request format: #{message}"]]
       end
 
       def error_response
-        [INTERNAL_SERVER_ERROR, {'Content-Type' => 'text/plain'}, ["Request failed with an unexpected error."]]
+        [INTERNAL_SERVER_ERROR, { 'Content-Type' => 'text/plain' }, ['Request failed with an unexpected error.']]
       end
     end
   end

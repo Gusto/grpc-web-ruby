@@ -13,7 +13,8 @@ module GRPCWeb
       def unframe_request(request)
         frames = unframe_content(request.body)
         ::GRPCWeb::GRPCWebRequest.new(
-          request.service, request.service_method, request.content_type, request.accept, frames)
+          request.service, request.service_method, request.content_type, request.accept, frames,
+        )
       end
 
       def frame_response(response)
@@ -31,9 +32,9 @@ module GRPCWeb
       def unframe_content(content)
         frames = []
         remaining_content = content
-        while remaining_content.length > 0
-          msg_length = remaining_content[1..4].unpack("N").first
-          raise "Invalid message length" if msg_length <= 0
+        until remaining_content.empty?
+          msg_length = remaining_content[1..4].unpack1('N')
+          raise 'Invalid message length' if msg_length <= 0
 
           frame_end = 5 + msg_length
           frames << ::GRPCWeb::MessageFrame.new(remaining_content[0].bytes[0], remaining_content[5...frame_end])

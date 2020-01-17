@@ -15,9 +15,9 @@ module TestGRPCWebApp
     Rack::Builder.new do
       use Rack::Cors do
         allow do
-           origins '*'
-           resource '*', :headers => :any, :methods => [:post, :options]
-         end
+          origins '*'
+          resource '*', headers: :any, methods: %i[post options]
+        end
       end
 
       run grpc_app

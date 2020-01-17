@@ -40,6 +40,7 @@ class EnvoyRunner
 
       30.times do # Wait for container to be running with 3 sec timeout
         return if docker_container_sha_for_envoy
+
         sleep 0.1
       end
       raise 'Envoy proxy failed to start'
@@ -52,11 +53,13 @@ class EnvoyRunner
 
     def stop_envoy
       return unless docker_container_sha_for_envoy
+
       log 'Stopping Envoy...'
       `docker stop #{docker_container_sha_for_envoy}`
       log 'Waiting for Envoy to exit...'
       30.times do # Wait for container to stop running with 3 sec timeout
         break if ::EnvoyRunner.docker_container_sha_for_envoy.nil?
+
         sleep 0.1
       end
       log 'Envoy shutdown complete.'
