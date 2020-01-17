@@ -15,4 +15,5 @@ workflows:
   version: 2
   main:
     jobs:
+      - gusto/ruby-lint
       - ruby-test
