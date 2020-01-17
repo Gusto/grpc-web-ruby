@@ -1,6 +1,6 @@
 # gRPC-Web Ruby
 
-[![Gusto](https://circleci.com/gh/Gusto/grpc-web-ruby/tree/master.svg?style=svg&circle-token=062a6c1a39b142a123eefe766baf90c51f8dd699)](https://circleci.com/gh/Gusto/grpc-web-ruby/tree/master)
+[![Gusto](https://circleci.com/gh/Gusto/grpc-web-ruby/tree/master.shield?style=svg&circle-token=062a6c1a39b142a123eefe766baf90c51f8dd699)](https://circleci.com/gh/Gusto/grpc-web-ruby/tree/master)
 
 ## Background
 Host gRPC-Web endpoints for Ruby gRPC services in a Rails or Rack app (over HTTP/1). Client included.
