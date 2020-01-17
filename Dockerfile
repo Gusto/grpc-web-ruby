@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y \
   libxrandr2 \
   libxss1 \
   libxtst6 \
+  nodejs \
   xdg-utils
 
 # Install Chrome
@@ -30,6 +31,12 @@ RUN wget --quiet https://dl.google.com/linux/direct/google-chrome-stable_current
     && dpkg -i google-chrome-stable_current_amd64.deb \
     && apt-get -f install \
     && rm -f /google-chrome-stable_current_amd64.deb
+
+# Install Yarn
+ENV PATH=/root/.yarn/bin:$PATH
+RUN apk add --virtual build-yarn curl && \
+RUN touch ~/.bashrc && \
+    curl -o- -L https://yarnpkg.com/install.sh | sh
 
 # Setup project home directory
 RUN mkdir /app
@@ -45,5 +52,17 @@ RUN gem install bundler \
  # Remove unneeded files (cached *.gem, *.o, *.c)
  && rm -rf /usr/local/bundle/cache/*.gem
 
+
+# RUN gem uninstall -I google-protobuf
+# RUN gem install google-protobuf --version=3.7.0 --platform=ruby
+
 # Add rails code and compile assets
 COPY . /app/
+# RUN bin/rake assets:precompile
+
+# Add a script to be executed every time the container starts.
+# ENTRYPOINT ["/app/entrypoint.rb"]
+# EXPOSE 3000
+
+# Start the main process.
+# CMD ["/app/bin/rails","server", "-b", "0.0.0.0"]
