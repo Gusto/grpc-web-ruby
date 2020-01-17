@@ -44,14 +44,11 @@ task :compile_protos_ruby do
 end
 
 task compile_js_client: [:compile_protos_js] do
-  # Dir.chdir('spec/js-client-src') do
-  #   system('yarn install')
-  #   system('yarn run webpack')
-  # end
+  compile_js_cmd = '"cd spec/js-client-src; yarn install; yarn run webpack"'
   sh [
     'docker-compose down',
     'docker-compose build',
-    'docker-compose run --use-aliases ruby "cd spec/js-client-src; yarn install; yarn run webpack"',
+    "docker-compose run --use-aliases ruby #{compile_js_cmd}",
     'docker-compose down',
   ].join(' && ')
 end
@@ -61,7 +58,6 @@ task default: %i[clean compile_protos_ruby compile_js_client spec]
 =======
 task :run_specs_in_docker do
   sh [
-    'ls -laR spec',
     'docker-compose down',
     'docker-compose build',
     'docker-compose run --use-aliases ruby rspec',
