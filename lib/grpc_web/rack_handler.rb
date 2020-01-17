@@ -52,11 +52,19 @@ module GRPCWeb
       end
 
       def not_found_response(path)
-        [NOT_FOUND, { 'Content-Type' => 'text/plain', 'X-Cascade' => 'pass' }, ["Not Found: #{path}"]]
+        [
+          NOT_FOUND,
+          { 'Content-Type' => 'text/plain', 'X-Cascade' => 'pass' },
+          ["Not Found: #{path}"],
+        ]
       end
 
       def unsupported_media_type_response
-        [UNSUPPORTED_MEDIA_TYPE, { 'Content-Type' => 'text/plain' }, ['Unsupported Media Type: Invalid Content-Type or Accept header']]
+        [
+          UNSUPPORTED_MEDIA_TYPE,
+          { 'Content-Type' => 'text/plain' },
+          ['Unsupported Media Type: Invalid Content-Type or Accept header'],
+        ]
       end
 
       def invalid_response(message)
@@ -64,7 +72,11 @@ module GRPCWeb
       end
 
       def error_response
-        [INTERNAL_SERVER_ERROR, { 'Content-Type' => 'text/plain' }, ['Request failed with an unexpected error.']]
+        [
+          INTERNAL_SERVER_ERROR,
+          { 'Content-Type' => 'text/plain' },
+          ['Request failed with an unexpected error.'],
+        ]
       end
     end
   end
