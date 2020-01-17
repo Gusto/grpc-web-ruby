@@ -8,7 +8,7 @@ jobs:
   ruby-test:
     machine: true
     steps:
-      - gusto/bundle-install
+      # - run: bundle
       - run: bundle exec rake
 
 workflows:
