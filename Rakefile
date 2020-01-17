@@ -27,9 +27,9 @@ end
 
 task :compile_protos_js do
   sh RakeHelpers.compile_protos_js_cmd('grpcwebtext', '/spec/pb-js-grpc-web-text')
-  touch 'spec/pb-js-grpc-web-text/.gitkeep'
+  # touch 'spec/pb-js-grpc-web-text/.gitkeep'
   sh RakeHelpers.compile_protos_js_cmd('grpcweb', '/spec/pb-js-grpc-web')
-  touch 'spec/pb-js-grpc-web/.gitkeep'
+  # touch 'spec/pb-js-grpc-web/.gitkeep'
 end
 
 task :compile_protos_ruby do
