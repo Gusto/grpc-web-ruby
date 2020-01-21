@@ -38,6 +38,9 @@ module GRPCWeb::ClientExecutor
     def post_request(uri, request_body)
       request = Net::HTTP::Post.new(uri, request_headers)
       request.body = request_body
+      if uri.userinfo
+        request.basic_auth uri.user, uri.password
+      end
 
       Net::HTTP.start(uri.hostname, uri.port) do |http|
         http.use_ssl = (uri.scheme == 'https')
