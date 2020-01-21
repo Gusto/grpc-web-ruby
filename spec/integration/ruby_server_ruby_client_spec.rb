@@ -7,13 +7,24 @@ require 'hello_services_pb'
 describe 'connecting to a ruby server from a ruby client', type: :feature do
   subject(:response) { client.say_hello(name: name) }
 
+  let(:basic_password) { 'supersecretpassword' }
+  let(:basic_username) { 'supermanuser' }
   let(:service) { TestHelloService }
-  let(:rack_app) { TestGRPCWebApp.build(service) }
+  let(:rack_app) do
+    app = TestGRPCWebApp.build(service)
+    app.use Rack::Auth::Basic do |username, password|
+      [username, password] == [basic_username, basic_password]
+    end
+    app
+  end
   let(:browser) { Capybara::Session.new(Capybara.default_driver, rack_app) }
   let(:server) { browser.server }
 
   let(:client) do
-    GRPCWeb::Client.new("http://#{server.host}:#{server.port}", HelloService::Service)
+    GRPCWeb::Client.new(
+      "http://{basic_username}:#{basic_password}@#{server.host}:#{server.port}",
+      HelloService::Service,
+    )
   end
   let(:name) { 'James' }
 

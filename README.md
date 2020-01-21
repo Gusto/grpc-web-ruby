@@ -131,6 +131,26 @@ GRPCWeb.handle(ExampleHelloService)
 Rack::Handler::WEBrick.run GRPCWeb.rack_app
 ```
 
+#### Running with Basic Auth
+Since you can run a gRPC-Web server using any Rack compliant app, you can accordingly support basic authentication for the server as well.
+
+```ruby
+# example_grpc_web_server.rb
+require 'grpc_web'
+require 'example_hello_service'
+require 'rack/handler'
+
+GRPCWeb.rack_app.use Rack::Auth::Basic do |username, password|
+  [user, password] == ["foobar", "verysecret"]
+end
+
+GRPCWeb.handle(ExampleHelloService)
+
+Rack::Handler::WEBrick.run GRPCWeb.rack_app
+```
+
+Now you can point your client to a Basic Auth comformant URL for this rack service. Example: `http://foobar:verysecret@localhost:3000/grpc`. Or via authentication headers, which ever is best suited by the client.
+
 ## Configuring Services
 
 Like the standard gRPC **RpcServer** class, `GRPCWeb.handle` accepts either an instance of a service or a service class. gRPC-Web also supports a block syntax for `.handle` that enables lazy loading of service classes.
@@ -197,6 +217,13 @@ $client = GRPCWeb::Client.new("http://localhost:3000/grpc", HelloService::Servic
 ```ruby
 $client.say_hello(name: 'James')
 # => <HelloResponse: message: "Hello James">
+```
+
+#### Using Basic Auth
+gRPC-Web Ruby client supports Basic Auth out of the box. You can pass in a Basic Auth comformant URL and gRPC-Web Ruby client will take care of the rest when interacting with the server.
+
+```ruby
+$client = GRPCWeb::Client.new("http://foobar:verysecret@localhost:3000/grpc", HelloService::Service)
 ```
 
 ### Error Handling
