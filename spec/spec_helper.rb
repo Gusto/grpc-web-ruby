@@ -23,8 +23,8 @@ Capybara.register_driver :apparition do |app|
     browser_options: [
       :no_sandbox,
       { disable_features: 'VizDisplayCompositor' },
-      :disable_gpu
-    ]
+      :disable_gpu,
+    ],
   }
   Capybara::Apparition::Driver.new(app, opts)
 end

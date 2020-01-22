@@ -109,8 +109,4 @@ DEPENDENCIES
   simplecov
 
 BUNDLED WITH
-<<<<<<< HEAD
-   2.1.2
-=======
    2.1.4
->>>>>>> Bring back bundle

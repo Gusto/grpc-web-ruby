@@ -22,7 +22,7 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
 
   let(:client) do
     GRPCWeb::Client.new(
-      "http://{basic_username}:#{basic_password}@#{server.host}:#{server.port}",
+      "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port}",
       HelloService::Service,
     )
   end
