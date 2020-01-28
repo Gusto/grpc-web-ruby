@@ -6,9 +6,14 @@ orbs:
 
 jobs:
   ruby-test:
-    machine:
-      image: circleci/classic:201808-01 # docker 18.06.0-ce, docker-compose 1.22.0
     steps:
+      - setup_remote_docker
+      - run:
+        name: Install Docker Compose
+        command: |
+          curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+          chmod +x ~/docker-compose
+          sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - gusto/bundle-install
       - run: bundle exec rake
 
