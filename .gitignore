@@ -5,5 +5,7 @@ spec/js-client-src/node_modules
 spec/js-client/main.js
 coverage
 
+node_modules
+
 # Workspace
 .idea

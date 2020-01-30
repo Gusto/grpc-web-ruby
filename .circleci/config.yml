@@ -11,6 +11,10 @@ jobs:
     steps:
       - gusto/bundle-install
       - run: bundle exec rake
+  release:
+    executor: gusto/ruby-2-3
+    steps:
+      - gusto/semantic-release-ruby
 
 workflows:
   version: 2
