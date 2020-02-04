@@ -10,7 +10,8 @@ jobs:
     machine: true
     steps:
       - docker/install-docker
-      - docker/install-docker-compose
+      - docker/install-docker-compose:
+        version: 1.25.3
       - gusto/bundle-install
       - run: bundle exec rake
 
