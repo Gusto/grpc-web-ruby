@@ -10,8 +10,12 @@ jobs:
     machine: true
     steps:
       - docker/install-docker
-      - docker/install-docker-compose:
-        version: 1.25.3
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - gusto/bundle-install
       - run: bundle exec rake
 
