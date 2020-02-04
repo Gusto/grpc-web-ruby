@@ -17,7 +17,7 @@ services:
 
   # Used as a reference gRPC-Web server to test against
   envoy:
-    image: envoyproxy/envoy:latest
+    image: envoyproxy/envoy:v1.12.2
     expose:
       - 8080
     volumes:

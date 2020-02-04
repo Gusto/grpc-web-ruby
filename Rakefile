@@ -45,7 +45,7 @@ task compile_js_client: [:compile_protos_js] do
   compile_js_cmd = '"cd spec/js-client-src; yarn install; yarn run webpack"'
   sh [
     'docker-compose down',
-    'docker-compose build --no-cache',
+    'docker-compose build',
     "docker-compose run --use-aliases ruby #{compile_js_cmd}",
     'docker-compose down',
   ].join(' && ')
@@ -54,7 +54,7 @@ end
 task :run_specs_in_docker do
   sh [
     'docker-compose down',
-    'docker-compose build --no-cache',
+    'docker-compose build',
     'docker-compose run --use-aliases ruby rspec',
     'docker-compose down',
   ].join(' && ')
