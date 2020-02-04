@@ -3,6 +3,7 @@ version: 2.1
 # See latest version of Gusto orbs at https://circleci.com/orbs/registry/orb/gusto/gusto
 orbs:
   gusto: gusto/gusto@0.0.12
+  docker: circleci/docker@0.5.20
 
 jobs:
   ruby-test:
