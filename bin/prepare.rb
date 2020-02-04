@@ -14,7 +14,7 @@ def bundle_install
 end
 
 def build_gem
-  system('gem build grpc-web-ruby.gemspec')
+  system('gem build grpc-web.gemspec')
 end
 
 set_version
