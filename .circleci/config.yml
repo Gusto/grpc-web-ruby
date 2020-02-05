@@ -3,19 +3,12 @@ version: 2.1
 # See latest version of Gusto orbs at https://circleci.com/orbs/registry/orb/gusto/gusto
 orbs:
   gusto: gusto/gusto@0.0.12
-  docker: circleci/docker@0.5.20
 
 jobs:
   ruby-test:
-    machine: true
+    machine:
+      image: circleci/classic:201808-01 # docker 18.06.0-ce, docker-compose 1.22.0
     steps:
-      - docker/install-docker
-      - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - gusto/bundle-install
       - run: bundle exec rake
 
