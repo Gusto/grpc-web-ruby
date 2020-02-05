@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'grpc_web/client'
 require 'hello_services_pb'
 
-describe 'connecting to a ruby server from a ruby client', type: :feature do
+RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature do
   subject(:response) { client.say_hello(name: name) }
 
   let(:basic_password) { 'supersecretpassword' }
@@ -22,7 +22,7 @@ describe 'connecting to a ruby server from a ruby client', type: :feature do
 
   let(:client) do
     GRPCWeb::Client.new(
-      "http://{basic_username}:#{basic_password}@#{server.host}:#{server.port}",
+      "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port}",
       HelloService::Service,
     )
   end

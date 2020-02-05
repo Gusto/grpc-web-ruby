@@ -6,10 +6,11 @@ orbs:
 
 jobs:
   ruby-test:
-    executor: gusto/ruby-2-5
+    machine:
+      image: circleci/classic:201808-01 # docker 18.06.0-ce, docker-compose 1.22.0
     steps:
       - gusto/bundle-install
-#      - run: bundle exec rake
+      - run: bundle exec rake
 
 workflows:
   version: 2

@@ -1,0 +1,32 @@
+version: '3.2'
+
+services:
+  ruby:
+    build: .
+    entrypoint: ./entrypoint.rb
+    expose:
+      - 9090 # Envoy connects to ruby gRPC Server on 9090
+    volumes:
+      - .:/app
+    depends_on:
+      - envoy
+    networks:
+      default:
+        aliases:
+          - ruby
+
+  # Used as a reference gRPC-Web server to test against
+  envoy:
+    image: envoyproxy/envoy:v1.12.2
+    expose:
+      - 8080
+    volumes:
+      - ./spec/support/envoy.yml:/etc/envoy/envoy.yaml
+    networks:
+      default:
+        aliases:
+          - envoy
+
+networks:
+  default:
+    driver: bridge
