@@ -246,6 +246,11 @@ end
 
 Web Browser clients will only allow HTTP requests to be made to your gRPC-Web API if CORS headers are correctly configured or the request is sameorigin (the gRPC-Web endpoints are hosted on the same domain that served the javascript code). You will need to use a library like [cyu/rack-cors](https://github.com/cyu/rack-cors) to manage CORS if you want to support browsers.
 
+
+## Developing
+
+See the [developer's guide](./DEVELOP.md)
+
 ## Useful links
 
 gRPC-Web Repo (protoc generator, js-client, proxy server)
