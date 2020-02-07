@@ -10,25 +10,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'simplecov'
 SimpleCov.start
 
-require 'capybara/rspec'
-Capybara.server = :webrick
-
-require 'test_grpc_web_app'
-Capybara.app = TestGRPCWebApp.build
-
-require 'capybara/apparition'
-Capybara.register_driver :apparition do |app|
-  opts = {
-    headless: true,
-    browser_options: [
-      :no_sandbox,
-      { disable_features: 'VizDisplayCompositor' },
-      :disable_gpu,
-    ],
-  }
-  Capybara::Apparition::Driver.new(app, opts)
-end
-Capybara.default_driver = :apparition
+require 'grpc-web'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -113,4 +95,28 @@ RSpec.configure do |config|
   # test failures related to randomization by passing the same `--seed` value
   # as the one that triggered the failure.
   Kernel.srand config.seed
+
+  config.before :context, type: :feature do
+    puts 'Running before block for features context'
+
+    require 'capybara/rspec'
+    Capybara.server = :webrick
+
+    require 'test_grpc_web_app'
+    Capybara.app = TestGRPCWebApp.build
+
+    require 'capybara/apparition'
+    Capybara.register_driver :apparition do |app|
+      opts = {
+        headless: true,
+        browser_options: [
+          :no_sandbox,
+          { disable_features: 'VizDisplayCompositor' },
+          :disable_gpu,
+        ],
+      }
+      Capybara::Apparition::Driver.new(app, opts)
+    end
+    Capybara.default_driver = :apparition
+  end
 end
