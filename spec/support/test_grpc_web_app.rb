@@ -18,6 +18,7 @@ module TestGRPCWebApp
           resource '*', headers: :any, methods: %i[post options]
         end
       end
+      use Rack::Lint
 
       run GRPCWeb.rack_app
     end
