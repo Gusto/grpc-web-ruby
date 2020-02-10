@@ -1,0 +1,14 @@
+{
+  "name": "grpc-web-ruby",
+  "private": true,
+  "license": "MIT",
+  "devDependencies": {
+    "@semantic-release/changelog": "^3.0.4",
+    "@semantic-release/exec": "^3.3.5",
+    "@semantic-release/git": "^7.0.16",
+    "semantic-release": "^17.0.1"
+  },
+  "scripts": {
+    "semantic-release": "semantic-release"
+  }
+}
