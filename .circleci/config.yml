@@ -22,3 +22,10 @@ workflows:
     jobs:
       - gusto/ruby-lint
       - ruby-test
+      - release:
+          filters:
+            branches:
+              only: master
+          requires:
+            - gusto/ruby-lint
+            - ruby-test
