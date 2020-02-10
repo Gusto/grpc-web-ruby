@@ -97,8 +97,6 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 
   config.before :context, type: :feature do
-    puts 'Running before block for features context'
-
     require 'capybara/rspec'
     Capybara.server = :webrick
 

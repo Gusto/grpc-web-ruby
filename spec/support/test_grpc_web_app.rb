@@ -9,8 +9,7 @@ require 'test_hello_service'
 # Used to build a Rack app hosting the HelloService for integration testing.
 module TestGRPCWebApp
   def self.build(service_class = TestHelloService)
-    grpc_app = GRPCWeb::RackApp.new
-    grpc_app.handle(service_class)
+    GRPCWeb.handle(service_class)
 
     Rack::Builder.new do
       use Rack::Cors do
@@ -20,7 +19,7 @@ module TestGRPCWebApp
         end
       end
 
-      run grpc_app
+      run GRPCWeb.rack_app
     end
   end
 end
