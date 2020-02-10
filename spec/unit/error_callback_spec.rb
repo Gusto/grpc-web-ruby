@@ -2,7 +2,7 @@ require 'grpc_web/error_callback'
 
 RSpec.describe 'GRPCWeb.on_error' do
   describe 'setting the callback' do
-    let(:callback) { Proc.new { |a,b,c|  } }
+    let(:callback) { Proc.new { |a, b, c| } }
     subject { GRPCWeb.on_error(&callback) }
 
     it 'returns the callback' do
@@ -14,16 +14,18 @@ RSpec.describe 'GRPCWeb.on_error' do
     end
 
     context 'with a callback that accepts the wrong number of parameters' do
-      let(:callback) { Proc.new { |a,b|  } }
+      let(:callback) { Proc.new { |a, b| } }
       it 'raises an error' do
-        expect{subject}.to raise_error ArgumentError, 'callback must accept (exception, service, service_method)'
+        expect { subject }.to raise_error(
+          ArgumentError, 'callback must accept (exception, service, service_method)'
+        )
       end
     end
   end
 
   describe 'calling the callback' do
-    let(:callback) { Proc.new { |a,b,c|  } }
-    let(:callback_parameters) { ['a','b','c'] }
+    let(:callback) { Proc.new { |a, b, c| } }
+    let(:callback_parameters) { ['a', 'b', 'c'] }
     subject { ::GRPCWeb.on_error.call(*callback_parameters) }
 
     context 'before setting the a callback' do
