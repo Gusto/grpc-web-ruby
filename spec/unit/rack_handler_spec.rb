@@ -60,7 +60,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
           expect(subject).to eq([
                                   404,
                                   { 'Content-Type' => 'text/plain', "X-Cascade" => "pass" },
-                                  [ "Not Found: #{path_info }"]
+                                  ["Not Found: #{path_info}"]
                                 ])
         end
       end
@@ -71,7 +71,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
           expect(subject).to eq([
                                   415,
                                   { 'Content-Type' => 'text/plain' },
-                                  [ 'Unsupported Media Type: Invalid Content-Type or Accept header']
+                                  ['Unsupported Media Type: Invalid Content-Type or Accept header']
                                 ])
         end
       end
@@ -82,7 +82,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
           expect(subject).to eq([
                                   415,
                                   { 'Content-Type' => 'text/plain' },
-                                  [ 'Unsupported Media Type: Invalid Content-Type or Accept header']
+                                  ['Unsupported Media Type: Invalid Content-Type or Accept header']
                                 ])
         end
       end
@@ -93,7 +93,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
           expect(subject).to eq([
                                   415,
                                   { 'Content-Type' => 'text/plain' },
-                                  [ 'Unsupported Media Type: Invalid Content-Type or Accept header']
+                                  ['Unsupported Media Type: Invalid Content-Type or Accept header']
                                 ])
         end
       end
@@ -101,15 +101,15 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       context 'invalid format' do
         let(:error_message) { 'error while parsing' }
         before do
-          allow(::GRPCWeb::GRPCRequestProcessor).to receive(:process).
-            and_raise(Google::Protobuf::ParseError, error_message)
+          allow(::GRPCWeb::GRPCRequestProcessor).to receive(:process)
+            .and_raise(Google::Protobuf::ParseError, error_message)
         end
 
         it 'returns a 422' do
           expect(subject).to eq([
                                   422,
                                   { 'Content-Type' => 'text/plain' },
-                                  [ "Invalid request format: #{error_message}"]
+                                  ["Invalid request format: #{error_message}"]
                                 ])
         end
       end
@@ -117,15 +117,15 @@ RSpec.describe(::GRPCWeb::RackHandler) do
 
     context 'server error' do
       before do
-        allow(::GRPCWeb::GRPCRequestProcessor).to receive(:process).
-          and_raise(StandardError, 'something internal went wrong')
+        allow(::GRPCWeb::GRPCRequestProcessor).to receive(:process)
+          .and_raise(StandardError, 'something internal went wrong')
       end
 
       it 'returns a 500' do
         expect(subject).to eq([
                                 500,
                                 { 'Content-Type' => 'text/plain' },
-                                [ 'Request failed with an unexpected error.' ]
+                                ['Request failed with an unexpected error.']
                               ])
       end
     end

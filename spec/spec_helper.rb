@@ -10,8 +10,9 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'simplecov'
 SimpleCov.start
 
-require 'grpc-web'
 require 'pry'
+require 'rspec'
+require 'grpc-web'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
