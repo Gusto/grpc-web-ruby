@@ -1,11 +1,14 @@
+# frozen_string_literal: true
+
 require 'grpc_web/content_types'
 require 'grpc_web/rack_handler'
 
 RSpec.describe(::GRPCWeb::RackHandler) do
   describe '#call' do
+    subject { described_class.call(service, service_method, env) }
+
     let(:service) { double('service') }
     let(:service_method) { double('service method') }
-    subject { described_class.call(service, service_method, env) }
 
     # Request
     let(:path_info) { 'request/path' }
@@ -13,7 +16,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
     let(:content_type) { ::GRPCWeb::ContentTypes::DEFAULT_CONTENT_TYPE }
     let(:accept_header) { '*/*' }
     let(:request_body) { 'request body' }
-    let(:env) {
+    let(:env) do
       {
         'PATH_INFO' => path_info,
         'REQUEST_METHOD' => request_method,
@@ -21,7 +24,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
         'HTTP_ACCEPT' => accept_header,
         'rack.input' => StringIO.new(request_body),
       }
-    }
+    end
 
     # Response
     let(:response_content_type) { 'text' }
@@ -37,7 +40,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
         expect(subject).to eq([
                                 200,
                                 { 'Content-Type' => response_content_type },
-                                [response_body]
+                                [response_body],
                               ])
       end
 
@@ -47,7 +50,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
                                                                             service_method,
                                                                             content_type,
                                                                             accept_header,
-                                                                            request_body
+                                                                            request_body,
                                                                           ))
         subject
       end
@@ -56,50 +59,55 @@ RSpec.describe(::GRPCWeb::RackHandler) do
     context 'invalid request' do
       context 'unsupported http method' do
         let(:request_method) { 'PUT' }
+
         it 'returns a 404' do
           expect(subject).to eq([
                                   404,
-                                  { 'Content-Type' => 'text/plain', "X-Cascade" => "pass" },
-                                  ["Not Found: #{path_info}"]
+                                  { 'Content-Type' => 'text/plain', 'X-Cascade' => 'pass' },
+                                  ["Not Found: #{path_info}"],
                                 ])
         end
       end
 
       context 'unsupported content type' do
-        let(:content_type) { "text/plain" }
+        let(:content_type) { 'text/plain' }
+
         it 'returns a 415' do
           expect(subject).to eq([
                                   415,
                                   { 'Content-Type' => 'text/plain' },
-                                  ['Unsupported Media Type: Invalid Content-Type or Accept header']
+                                  ['Unsupported Media Type: Invalid Content-Type or Accept header'],
                                 ])
         end
       end
 
       context 'unsupported accept header' do
-        let(:accept_header) { "text/plain" }
+        let(:accept_header) { 'text/plain' }
+
         it 'returns a 415' do
           expect(subject).to eq([
                                   415,
                                   { 'Content-Type' => 'text/plain' },
-                                  ['Unsupported Media Type: Invalid Content-Type or Accept header']
+                                  ['Unsupported Media Type: Invalid Content-Type or Accept header'],
                                 ])
         end
       end
 
       context 'unsupported accept header' do
-        let(:accept_header) { "text/plain" }
+        let(:accept_header) { 'text/plain' }
+
         it 'returns a 415' do
           expect(subject).to eq([
                                   415,
                                   { 'Content-Type' => 'text/plain' },
-                                  ['Unsupported Media Type: Invalid Content-Type or Accept header']
+                                  ['Unsupported Media Type: Invalid Content-Type or Accept header'],
                                 ])
         end
       end
 
       context 'invalid format' do
         let(:error_message) { 'error while parsing' }
+
         before do
           allow(::GRPCWeb::GRPCRequestProcessor).to receive(:process)
             .and_raise(Google::Protobuf::ParseError, error_message)
@@ -109,7 +117,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
           expect(subject).to eq([
                                   422,
                                   { 'Content-Type' => 'text/plain' },
-                                  ["Invalid request format: #{error_message}"]
+                                  ["Invalid request format: #{error_message}"],
                                 ])
         end
       end
@@ -125,7 +133,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
         expect(subject).to eq([
                                 500,
                                 { 'Content-Type' => 'text/plain' },
-                                ['Request failed with an unexpected error.']
+                                ['Request failed with an unexpected error.'],
                               ])
       end
     end

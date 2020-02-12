@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module GRPCWeb
   module ServiceClassValidator
     def self.validate(clazz)

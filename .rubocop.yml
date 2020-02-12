@@ -27,3 +27,11 @@ Metrics/AbcSize:
 Naming/FileName:
   Exclude:
     - 'lib/grpc-web.rb'
+
+RSpec/ContextWording:
+  Prefixes:
+    - when
+    - with
+    - without
+    - given
+    - which
