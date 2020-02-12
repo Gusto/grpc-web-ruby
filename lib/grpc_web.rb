@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'grpc_web/version'
-require 'grpc_web/rack_app'
+require 'grpc_web/server/rack_app'
 
 module GRPCWeb
   class << self

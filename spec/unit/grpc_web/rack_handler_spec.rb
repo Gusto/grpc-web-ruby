@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'grpc_web/content_types'
-require 'grpc_web/rack_handler'
+require 'grpc_web/server/rack_handler'
 
 RSpec.describe(::GRPCWeb::RackHandler) do
   subject(:call) { described_class.call(service, service_method, env) }

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'uri'
-require 'grpc_web/client_executor'
+require 'grpc_web/client/client_executor'
 
 module GRPCWeb
   class Client

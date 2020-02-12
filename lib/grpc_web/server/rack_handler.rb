@@ -4,9 +4,9 @@ require 'google/protobuf'
 require 'rack'
 require 'rack/request'
 require 'grpc_web/content_types'
-require 'grpc_web/error_callback'
-require 'grpc_web/grpc_request_processor'
 require 'grpc_web/grpc_web_request'
+require 'grpc_web/server/error_callback'
+require 'grpc_web/server/grpc_request_processor'
 
 module GRPCWeb
   module RackHandler

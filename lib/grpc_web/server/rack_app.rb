@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'rack/builder'
-require 'grpc_web/rack_handler'
-require 'grpc_web/service_class_validator'
+require 'grpc_web/server/rack_handler'
+require 'grpc_web/server/service_class_validator'
 
 module GRPCWeb
   class RackApp < ::Rack::Builder

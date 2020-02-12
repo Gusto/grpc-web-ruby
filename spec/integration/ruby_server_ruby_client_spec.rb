@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'grpc_web/client'
+require 'grpc_web/client/client'
 require 'hello_services_pb'
 
 RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature do
