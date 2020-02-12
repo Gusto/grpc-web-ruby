@@ -2,7 +2,7 @@
 
 ### Running tests
 
-Use the `rake` command to run the entire test suite. This runs on docker becuase of a dependency on envoy. 
+Use the `rake` command to run the entire test suite. This runs on docker due to a dependency on Envoy.
 
 ### Unit tests
 
