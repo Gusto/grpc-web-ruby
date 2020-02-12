@@ -34,14 +34,14 @@ RSpec.describe 'GRPCWeb.on_error' do # rubocop:disable RSpec/DescribeClass
     let(:callback) { proc { |a, b, c| } }
     let(:callback_parameters) { %w[a b c] }
 
-    context 'before setting the a callback' do
+    context 'before setting the callback' do
       it 'is a no-op' do
         expect(callback).not_to receive(:call)
         on_error
       end
     end
 
-    context 'after setting a callback' do
+    context 'after setting the callback' do
       before { GRPCWeb.on_error(&callback) }
 
       it 'calls the callback' do
