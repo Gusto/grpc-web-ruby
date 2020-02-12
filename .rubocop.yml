@@ -35,3 +35,10 @@ RSpec/ContextWording:
     - without
     - given
     - which
+    - before
+    - after
+    - because
+RSpec/MultipleExpectations:
+  Max: 2
+RSpec/ExampleLength:
+  Max: 10

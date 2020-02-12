@@ -2,18 +2,18 @@
 
 require 'grpc_web/error_callback'
 
-RSpec.describe 'GRPCWeb.on_error' do
+RSpec.describe 'GRPCWeb.on_error' do # rubocop:disable RSpec/DescribeClass
   describe 'setting the callback' do
-    subject { GRPCWeb.on_error(&callback) }
+    subject(:on_error) { GRPCWeb.on_error(&callback) }
 
     let(:callback) { proc { |a, b, c| } }
 
     it 'returns the callback' do
-      expect(subject).to eq callback
+      expect(on_error).to eq callback
     end
 
     it 'saves the callback for later' do
-      subject
+      on_error
       expect(GRPCWeb.on_error).to eq callback
     end
 
@@ -21,7 +21,7 @@ RSpec.describe 'GRPCWeb.on_error' do
       let(:callback) { proc { |a, b| } }
 
       it 'raises an error' do
-        expect { subject }.to raise_error(
+        expect { on_error }.to raise_error(
           ArgumentError, 'callback must accept (exception, service, service_method)',
         )
       end
@@ -29,7 +29,7 @@ RSpec.describe 'GRPCWeb.on_error' do
   end
 
   describe 'calling the callback' do
-    subject { ::GRPCWeb.on_error.call(*callback_parameters) }
+    subject(:on_error) { GRPCWeb.on_error.call(*callback_parameters) }
 
     let(:callback) { proc { |a, b, c| } }
     let(:callback_parameters) { %w[a b c] }
@@ -37,7 +37,7 @@ RSpec.describe 'GRPCWeb.on_error' do
     context 'before setting the a callback' do
       it 'is a no-op' do
         expect(callback).not_to receive(:call)
-        subject
+        on_error
       end
     end
 
@@ -46,7 +46,7 @@ RSpec.describe 'GRPCWeb.on_error' do
 
       it 'calls the callback' do
         expect(callback).to receive(:call).with(*callback_parameters)
-        subject
+        on_error
       end
     end
   end

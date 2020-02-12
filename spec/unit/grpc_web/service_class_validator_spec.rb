@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe ::GRPCWeb::ServiceClassValidator do
-  subject { described_class.validate(clazz) }
+  subject(:validate) { described_class.validate(clazz) }
 
   context 'with a valid class' do
     let(:clazz) { TestHelloService }
 
     it 'does not raise' do
-      expect { subject }.not_to raise_error
+      expect { validate }.not_to raise_error
+    end
+
+    it 'returns true' do
+      expect(validate).to eq true
     end
   end
 
@@ -16,19 +20,20 @@ RSpec.describe ::GRPCWeb::ServiceClassValidator do
       let(:clazz) { Object }
 
       it 'raises an error' do
-        expect { subject }.to raise_error(ArgumentError, "#{clazz} must 'include GenericService'")
+        expect { validate }.to raise_error(ArgumentError, "#{clazz} must 'include GenericService'")
       end
     end
 
     context 'which does not have rpc_descs' do
       let(:clazz) do
-        class EmptyClass
+        Class.new do
           include ::GRPC::GenericService
         end
       end
 
       it 'raises an error' do
-        expect { subject }.to raise_error(ArgumentError, "#{clazz} should specify some rpc descriptions")
+        expect { validate }
+          .to raise_error(ArgumentError, "#{clazz} should specify some rpc descriptions")
       end
     end
   end
