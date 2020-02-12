@@ -16,6 +16,8 @@ Style/ConditionalAssignment:
 
 Layout/LineLength:
   Max: 100
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
 
 Metrics/MethodLength:
   Enabled: false

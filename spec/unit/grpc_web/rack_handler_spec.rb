@@ -37,10 +37,10 @@ RSpec.describe(::GRPCWeb::RackHandler) do
   context 'with a valid request' do
     it 'returns a 200' do
       expect(call).to eq([
-                           200,
-                           { 'Content-Type' => response_content_type },
-                           [response_body],
-                         ])
+        200,
+        { 'Content-Type' => response_content_type },
+        [response_body],
+      ])
     end
 
     it 'calls the request processor with the modified request' do
@@ -62,10 +62,10 @@ RSpec.describe(::GRPCWeb::RackHandler) do
 
       it 'returns a 404' do
         expect(call).to eq([
-                             404,
-                             { 'Content-Type' => 'text/plain', 'X-Cascade' => 'pass' },
-                             ["Not Found: #{path_info}"],
-                           ])
+          404,
+          { 'Content-Type' => 'text/plain', 'X-Cascade' => 'pass' },
+          ["Not Found: #{path_info}"],
+        ])
       end
     end
 
@@ -74,10 +74,10 @@ RSpec.describe(::GRPCWeb::RackHandler) do
 
       it 'returns a 415' do
         expect(call).to eq([
-                             415,
-                             { 'Content-Type' => 'text/plain' },
-                             ['Unsupported Media Type: Invalid Content-Type or Accept header'],
-                           ])
+          415,
+          { 'Content-Type' => 'text/plain' },
+          ['Unsupported Media Type: Invalid Content-Type or Accept header'],
+        ])
       end
     end
 
@@ -86,10 +86,10 @@ RSpec.describe(::GRPCWeb::RackHandler) do
 
       it 'returns a 415' do
         expect(call).to eq([
-                             415,
-                             { 'Content-Type' => 'text/plain' },
-                             ['Unsupported Media Type: Invalid Content-Type or Accept header'],
-                           ])
+          415,
+          { 'Content-Type' => 'text/plain' },
+          ['Unsupported Media Type: Invalid Content-Type or Accept header'],
+        ])
       end
     end
 
@@ -103,10 +103,10 @@ RSpec.describe(::GRPCWeb::RackHandler) do
 
       it 'returns a 422' do
         expect(call).to eq([
-                             422,
-                             { 'Content-Type' => 'text/plain' },
-                             ["Invalid request format: #{error_message}"],
-                           ])
+          422,
+          { 'Content-Type' => 'text/plain' },
+          ["Invalid request format: #{error_message}"],
+        ])
       end
     end
   end
@@ -119,10 +119,10 @@ RSpec.describe(::GRPCWeb::RackHandler) do
 
     it 'returns a 500' do
       expect(call).to eq([
-                           500,
-                           { 'Content-Type' => 'text/plain' },
-                           ['Request failed with an unexpected error.'],
-                         ])
+        500,
+        { 'Content-Type' => 'text/plain' },
+        ['Request failed with an unexpected error.'],
+      ])
     end
   end
 end
