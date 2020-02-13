@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'google/protobuf'
+require 'rack'
 require 'rack/request'
 require 'grpc_web/content_types'
 require 'grpc_web/error_callback'
@@ -11,7 +13,6 @@ module GRPCWeb
     NOT_FOUND = 404
     UNSUPPORTED_MEDIA_TYPE = 415
     INTERNAL_SERVER_ERROR = 500
-    POST = 'POST'
     ACCEPT_HEADER = 'HTTP_ACCEPT'
 
     class << self
@@ -19,13 +20,13 @@ module GRPCWeb
 
       def call(service, service_method, env)
         rack_request = Rack::Request.new(env)
-        return not_found_response(rack_request.path) unless post?(rack_request)
+        return not_found_response(rack_request.path) unless rack_request.post?
         return unsupported_media_type_response unless valid_content_types?(rack_request)
 
-        request_format = rack_request.content_type
+        content_type = rack_request.content_type
         accept = rack_request.get_header(ACCEPT_HEADER)
         body = rack_request.body.read
-        request = GRPCWebRequest.new(service, service_method, request_format, accept, body)
+        request = GRPCWebRequest.new(service, service_method, content_type, accept, body)
         response = GRPCRequestProcessor.process(request)
 
         [200, { 'Content-Type' => response.content_type }, [response.body]]
@@ -37,10 +38,6 @@ module GRPCWeb
       end
 
       private
-
-      def post?(rack_request)
-        rack_request.request_method == POST
-      end
 
       def valid_content_types?(rack_request)
         return false unless ALL_CONTENT_TYPES.include?(rack_request.content_type)

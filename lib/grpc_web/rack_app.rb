@@ -2,6 +2,7 @@
 
 require 'rack/builder'
 require 'grpc_web/rack_handler'
+require 'grpc_web/service_class_validator'
 
 module GRPCWeb
   class RackApp < ::Rack::Builder
@@ -22,7 +23,7 @@ module GRPCWeb
     #
     def handle(service_or_class, &lazy_init_block)
       service_class = service_or_class.is_a?(Class) ? service_or_class : service_or_class.class
-      validate_service_class(service_class)
+      ServiceClassValidator.validate(service_class)
       service_config = lazy_init_block || service_or_class
 
       service_class.rpc_descs.keys.each do |service_method|
@@ -31,15 +32,6 @@ module GRPCWeb
     end
 
     private
-
-    def validate_service_class(clazz)
-      unless clazz.include?(::GRPC::GenericService)
-        raise(ArgumentError, "#{clazz} must 'include GenericService'")
-      end
-      if clazz.rpc_descs.size.zero?
-        raise(ArgumentError, "#{clazz} should specify some rpc descriptions")
-      end
-    end
 
     # Map a path with Rack::Builder corresponding to the service method
     def add_service_method_to_app(service_name, service_config, service_method)
