@@ -23,7 +23,7 @@ require 'grpc_web/server/service_class_validator'
 class GRPCWeb::RackApp < ::Rack::Builder
   def handle(service_or_class, &lazy_init_block)
     service_class = service_or_class.is_a?(Class) ? service_or_class : service_or_class.class
-    ServiceClassValidator.validate(service_class)
+    GRPCWeb::ServiceClassValidator.validate(service_class)
     service_config = lazy_init_block || service_or_class
 
     service_class.rpc_descs.keys.each do |service_method|

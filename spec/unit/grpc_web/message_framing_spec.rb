@@ -3,13 +3,14 @@
 require 'grpc_web/message_framing'
 
 RSpec.describe GRPCWeb::MessageFraming do
-  let(:content) { 'some content' }
+  let(:unframed_content) { 'some content' }
+  let(:framed_content) { "\x80\x00\x00\x00\fsome content".b }
 
   describe '#frame_content' do
-    subject(:framed_content) { described_class.frame_content(content, frame_type) }
+    subject(:framed_content) { described_class.frame_content(unframed_content, frame_type) }
 
     context 'when the frame type is unspecified' do
-      subject(:framed_content) { described_class.frame_content(content) }
+      subject(:framed_content) { described_class.frame_content(unframed_content) }
 
       it 'returns framed content' do
         expect(framed_content).to eq "\x00\x00\x00\x00\fsome content".b
@@ -34,9 +35,11 @@ RSpec.describe GRPCWeb::MessageFraming do
   end
 
   describe '#unframe_content' do
-    subject(:unframed_content) { described_class.unframe_content(content) }
+    let(:content) { "\x80\x00\x00\x00\fsome content".b }
+    subject(:unframed_content) { described_class.unframe_content(framed_content) }
 
     it 'returns unframed content' do
+      expect(unframed_content).to eq unframed_content
     end
   end
 end

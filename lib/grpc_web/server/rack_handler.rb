@@ -26,8 +26,8 @@ module GRPCWeb::RackHandler
       content_type = rack_request.content_type
       accept = rack_request.get_header(ACCEPT_HEADER)
       body = rack_request.body.read
-      request = GRPCWebRequest.new(service, service_method, content_type, accept, body)
-      response = GRPCRequestProcessor.process(request)
+      request = GRPCWeb::GRPCWebRequest.new(service, service_method, content_type, accept, body)
+      response = GRPCWeb::GRPCRequestProcessor.process(request)
 
       [200, { 'Content-Type' => response.content_type }, [response.body]]
     rescue Google::Protobuf::ParseError => e
