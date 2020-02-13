@@ -15,9 +15,11 @@ module GRPCWeb::RequestFraming
     end
 
     def frame_response(response)
-      framed = response.body.map do |frame|
-        message_framing.frame_content(frame.body, frame.frame_type)
-      end.join
+      # framed = response.body.map do |frame|
+      #   message_framing.frame_content(frame.body, frame.frame_type)
+      # end.join
+
+      framed = message_framing.frame_content(response.body)
       ::GRPCWeb::GRPCWebResponse.new(response.content_type, framed)
     end
 

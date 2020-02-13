@@ -5,9 +5,11 @@ require 'grpc_web/message_frame'
 # Placeholder
 module GRPCWeb::MessageFraming
   class << self
-    def frame_content(content, frame_type = ::GRPCWeb::MessageFrame::PAYLOAD_FRAME_TYPE)
-      length_bytes = [content.bytesize].pack('N')
-      "#{frame_type.chr}#{length_bytes}#{content}"
+    def frame_content(content)
+      content.map do |frame|
+        length_bytes = [frame.body.bytesize].pack('N')
+        "#{frame.frame_type.chr}#{length_bytes}#{frame.body}"
+      end.join
     end
 
     def unframe_content(content)
