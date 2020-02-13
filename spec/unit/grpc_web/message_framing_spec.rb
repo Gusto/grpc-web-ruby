@@ -1,8 +1,8 @@
 require 'grpc_web/message_framing'
 
 RSpec.describe GRPCWeb::MessageFraming do
+  let(:content) {'some content'}
   describe '#frame_content' do
-    let(:content) {'some content'}
     subject(:framed_content) { described_class.frame_content(content, frame_type) }
 
     context 'when the frame type is unspecified' do
@@ -28,6 +28,10 @@ RSpec.describe GRPCWeb::MessageFraming do
   end
 
   describe '#unframe_content' do
+    subject(:unframed_content) { described_class.unframe_content(content) }
 
+    it 'returns unframed content' do
+
+    end
   end
 end

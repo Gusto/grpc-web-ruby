@@ -5,9 +5,6 @@ require 'grpc_web/grpc_web_request'
 require 'grpc_web/message_framing'
 
 module GRPCWeb
-  # GRPC Web uses a simple 5 byte framing scheme. The first byte represents
-  # flags indicating what type of frame this is. The next 4 bytes indicate the
-  # byte length of the frame body.
   module RequestFraming
     class << self
       def unframe_request(request)
