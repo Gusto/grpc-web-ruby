@@ -13,6 +13,11 @@ Style/TrailingCommaInHashLiteral:
 Style/ConditionalAssignment:
   EnforcedStyle: assign_inside_condition
   IncludeTernaryExpressions: false
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+  AutoCorrect: true
+Style/GuardClause:
+  MinBodyLength: 4
 
 Layout/LineLength:
   Max: 100

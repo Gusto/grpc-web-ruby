@@ -7,6 +7,7 @@ require 'grpc/errors'
 require 'grpc_web/content_types'
 require 'grpc_web/message_framing'
 
+# Client execution concerns
 module GRPCWeb::ClientExecutor
   class << self
     include ::GRPCWeb::ContentTypes
@@ -35,9 +36,7 @@ module GRPCWeb::ClientExecutor
     def post_request(uri, request_body)
       request = Net::HTTP::Post.new(uri, request_headers)
       request.body = request_body
-      if uri.userinfo
-        request.basic_auth uri.user, uri.password
-      end
+      request.basic_auth uri.user, uri.password if uri.userinfo
 
       Net::HTTP.start(uri.hostname, uri.port) do |http|
         http.use_ssl = (uri.scheme == 'https')

@@ -5,6 +5,7 @@ require 'grpc_web/content_types'
 require 'grpc_web/grpc_web_response'
 require 'grpc_web/grpc_web_request'
 
+# Placeholder
 module GRPCWeb::TextCoder
   class << self
     include ::GRPCWeb::ContentTypes

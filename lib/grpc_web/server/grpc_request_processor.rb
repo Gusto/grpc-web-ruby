@@ -7,6 +7,7 @@ require 'grpc_web/server/error_callback'
 require 'grpc_web/server/message_serialization'
 require 'grpc_web/server/text_coder'
 
+# Placeholder
 module GRPCWeb::GRPCRequestProcessor
   class << self
     include ::GRPCWeb::ContentTypes
