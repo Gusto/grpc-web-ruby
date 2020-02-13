@@ -27,4 +27,8 @@ class GRPCWeb::MessageFrame
   def header?
     frame_type == HEADER_FRAME_TYPE
   end
+
+  def ==(other)
+    frame_type == other.frame_type && body == other.body
+  end
 end
