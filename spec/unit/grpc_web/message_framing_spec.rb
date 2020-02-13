@@ -16,15 +16,26 @@ RSpec.describe GRPCWeb::MessageFraming do
       "\x00\x00\x00\x00\x18data in the second frame"
     string.b # encode to ASCII-8BIT
   end
-  describe '#frame_content' do
+  describe '#pack_frames' do
     subject { described_class.pack_frames(unpacked_frames) }
 
     it { is_expected.to eq packed_frames }
   end
 
-  describe '#unframe_content' do
+  describe '#unpack_frames' do
     subject { described_class.unpack_frames(packed_frames) }
 
     it { is_expected.to eq unpacked_frames }
+  end
+
+  describe 'pack and unpack frames' do
+    subject { described_class.unpack_frames( described_class.pack_frames(unpacked_frames)) }
+
+    it { is_expected.to eq unpacked_frames }
+  end
+  describe 'unpack and pack frames' do
+    subject { described_class.pack_frames( described_class.unpack_frames(packed_frames)) }
+
+    it { is_expected.to eq packed_frames }
   end
 end
