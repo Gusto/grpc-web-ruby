@@ -8,19 +8,15 @@ require 'grpc_web/message_framing'
 module GRPCWeb::RequestFraming
   class << self
     def unframe_request(request)
-      frames = message_framing.unframe_content(request.body)
+      frames = message_framing.unpack_frames(request.body)
       ::GRPCWeb::GRPCWebRequest.new(
         request.service, request.service_method, request.content_type, request.accept, frames,
       )
     end
 
     def frame_response(response)
-      # framed = response.body.map do |frame|
-      #   message_framing.frame_content(frame.body, frame.frame_type)
-      # end.join
-
-      framed = message_framing.frame_content(response.body)
-      ::GRPCWeb::GRPCWebResponse.new(response.content_type, framed)
+      frames = message_framing.pack_frames(response.body)
+      ::GRPCWeb::GRPCWebResponse.new(response.content_type, frames)
     end
 
     private

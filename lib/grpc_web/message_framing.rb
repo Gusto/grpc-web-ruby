@@ -5,14 +5,14 @@ require 'grpc_web/message_frame'
 # Placeholder
 module GRPCWeb::MessageFraming
   class << self
-    def frame_content(content)
-      content.map do |frame|
+    def pack_frames(frames)
+      frames.map do |frame|
         length_bytes = [frame.body.bytesize].pack('N')
         "#{frame.frame_type.chr}#{length_bytes}#{frame.body}"
       end.join
     end
 
-    def unframe_content(content)
+    def unpack_frames(content)
       frames = []
       remaining_content = content
       until remaining_content.empty?
