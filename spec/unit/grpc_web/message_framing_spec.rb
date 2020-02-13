@@ -14,7 +14,10 @@ RSpec.describe GRPCWeb::MessageFraming do
     ]
   }
   let(:packed_frames) do
-    "\x80\x00\x00\x00\x12data in the header\x00\x00\x00\x00\x17data in the first frame\x00\x00\x00\x00\x18data in the second frame".b
+    string = "\x80\x00\x00\x00\x12data in the header" +
+      "\x00\x00\x00\x00\x17data in the first frame" +
+      "\x00\x00\x00\x00\x18data in the second frame"
+    string.b
   end
   describe '#frame_content' do
     subject { described_class.pack_frames(unpacked_frames) }
