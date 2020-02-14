@@ -45,7 +45,7 @@ RSpec.describe 'connecting to a ruby server from a javascript client', type: :fe
   let(:server) { browser.server }
 
   let(:test_page) { "file://#{File.expand_path('../js-client/test.html', __dir__)}" }
-  let(:name) { 'James' }
+  let(:name) { "James\u1f61d" }
 
   shared_context 'javascript integration' do
     it 'returns the expected response from the service' do

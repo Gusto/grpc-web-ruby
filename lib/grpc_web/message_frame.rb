@@ -17,7 +17,7 @@ class GRPCWeb::MessageFrame
 
   def initialize(frame_type, body)
     self.frame_type = frame_type
-    self.body = body
+    self.body = body.b # treat body as a byte string
   end
 
   def payload?

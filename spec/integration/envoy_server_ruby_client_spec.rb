@@ -20,7 +20,7 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
 
   let(:service) { TestHelloService }
   let(:client) { GRPCWeb::Client.new('http://envoy:8080', HelloService::Service) }
-  let(:name) { 'Jamesasdfasdfasdfas' }
+  let(:name) { "Jamesasdfas\u1f61ddfasdfas" }
 
   it 'returns the expected response from the service' do
     result = client.say_hello(name: name)

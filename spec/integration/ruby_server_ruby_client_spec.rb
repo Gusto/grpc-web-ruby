@@ -26,7 +26,7 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
       HelloService::Service,
     )
   end
-  let(:name) { 'James' }
+  let(:name) { "James\u1f61d" }
 
   it 'returns the expected response from the service' do
     expect(response).to eq(HelloResponse.new(message: "Hello #{name}"))

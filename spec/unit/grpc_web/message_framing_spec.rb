@@ -5,16 +5,16 @@ require 'grpc_web/message_framing'
 RSpec.describe GRPCWeb::MessageFraming do
   let(:unpacked_frames) do
     [
-      ::GRPCWeb::MessageFrame.header_frame('data in the header'),
-      ::GRPCWeb::MessageFrame.payload_frame('data in the \u1f61d first frame'),
-      ::GRPCWeb::MessageFrame.payload_frame('data in the second frame'),
+      ::GRPCWeb::MessageFrame.header_frame("data in the header"),
+      ::GRPCWeb::MessageFrame.payload_frame("data in the \u1f61d first frame"),
+      ::GRPCWeb::MessageFrame.payload_frame("data in the second frame"),
     ]
   end
   let(:packed_frames) do
     string = "\x80\x00\x00\x00\x12data in the header" \
-             "\x00\x00\x00\x00\x1Fdata in the \\u1f61d first frame" \
+             "\x00\x00\x00\x00\x1Cdata in the \u1f61d first frame" \
              "\x00\x00\x00\x00\x18data in the second frame"
-    string.b # encode to ASCII-8BIT
+    string.b # treat string as a byte string
   end
 
   describe '#pack_frames' do
