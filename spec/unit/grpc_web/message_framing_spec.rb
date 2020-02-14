@@ -24,9 +24,20 @@ RSpec.describe GRPCWeb::MessageFraming do
   end
 
   describe '#unpack_frames' do
-    subject { described_class.unpack_frames(packed_frames) }
+    subject(:unpack) { described_class.unpack_frames(packed_frames) }
 
     it { is_expected.to eq unpacked_frames }
+
+    context 'when the message length is invalid' do
+      let(:packed_frames) do
+        string = "\x80\x00\x00\x00\x00data in the header"
+        string.b # treat string as a byte string
+      end
+
+      it 'raises an error' do
+        expect { unpack }.to raise_error(StandardError, 'Invalid message length')
+      end
+    end
   end
 
   describe 'pack and unpack frames' do
