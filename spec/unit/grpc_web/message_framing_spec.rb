@@ -5,9 +5,9 @@ require 'grpc_web/message_framing'
 RSpec.describe GRPCWeb::MessageFraming do
   let(:unpacked_frames) do
     [
-      ::GRPCWeb::MessageFrame.header_frame("data in the header"),
+      ::GRPCWeb::MessageFrame.header_frame('data in the header'),
       ::GRPCWeb::MessageFrame.payload_frame("data in the \u1f61d first frame"),
-      ::GRPCWeb::MessageFrame.payload_frame("data in the second frame"),
+      ::GRPCWeb::MessageFrame.payload_frame('data in the second frame'),
     ]
   end
   let(:packed_frames) do
