@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require 'grpc_web/client/client_executor'
+require 'grpc/generic/rpc_desc'
+require_relative '../../../../spec/pb-ruby/hello_services_pb'
+
 RSpec.describe ::GRPCWeb::ClientExecutor do
   describe '#request' do
-    subject(:response) { described_class.request(uri, rpc_desc, params) }
-
-    let(:url) { 'http://www.example.com' }
-    let(:uri) { URI(url) }
+    let(:server_url) { 'http://www.example.com' }
+    let(:request_uri) { URI(server_url) }
     let(:rpc_desc) do
       GRPC::RpcDesc.new(
         :SayHello,
@@ -24,13 +26,18 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
       }
     end
 
-    before do
-      stub_request(:post, url).
+    subject(:response) { described_class.request(request_uri, rpc_desc, params) }
+
+    let!(:server_stub) do
+      stub_request(:post, server_url).
         with(
-         body: expected_request_body,
-         headers: expected_headers).
+          body: expected_request_body,
+          headers: expected_headers,
+        ).
         to_return(server_response)
     end
+
+    after { assert_requested(server_stub) }
 
     context 'when the server returns a successful response' do
       let(:server_response) do
@@ -39,16 +46,55 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
           body: "\x00\x00\x00\x00\v\n\tHello Noa\x80\x00\x00\x00.grpc-status:0\r\ngrpc-message:OK\r\nx-grpc-web:1\r\n".b,
         }
       end
+      let(:expected_response) { HelloResponse.new(message: "Hello Noa") }
 
       it 'returns the rpc_desc response object' do
-        expect(response).to eq(HelloResponse.new(message: "Hello Noa"))
+        expect(response).to eq(expected_response)
       end
 
       context 'with ssl' do
         let(:url) { 'https://www.example.com' }
 
         it 'returns the rpc_desc response object' do
-          expect(response).to eq(HelloResponse.new(message: "Hello Noa"))
+          expect(response).to eq(expected_response)
+        end
+      end
+
+      context 'with a username' do
+        let(:username) { 'noa' }
+        let(:request_uri) { URI("http://#{username}@www.example.com") }
+
+        let!(:server_stub) do
+          stub_request(:post, server_url).
+            with(
+              body: expected_request_body,
+              headers: expected_headers,
+              basic_auth: [username]
+            ).
+            to_return(server_response)
+        end
+
+        it 'sends the auth info in the request' do
+          expect(response).to eq(expected_response)
+        end
+
+        context 'and a password' do
+          let(:password) { 'passthesauce' }
+          let(:request_uri) { URI("http://#{username}:#{password}@www.example.com") }
+
+          let!(:server_stub) do
+            stub_request(:post, server_url).
+              with(
+                body: expected_request_body,
+                headers: expected_headers,
+                basic_auth: [username, password]
+              ).
+              to_return(server_response)
+          end
+
+          it 'sends the auth info in the request' do
+            expect(response).to eq(expected_response)
+          end
         end
       end
     end
