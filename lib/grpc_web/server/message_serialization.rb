@@ -7,6 +7,7 @@ require 'grpc_web/grpc_web_response'
 require 'grpc_web/grpc_web_request'
 require 'grpc_web/message_frame'
 
+# Placeholder
 module GRPCWeb::MessageSerialization
   class << self
     include ::GRPCWeb::ContentTypes
@@ -72,7 +73,7 @@ module GRPCWeb::MessageSerialization
     # If needed, trailers can be appended to the response as a 2nd
     # base64 encoded string with independent framing.
     def generate_headers(status, message)
-      header_str = [
+      [
         "grpc-status:#{status}",
         "grpc-message:#{message}",
         'x-grpc-web:1',

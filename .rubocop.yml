@@ -13,6 +13,11 @@ Style/TrailingCommaInHashLiteral:
 Style/ConditionalAssignment:
   EnforcedStyle: assign_inside_condition
   IncludeTernaryExpressions: false
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+  AutoCorrect: true
+Style/GuardClause:
+  MinBodyLength: 4
 
 Layout/LineLength:
   Max: 100
@@ -43,4 +48,8 @@ RSpec/ContextWording:
 RSpec/MultipleExpectations:
   Max: 2
 RSpec/ExampleLength:
-  Max: 10
+  Max: 15
+RSpec/NestedGroups:
+  Max: 5
+RSpec/FilePath:
+  Enabled: false

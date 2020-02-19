@@ -7,6 +7,7 @@ require 'grpc/errors'
 require 'grpc_web/content_types'
 require 'grpc_web/message_framing'
 
+# Client execution concerns
 module GRPCWeb::ClientExecutor
   class << self
     include ::GRPCWeb::ContentTypes
@@ -16,7 +17,8 @@ module GRPCWeb::ClientExecutor
 
     def request(uri, rpc_desc, params = {})
       req_proto = rpc_desc.input.new(params)
-      request_body = ::GRPCWeb::MessageFraming.frame_content(req_proto.to_proto)
+      frame = ::GRPCWeb::MessageFrame.payload_frame(req_proto.to_proto)
+      request_body = ::GRPCWeb::MessageFraming.pack_frames([frame])
 
       resp = post_request(uri, request_body)
       resp_body = handle_response(resp)
@@ -35,9 +37,7 @@ module GRPCWeb::ClientExecutor
     def post_request(uri, request_body)
       request = Net::HTTP::Post.new(uri, request_headers)
       request.body = request_body
-      if uri.userinfo
-        request.basic_auth uri.user, uri.password
-      end
+      request.basic_auth uri.user, uri.password if uri.userinfo
 
       Net::HTTP.start(uri.hostname, uri.port) do |http|
         http.use_ssl = (uri.scheme == 'https')
@@ -50,7 +50,7 @@ module GRPCWeb::ClientExecutor
         raise "Received #{resp.code} #{resp.message} response: #{resp.body}"
       end
 
-      frames = ::GRPCWeb::MessageFraming.unframe_content(resp.body)
+      frames = ::GRPCWeb::MessageFraming.unpack_frames(resp.body)
       header_frame = frames.find(&:header?)
       headers = parse_headers(header_frame.body) if header_frame
       raise_on_error(headers)

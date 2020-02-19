@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rack/mock'
-require 'grpc_web/rack_app'
+require 'grpc_web/server/rack_app'
 require 'test_hello_service'
 
 RSpec.describe(::GRPCWeb::RackApp) do

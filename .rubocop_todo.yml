@@ -9,7 +9,6 @@
 # Offense count: 2
 Lint/UselessAssignment:
   Exclude:
-    - 'lib/grpc_web/message_serialization.rb'
     - 'spec/support/envoy_runner.rb'
 
 # Offense count: 1
@@ -46,18 +45,6 @@ RSpec/ScatteredLet:
   Exclude:
     - 'spec/integration/ruby_server_js_client_spec.rb'
 
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, EnforcedStyle.
-# SupportedStyles: nested, compact
-Style/ClassAndModuleChildren:
-  Exclude:
-    - 'lib/grpc_web/client_executor.rb'
-    - 'lib/grpc_web/content_types.rb'
-    - 'lib/grpc_web/grpc_request_processor.rb'
-    - 'lib/grpc_web/message_serialization.rb'
-    - 'lib/grpc_web/text_coder.rb'
-
 # Offense count: 12
 Style/Documentation:
   Exclude:
@@ -65,28 +52,9 @@ Style/Documentation:
     - 'test/**/*'
     - 'Rakefile'
     - 'lib/grpc_web.rb'
-    - 'lib/grpc_web/client.rb'
-    - 'lib/grpc_web/client_executor.rb'
-    - 'lib/grpc_web/error_callback.rb'
-    - 'lib/grpc_web/grpc_request_processor.rb'
-    - 'lib/grpc_web/message_frame.rb'
-    - 'lib/grpc_web/message_serialization.rb'
-    - 'lib/grpc_web/rack_app.rb'
-    - 'lib/grpc_web/rack_handler.rb'
-    - 'lib/grpc_web/text_coder.rb'
 
 # Offense count: 3
 # Configuration parameters: MinBodyLength.
 Style/GuardClause:
   Exclude:
-    - 'lib/grpc_web/client_executor.rb'
-    - 'lib/grpc_web/rack_app.rb'
     - 'spec/support/envoy_runner.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-Style/IfUnlessModifier:
-  Exclude:
-    - 'lib/grpc_web/client_executor.rb'
-    - 'lib/grpc_web/error_callback.rb'
-    - 'lib/grpc_web/rack_app.rb'

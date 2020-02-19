@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'grpc_web/error_callback'
+require 'grpc_web/server/error_callback'
 
 RSpec.describe 'GRPCWeb.on_error' do # rubocop:disable RSpec/DescribeClass
   describe 'setting the callback' do

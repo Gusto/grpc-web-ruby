@@ -1,19 +1,20 @@
 # frozen_string_literal: true
 
 require 'grpc_web/content_types'
-require 'grpc_web/error_callback'
 require 'grpc_web/grpc_web_response'
-require 'grpc_web/message_framing'
-require 'grpc_web/message_serialization'
-require 'grpc_web/text_coder'
+require 'grpc_web/server/request_framing'
+require 'grpc_web/server/error_callback'
+require 'grpc_web/server/message_serialization'
+require 'grpc_web/server/text_coder'
 
+# Placeholder
 module GRPCWeb::GRPCRequestProcessor
   class << self
     include ::GRPCWeb::ContentTypes
 
     def process(grpc_web_request)
       text_coder = ::GRPCWeb::TextCoder
-      framing = ::GRPCWeb::MessageFraming
+      framing = ::GRPCWeb::RequestFraming
       serialization = ::GRPCWeb::MessageSerialization
 
       grpc_web_request = text_coder.decode_request(grpc_web_request)

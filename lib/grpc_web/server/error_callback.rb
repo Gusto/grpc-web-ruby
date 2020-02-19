@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Placeholder
 module GRPCWeb
   class << self
     NOOP_ON_ERROR = proc { |ex, service, service_method| }

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'grpc_web/client'
+require 'grpc_web/client/client'
 require 'hello_services_pb'
 
 RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature do
@@ -26,7 +26,7 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
       HelloService::Service,
     )
   end
-  let(:name) { 'James' }
+  let(:name) { "James\u1f61d" }
 
   it 'returns the expected response from the service' do
     expect(response).to eq(HelloResponse.new(message: "Hello #{name}"))
