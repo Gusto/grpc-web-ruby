@@ -17,12 +17,13 @@ module GRPCWeb::ClientExecutor
 
     def request(uri, rpc_desc, params = {})
       req_proto = rpc_desc.input.new(params)
-      frame = ::GRPCWeb::MessageFrame.payload_frame(req_proto.to_proto)
+      marshalled_proto = rpc_desc.marshal_proc.call(req_proto)
+      frame = ::GRPCWeb::MessageFrame.payload_frame(marshalled_proto)
       request_body = ::GRPCWeb::MessageFraming.pack_frames([frame])
 
       resp = post_request(uri, request_body)
       resp_body = handle_response(resp)
-      rpc_desc.output.decode(resp_body)
+      rpc_desc.unmarshal_proc(:output).call(resp_body)
     end
 
     private
@@ -39,8 +40,7 @@ module GRPCWeb::ClientExecutor
       request.body = request_body
       request.basic_auth uri.user, uri.password if uri.userinfo
 
-      Net::HTTP.start(uri.hostname, uri.port) do |http|
-        http.use_ssl = (uri.scheme == 'https')
+      Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
         http.request(request)
       end
     end

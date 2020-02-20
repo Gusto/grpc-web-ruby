@@ -45,6 +45,7 @@ RSpec/ContextWording:
     - before
     - after
     - because
+    - and
 RSpec/MultipleExpectations:
   Max: 2
 RSpec/ExampleLength:

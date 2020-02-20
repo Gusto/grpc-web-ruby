@@ -12,6 +12,7 @@ SimpleCov.start
 
 require 'pry'
 require 'rspec'
+require 'webmock/rspec'
 require 'grpc-web'
 require 'grpc_web/client/client'
 
@@ -100,6 +101,8 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 
   config.before :context, type: :feature do
+    WebMock.allow_net_connect!
+
     require 'capybara/rspec'
     Capybara.server = :webrick
 
