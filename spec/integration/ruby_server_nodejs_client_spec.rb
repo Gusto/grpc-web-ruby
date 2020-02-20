@@ -33,7 +33,7 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
     expect(result['response']).to eq('message' => "Hello #{name}")
   end
 
-  context 'for a method that raises a standard gRPC error' do
+  context 'with a service that raises a standard gRPC error' do
     let(:service) do
       Class.new(TestHelloService) do
         def say_hello(_request, _metadata = nil)
@@ -48,7 +48,7 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
     end
   end
 
-  context 'for a method that raises a custom error' do
+  context 'with a service that raises a custom error' do
     let(:service) do
       Class.new(TestHelloService) do
         def say_hello(_request, _metadata = nil)
