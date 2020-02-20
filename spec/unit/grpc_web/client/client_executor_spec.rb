@@ -6,6 +6,8 @@ require_relative '../../../../spec/pb-ruby/hello_services_pb'
 
 RSpec.describe ::GRPCWeb::ClientExecutor do
   describe '#request' do
+    subject(:response) { described_class.request(request_uri, rpc_desc, params) }
+
     let(:server_url) { 'http://www.example.com' }
     let(:request_uri) { URI(server_url) }
     let(:rpc_desc) do
@@ -17,43 +19,46 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
         :decode,
       )
     end
-    let(:params) { {name: 'Noa'} }
-    let(:expected_request_body) {"\u0000\u0000\u0000\u0000\u0005\n\u0003Noa"}
+    let(:params) { { name: 'Noa' } }
+    let(:expected_request_body) { "\u0000\u0000\u0000\u0000\u0005\n\u0003Noa" }
     let(:expected_headers) do
       {
-        'Accept'=>GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
-        'Content-Type'=>GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
+        'Accept' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
+        'Content-Type' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
       }
     end
 
-    subject(:response) { described_class.request(request_uri, rpc_desc, params) }
-
     let!(:server_stub) do
-      stub_request(:post, server_url).
-        with(
-          body: expected_request_body,
-          headers: expected_headers,
-        ).
-        to_return(server_response)
+      stub_request(:post, server_url).to_return(server_response)
     end
-
-    after { assert_requested(server_stub) }
 
     context 'when the server returns a successful response' do
       let(:server_response) do
         {
           status: 200,
-          body: "\x00\x00\x00\x00\v\n\tHello Noa\x80\x00\x00\x00.grpc-status:0\r\ngrpc-message:OK\r\nx-grpc-web:1\r\n".b,
+          body:
+            "\x00\x00\x00\x00\v\n\tHello Noa"\
+            "\x80\x00\x00\x00.grpc-status:0\r\ngrpc-message:OK\r\nx-grpc-web:1\r\n".b,
         }
       end
-      let(:expected_response) { HelloResponse.new(message: "Hello Noa") }
+      let(:expected_response) { HelloResponse.new(message: 'Hello Noa') }
 
       it 'returns the rpc_desc response object' do
         expect(response).to eq(expected_response)
       end
 
+      it 'sends the correct headers and body' do
+        response
+        assert_requested(
+          server_stub.with(
+            headers: expected_headers,
+            body: expected_request_body,
+          )
+        )
+      end
+
       context 'with ssl' do
-        let(:url) { 'https://www.example.com' }
+        let(:server_url) { 'https://www.example.com' }
 
         it 'returns the rpc_desc response object' do
           expect(response).to eq(expected_response)
@@ -64,36 +69,38 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
         let(:username) { 'noa' }
         let(:request_uri) { URI("http://#{username}@www.example.com") }
 
-        let!(:server_stub) do
-          stub_request(:post, server_url).
-            with(
-              body: expected_request_body,
-              headers: expected_headers,
-              basic_auth: [username]
-            ).
-            to_return(server_response)
-        end
-
         it 'sends the auth info in the request' do
           expect(response).to eq(expected_response)
+        end
+
+        it 'sends the correct headers body and auth information' do
+          response
+          assert_requested(
+            server_stub.with(
+              headers: expected_headers,
+              body: expected_request_body,
+              basic_auth: [username],
+            )
+          )
         end
 
         context 'and a password' do
           let(:password) { 'passthesauce' }
           let(:request_uri) { URI("http://#{username}:#{password}@www.example.com") }
 
-          let!(:server_stub) do
-            stub_request(:post, server_url).
-              with(
-                body: expected_request_body,
-                headers: expected_headers,
-                basic_auth: [username, password]
-              ).
-              to_return(server_response)
-          end
-
           it 'sends the auth info in the request' do
             expect(response).to eq(expected_response)
+          end
+
+          it 'sends the correct headers body and auth information' do
+            response
+            assert_requested(
+              server_stub.with(
+                headers: expected_headers,
+                body: expected_request_body,
+                basic_auth: [username, password],
+              )
+            )
           end
         end
       end
@@ -104,7 +111,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
         let(:server_response) { { status: 500 } }
 
         it 'raises an error' do
-          expect{ response }.to raise_error(RuntimeError)
+          expect { response }.to raise_error(RuntimeError)
         end
       end
 
@@ -117,7 +124,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
         end
 
         it 'raises an error' do
-          expect{ response }.to raise_error(GRPC::InvalidArgument)
+          expect { response }.to raise_error(GRPC::InvalidArgument)
         end
       end
     end

@@ -40,7 +40,7 @@ module GRPCWeb::ClientExecutor
       request.body = request_body
       request.basic_auth uri.user, uri.password if uri.userinfo
 
-      Net::HTTP.start(uri.hostname, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+      Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
         http.request(request)
       end
     end
@@ -69,6 +69,7 @@ module GRPCWeb::ClientExecutor
 
     def raise_on_error(headers)
       return unless headers
+
       status_str = headers[GRPC_STATUS_HEADER]
       status_code = status_str.to_i if status_str && status_str == status_str.to_i.to_s
 

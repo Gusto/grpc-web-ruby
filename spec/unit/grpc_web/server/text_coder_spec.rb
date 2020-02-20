@@ -1,7 +1,11 @@
+# frozen_string_literal: true
+
 require 'grpc_web/server/text_coder'
 
 RSpec.describe GRPCWeb::TextCoder do
-  context '#decode_request' do
+  describe '#decode_request' do
+    subject(:decoded_request) { described_class.decode_request(request) }
+
     let(:request) do
       ::GRPCWeb::GRPCWebRequest.new(
         service,
@@ -9,14 +13,12 @@ RSpec.describe GRPCWeb::TextCoder do
         content_type,
         accept,
         body,
-        )
+      )
     end
     let(:service) { instance_double(TestHelloService) }
     let(:service_method) { :SayHello }
     let(:accept) { '*/*' }
-    let(:chunk_contents) { [ 'Hello Noa!', 'this is another chunk']}
-
-    subject(:decoded_request) { described_class.decode_request(request) }
+    let(:chunk_contents) { ['Hello Noa!', 'this is another chunk'] }
 
     context('non encoded content type') do
       let(:content_type) { ::GRPCWeb::ContentTypes::DEFAULT_CONTENT_TYPE }
@@ -51,8 +53,8 @@ RSpec.describe GRPCWeb::TextCoder do
       end
 
       context 'with several chunks' do
-        let(:chunk_contents) { [ 'Hello Noa!', 'this is another chunk', 'and this too']}
-        let(:body) { chunk_contents.map{|chunk| Base64.strict_encode64(chunk)}.join }
+        let(:chunk_contents) { ['Hello Noa!', 'this is another chunk', 'and this too'] }
+        let(:body) { chunk_contents.map { |chunk| Base64.strict_encode64(chunk) }.join }
 
         it 'is decodes the request body' do
           expect(decoded_request.body).to eq chunk_contents.join
@@ -61,11 +63,11 @@ RSpec.describe GRPCWeb::TextCoder do
     end
   end
 
-  context '#encode_response' do
+  describe '#encode_response' do
+    subject(:encoded_response) { described_class.encode_response(response) }
+
     let(:response_body) { 'body' }
     let(:response) { ::GRPCWeb::GRPCWebResponse.new(response_content_type, response_body) }
-
-    subject(:encoded_response) { described_class.encode_response(response) }
 
     context('non encoded content type') do
       let(:response_content_type) { ::GRPCWeb::ContentTypes::DEFAULT_CONTENT_TYPE }
