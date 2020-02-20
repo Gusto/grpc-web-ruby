@@ -20,7 +20,7 @@ RSpec.describe GRPCWeb::TextCoder do
     let(:accept) { '*/*' }
     let(:chunk_contents) { ['Hello Noa!', 'this is another chunk'] }
 
-    context('non encoded content type') do
+    context('when the content type is non encoded') do
       let(:content_type) { ::GRPCWeb::ContentTypes::DEFAULT_CONTENT_TYPE }
       let(:body) { 'Hi Noa!' }
 
@@ -29,12 +29,12 @@ RSpec.describe GRPCWeb::TextCoder do
       end
     end
 
-    context('encoded content type') do
+    context('when the content tyep is encoded') do
       let(:content_type) { ::GRPCWeb::ContentTypes::TEXT_CONTENT_TYPE }
       let(:body_content) { 'Hi Noa!' }
       let(:body) { Base64.strict_encode64(body_content) }
 
-      it 'is decodes the request body' do
+      it 'decodes the request body' do
         expect(decoded_request.body).to eq body_content
       end
 
@@ -56,7 +56,7 @@ RSpec.describe GRPCWeb::TextCoder do
         let(:chunk_contents) { ['Hello Noa!', 'this is another chunk', 'and this too'] }
         let(:body) { chunk_contents.map { |chunk| Base64.strict_encode64(chunk) }.join }
 
-        it 'is decodes the request body' do
+        it 'decodes the request body' do
           expect(decoded_request.body).to eq chunk_contents.join
         end
       end

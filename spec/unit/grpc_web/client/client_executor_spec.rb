@@ -38,7 +38,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
           status: 200,
           body:
             "\x00\x00\x00\x00\v\n\tHello Noa"\
-            "\x80\x00\x00\x00.grpc-status:0\r\ngrpc-message:OK\r\nx-grpc-web:1\r\n".b,
+            "\x80\x00\x00\x00.grpc-status:0\r\ngrpc-message:OK\r\nx-grpc-web:1\r\n",
         }
       end
       let(:expected_response) { HelloResponse.new(message: 'Hello Noa') }
@@ -53,7 +53,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
           server_stub.with(
             headers: expected_headers,
             body: expected_request_body,
-          )
+          ),
         )
       end
 
@@ -80,7 +80,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
               headers: expected_headers,
               body: expected_request_body,
               basic_auth: [username],
-            )
+            ),
           )
         end
 
@@ -99,7 +99,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
                 headers: expected_headers,
                 body: expected_request_body,
                 basic_auth: [username, password],
-              )
+              ),
             )
           end
         end
@@ -107,7 +107,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
     end
 
     context 'when the server returns an error' do
-      context 'http error' do
+      context 'which is an http error' do
         let(:server_response) { { status: 500 } }
 
         it 'raises an error' do
@@ -115,11 +115,13 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
         end
       end
 
-      context 'grpc error' do
+      context 'which is a grpc error' do
         let(:server_response) do
           {
             status: 200,
-            body: "\x80\x00\x00\x008grpc-status:#{GRPC::Core::StatusCodes::INVALID_ARGUMENT}\r\ngrpc-message:Test message\r\nx-grpc-web:1\r\n",
+            body:
+              "\x80\x00\x00\x008grpc-status:#{GRPC::Core::StatusCodes::INVALID_ARGUMENT}"\
+              "\r\ngrpc-message:Test message\r\nx-grpc-web:1\r\n",
           }
         end
 
