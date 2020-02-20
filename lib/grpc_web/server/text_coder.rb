@@ -14,7 +14,7 @@ module GRPCWeb::TextCoder
       return request unless BASE64_CONTENT_TYPES.include?(request.content_type)
 
       # Body can be several base64 "chunks" concatenated together
-      base64_chunks = request.body.scan(%r{[a-zA-Z0-9+\\]+={0,2}})
+      base64_chunks = request.body.scan(%r{[a-zA-Z0-9+/]+={0,2}})
       decoded = base64_chunks.map { |chunk| Base64.decode64(chunk) }.join
       ::GRPCWeb::GRPCWebRequest.new(
         request.service, request.service_method, request.content_type, request.accept, decoded,
