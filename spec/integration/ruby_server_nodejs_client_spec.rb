@@ -5,28 +5,35 @@ require 'json'
 require 'hello_services_pb'
 
 RSpec.describe 'connecting to a ruby server from a nodejs client', type: :feature do
-  subject(:json_result) { `node #{node_script} #{server_url} #{name}` }
+  subject(:json_result) { `#{node_cmd}` }
 
+  let(:node_client) { File.expand_path('../node-client/dist/client.js', __dir__) }
+  let(:node_cmd) do
+    [
+      'node',
+      node_client,
+      server_url,
+      name,
+      basic_username,
+      basic_password,
+    ].join(' ')
+  end
   let(:result) { JSON.parse(json_result) }
 
-  # let(:basic_password) { 'supersecretpassword' }
-  # let(:basic_username) { 'supermanuser' }
-  let(:node_script) { File.expand_path('../node-client/dist/client.js', __dir__) }
+  let(:basic_password) { 'supersecretpassword' }
+  let(:basic_username) { 'supermanuser' }
   let(:service) { TestHelloService }
   let(:rack_app) do
     app = TestGRPCWebApp.build(service)
-    # app.use Rack::Auth::Basic do |username, password|
-    #   [username, password] == [basic_username, basic_password]
-    # end
+    app.use Rack::Auth::Basic do |username, password|
+      [username, password] == [basic_username, basic_password]
+    end
     app
   end
+
   let(:browser) { Capybara::Session.new(Capybara.default_driver, rack_app) }
   let(:server) { browser.server }
-
-  let(:server_url) do
-    # "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port}"
-    "http://#{server.host}:#{server.port}"
-  end
+  let(:server_url) { "http://#{server.host}:#{server.port}" }
   let(:name) { "James\u1f61d" }
 
   it 'returns the expected response from the service' do
@@ -43,7 +50,6 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
     end
 
     it 'raises an error' do
-      # expect { subject }.to raise_error(GRPC::InvalidArgument, '3:Test message')
       expect(result['error']).to include('grpc-message' => ['Test message'], 'grpc-status' => ['3'])
     end
   end
@@ -58,7 +64,6 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
     end
 
     it 'raises an error' do
-      # expect { subject }.to raise_error(GRPC::Unknown, '2:RuntimeError: Some random error')
       expect(result['error']).to include(
         'grpc-message' => ['RuntimeError: Some random error'],
         'grpc-status' => ['2'],

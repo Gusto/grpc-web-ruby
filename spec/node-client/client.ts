@@ -7,14 +7,24 @@ import {HelloRequest} from './pb-ts/hello_pb';
 // Required for grpc-web in a NodeJS environment (vs. browser)
 grpc.setDefaultTransport(NodeHttpTransport());
 
+// Usage: node client.js http://server:port nameParam username password
 const serverUrl = process.argv[2];
-const name = process.argv[3];
+const helloName = process.argv[3];
+const username = process.argv[4];
+const password = process.argv[5];
 
 const client = new HelloServiceClient(serverUrl);
-const req = new HelloRequest();
-req.setName(name);
+const headers = new grpc.Metadata();
 
-client.sayHello(req, (err, resp) => {
+if (username && password) {
+  const encodedCredentials = Buffer.from(`${username}:${password}`).toString("base64");
+  headers.set("Authorization", `Basic ${encodedCredentials}`);
+}
+
+const req = new HelloRequest();
+req.setName(helloName);
+
+client.sayHello(req, headers, (err, resp) => {
   var result = {
     response: resp && resp.toObject(),
     error: err && err.metadata && err.metadata.headersMap
