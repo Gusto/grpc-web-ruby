@@ -47,7 +47,7 @@ end
 task :compile_protos_ts do
   defs_dir = File.expand_path('spec', __dir__)
   proto_files = Dir[File.join(defs_dir, 'pb-src/**/*.proto')]
-  proto_input_files = proto_files.map{|f| f.gsub(defs_dir, '/defs')}
+  proto_input_files = proto_files.map { |f| f.gsub(defs_dir, '/defs') }
   sh [
     'docker run',
     "-v \"#{defs_dir}:/defs\"",
