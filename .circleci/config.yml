@@ -12,7 +12,7 @@ jobs:
       - gusto/bundle-install
       - run: bundle exec rake
       - store_artifacts:
-        path: coverage
+          path: coverage
   release:
     executor: gusto/ruby-2-3
     steps:
