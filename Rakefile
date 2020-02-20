@@ -41,6 +41,23 @@ task :compile_protos_ruby do
   ].join(' ')
 end
 
+task :compile_protos_ts do
+  defs_dir = File.expand_path('spec', __dir__)
+  proto_files = Dir[File.join(defs_dir, 'pb-src/**/*.proto')]
+  proto_input_files = proto_files.map{|f| f.gsub(defs_dir, '/defs')}
+  sh [
+    'docker run',
+    "-v \"#{defs_dir}:/defs\"",
+    '--entrypoint protoc',
+    'namely/protoc-all',
+    '--plugin=protoc-gen-ts=/usr/bin/protoc-gen-ts',
+    '--js_out=import_style=commonjs,binary:/defs/pb-ts',
+    '--ts_out=service=grpc-web:/defs/pb-ts',
+    '-I /defs/pb-src',
+    proto_input_files.join(' '),
+  ].join(' ')
+end
+
 task compile_js_client: [:compile_protos_js] do
   compile_js_cmd = '"cd spec/js-client-src; yarn install; yarn run webpack"'
   sh [
