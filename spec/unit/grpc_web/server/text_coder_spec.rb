@@ -69,7 +69,7 @@ RSpec.describe GRPCWeb::TextCoder do
     let(:response_body) { 'body' }
     let(:response) { ::GRPCWeb::GRPCWebResponse.new(response_content_type, response_body) }
 
-    context('non encoded content type') do
+    context('when the content type is non encoded') do
       let(:response_content_type) { ::GRPCWeb::ContentTypes::DEFAULT_CONTENT_TYPE }
 
       it 'is a no-op' do
@@ -77,7 +77,7 @@ RSpec.describe GRPCWeb::TextCoder do
       end
     end
 
-    context('encoded content type') do
+    context('when the content type is encoded') do
       let(:response_content_type) { ::GRPCWeb::ContentTypes::TEXT_CONTENT_TYPE }
 
       it 'encodes the response body' do
