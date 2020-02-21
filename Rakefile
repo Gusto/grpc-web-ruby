@@ -8,7 +8,10 @@ RSpec::Core::RakeTask.new(:spec)
 CLEAN.include('spec/pb-ruby/*.rb')
 CLEAN.include('spec/pb-js-grpc-web/*.js')
 CLEAN.include('spec/pb-js-grpc-web-text/*.js')
+CLEAN.include('spec/pb-ts/*.js')
+CLEAN.include('spec/pb-ts/*.ts')
 CLEAN.include('spec/js-client/main.js')
+CLEAN.include('spec/node-client/dist/*')
 
 module RakeHelpers
   def self.compile_protos_js_cmd(mode, output_dir)
@@ -41,12 +44,39 @@ task :compile_protos_ruby do
   ].join(' ')
 end
 
+task :compile_protos_ts do
+  defs_dir = File.expand_path('spec', __dir__)
+  proto_files = Dir[File.join(defs_dir, 'pb-src/**/*.proto')]
+  proto_input_files = proto_files.map { |f| f.gsub(defs_dir, '/defs') }
+  sh [
+    'docker run',
+    "-v \"#{defs_dir}:/defs\"",
+    '--entrypoint protoc',
+    'namely/protoc-all',
+    '--plugin=protoc-gen-ts=/usr/bin/protoc-gen-ts',
+    '--js_out=import_style=commonjs,binary:/defs/pb-ts',
+    '--ts_out=service=grpc-web:/defs/pb-ts',
+    '-I /defs/pb-src',
+    proto_input_files.join(' '),
+  ].join(' ')
+end
+
 task compile_js_client: [:compile_protos_js] do
   compile_js_cmd = '"cd spec/js-client-src; yarn install; yarn run webpack"'
   sh [
     'docker-compose down',
     'docker-compose build',
     "docker-compose run --use-aliases ruby #{compile_js_cmd}",
+    'docker-compose down',
+  ].join(' && ')
+end
+
+task compile_node_client: [:compile_protos_ts] do
+  compile_node_cmd = '"cd spec/node-client; yarn install; yarn build"'
+  sh [
+    'docker-compose down',
+    'docker-compose build',
+    "docker-compose run --use-aliases ruby #{compile_node_cmd}",
     'docker-compose down',
   ].join(' && ')
 end
@@ -60,4 +90,10 @@ task :run_specs_in_docker do
   ].join(' && ')
 end
 
-task default: %i[clean compile_protos_ruby compile_js_client run_specs_in_docker]
+task default: %i[
+  clean
+  compile_protos_ruby
+  compile_js_client
+  compile_node_client
+  run_specs_in_docker
+]

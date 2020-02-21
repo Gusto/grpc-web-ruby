@@ -43,7 +43,7 @@ module GRPCWeb::RackHandler
       return false unless ALL_CONTENT_TYPES.include?(rack_request.content_type)
 
       accept = rack_request.get_header(ACCEPT_HEADER)
-      return true if ANY_CONTENT_TYPES.include?(accept)
+      return true if UNSPECIFIED_CONTENT_TYPES.include?(accept)
 
       ALL_CONTENT_TYPES.include?(accept)
     end
