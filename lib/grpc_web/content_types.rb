@@ -15,5 +15,5 @@ module GRPCWeb::ContentTypes
     TEXT_CONTENT_TYPE,
     TEXT_PROTO_CONTENT_TYPE,
   ].freeze
-  ANY_CONTENT_TYPES = ['*/*', '', nil].freeze
+  UNSPECIFIED_CONTENT_TYPES = ['*/*', '', nil].freeze
 end

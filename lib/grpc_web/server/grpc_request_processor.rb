@@ -42,7 +42,7 @@ module GRPCWeb::GRPCRequestProcessor
 
     # Use Accept header value if specified, otherwise use request content type
     def response_content_type(request)
-      if request.accept.nil? || ANY_CONTENT_TYPES.include?(request.accept)
+      if UNSPECIFIED_CONTENT_TYPES.include?(request.accept)
         request.content_type
       else
         request.accept
