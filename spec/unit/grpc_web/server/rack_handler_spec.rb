@@ -36,6 +36,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
 
   context 'with a valid request' do
     it 'returns a 200' do
+      expect(GRPCWeb.metrics).to receive(:increment).with('server.response')
       expect(call).to eq([
         200,
         { 'Content-Type' => response_content_type },
@@ -61,6 +62,11 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       let(:request_method) { 'PUT' }
 
       it 'returns a 404' do
+        expect(GRPCWeb.metrics).to receive(:increment).with(
+          'server.error',
+          { tags: ['type:not_found_error'] }
+        )
+
         expect(call).to eq([
           404,
           { 'Content-Type' => 'text/plain', 'X-Cascade' => 'pass' },
@@ -73,6 +79,11 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       let(:content_type) { 'text/plain' }
 
       it 'returns a 415' do
+        expect(GRPCWeb.metrics).to receive(:increment).with(
+          'server.error',
+          { tags: ['type:unsupported_media_type_error'] }
+        )
+
         expect(call).to eq([
           415,
           { 'Content-Type' => 'text/plain' },
@@ -102,6 +113,10 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       end
 
       it 'returns a 422' do
+        expect(GRPCWeb.metrics).to receive(:increment).with(
+          'server.error',
+          { tags: ['type:invalid_request_format'] }
+        )
         expect(call).to eq([
           422,
           { 'Content-Type' => 'text/plain' },
@@ -118,6 +133,10 @@ RSpec.describe(::GRPCWeb::RackHandler) do
     end
 
     it 'returns a 500' do
+      expect(GRPCWeb.metrics).to receive(:increment).with(
+        'server.error',
+        { tags: ['type:internal_server_error'] }
+      )
       expect(call).to eq([
         500,
         { 'Content-Type' => 'text/plain' },

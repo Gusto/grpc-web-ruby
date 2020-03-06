@@ -3,6 +3,7 @@
 require 'google/protobuf'
 require 'rack'
 require 'rack/request'
+require 'grpc_web/metrics'
 require 'grpc_web/content_types'
 require 'grpc_web/grpc_web_request'
 require 'grpc_web/server/error_callback'
@@ -20,8 +21,15 @@ module GRPCWeb::RackHandler
 
     def call(service, service_method, env)
       rack_request = Rack::Request.new(env)
-      return not_found_response(rack_request.path) unless rack_request.post?
-      return unsupported_media_type_response unless valid_content_types?(rack_request)
+      unless rack_request.post?
+        GRPCWeb.metrics.increment('server.error', tags: ['type:not_found_error'])
+        return not_found_response(rack_request.path)
+      end
+
+      unless valid_content_types?(rack_request)
+        GRPCWeb.metrics.increment('server.error', tags: ['type:unsupported_media_type_error'])
+        return unsupported_media_type_response
+      end
 
       content_type = rack_request.content_type
       accept = rack_request.get_header(ACCEPT_HEADER)
@@ -29,10 +37,15 @@ module GRPCWeb::RackHandler
       request = GRPCWeb::GRPCWebRequest.new(service, service_method, content_type, accept, body)
       response = GRPCWeb::GRPCRequestProcessor.process(request)
 
+      GRPCWeb.metrics.increment('server.response')
       [200, { 'Content-Type' => response.content_type }, [response.body]]
     rescue Google::Protobuf::ParseError => e
+      GRPCWeb.metrics.increment('server.error', tags: ['type:invalid_request_format'])
+
       invalid_response(e.message)
     rescue StandardError => e
+      GRPCWeb.metrics.increment('server.error', tags: ['type:internal_server_error'])
+
       ::GRPCWeb.on_error.call(e, service, service_method)
       error_response
     end
