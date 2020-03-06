@@ -7,7 +7,7 @@ module GRPCWeb::Metrics
   class Empty
     def increment(name, opts = {}); end
 
-    def time(_name, _opts = {}, &block)
+    def timing(_name, _opts = {}, &block)
       block&.call
     end
 
@@ -31,11 +31,15 @@ module GRPCWeb::Metrics
       @statsd.increment(metric_name(name), opts)
     end
 
-    def time(name, opts = {}, &block)
-      @statsd.time(metric_name(name), opts, &block)
+    def timing(name, value, opts = {})
+      @statsd.timing(metric_name(name), value, opts)
     end
 
     # Additional StatsD like functions when needed.
+
+    def time(name, opts = {}, &block)
+      @statsd.time(metric_name(name), opts, &block)
+    end
 
     # def decrement(name, opts = {})
     #   @statsd.decrement(metric_name(name), opts)
@@ -51,10 +55,6 @@ module GRPCWeb::Metrics
 
     # def histogram(name, value, opts = {})
     #   @statsd.histogram(metric_name(name), value, opts)
-    # end
-
-    # def timing(name, value, opts = {})
-    #   @statsd.timing(metric_name(name), value, opts)
     # end
 
     # def set(name, value, opts = {})

@@ -88,7 +88,7 @@ RSpec.describe(::GRPCWeb::RackApp) do
     context 'given a class' do
       include_context 'given a class'
       it 'creates an instance of the class and calls the correct method on it' do
-        expect(GRPCWeb.metrics).to receive(:time).with(
+        expect(GRPCWeb.metrics).to receive(:timing).with(
           'server.request',
           tags: ['service_method:SayHello'],
         ).and_call_original
@@ -104,7 +104,7 @@ RSpec.describe(::GRPCWeb::RackApp) do
       include_context 'given an instance of a class'
 
       it 'calls the correct method on the instance' do
-        expect(GRPCWeb.metrics).to receive(:time).with(
+        expect(GRPCWeb.metrics).to receive(:timing).with(
           'server.request',
           tags: ['service_method:SayHello'],
         ).and_call_original
@@ -121,7 +121,7 @@ RSpec.describe(::GRPCWeb::RackApp) do
       include_context 'given a class and a lazy init block'
 
       it 'calls the correct method on the service returned by the init block' do
-        expect(GRPCWeb.metrics).to receive(:time).with(
+        expect(GRPCWeb.metrics).to receive(:timing).with(
           'server.request',
           tags: ['service_method:SayHello'],
         ).and_call_original
@@ -139,7 +139,7 @@ RSpec.describe(::GRPCWeb::RackApp) do
       include_context 'given an instance of a class and a lazy init block'
 
       it 'calls the correct method on the service returned by the init block' do
-        expect(GRPCWeb.metrics).to receive(:time).with(
+        expect(GRPCWeb.metrics).to receive(:timing).with(
           'server.request',
           tags: ['service_method:SayHello'],
         ).and_call_original
