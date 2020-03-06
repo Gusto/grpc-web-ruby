@@ -90,7 +90,7 @@ RSpec.describe GRPCWeb::Metrics do
       it 'when a undefined method is called with arguments and block' do
         expect(GRPCWeb.metrics).to receive(:method_missing).and_call_original
 
-        expect(GRPCWeb.metrics.decrement('foo', 1, {}, 'bar') { 'block' }).to eq(nil)
+        expect(GRPCWeb.metrics.decrement('foo', 1, {}, 'bar') { 'block' }).to eq('block')
       end
     end
   end

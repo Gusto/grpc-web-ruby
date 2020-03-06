@@ -7,7 +7,13 @@ module GRPCWeb::Metrics
   class Empty
     def increment(name, opts = {}); end
 
-    def method_missing(m, *args, &block); end
+    def time(name, opts = {}, &block)
+      block.call if block
+    end
+
+    def method_missing(m, *args, &block)
+      block.call if block
+    end
   end
 
   class DogStatsD
@@ -51,9 +57,9 @@ module GRPCWeb::Metrics
     #   @statsd.set(metric_name(name), value, opts)
     # end
 
-    # def time(name, opts = {}, &block)
-    #   @statsd.time(metric_name(name), opts, &block)
-    # end
+    def time(name, opts = {}, &block)
+      @statsd.time(metric_name(name), opts, &block)
+    end
 
     # def batch(&block)
     #   @statsd.batch(&block)
