@@ -21,6 +21,7 @@ module GRPCWeb::RackHandler
 
     def call(service, service_method, env)
       rack_request = Rack::Request.new(env)
+
       unless rack_request.post?
         GRPCWeb.metrics.increment('server.error', tags: ['type:not_found_error'])
         return not_found_response(rack_request.path)

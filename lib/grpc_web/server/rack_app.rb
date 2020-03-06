@@ -48,7 +48,9 @@ class GRPCWeb::RackApp < ::Rack::Builder
     end
 
     def call(env)
-      ::GRPCWeb::RackHandler.call(service, service_method, env)
+      GRPCWeb.metrics.time('server.request', tags: ["service_method:#{service_method}"]) do
+        ::GRPCWeb::RackHandler.call(service, service_method, env)
+      end
     end
 
     private
