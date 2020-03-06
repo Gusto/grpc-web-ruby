@@ -90,7 +90,7 @@ RSpec.describe(::GRPCWeb::RackApp) do
       it 'creates an instance of the class and calls the correct method on it' do
         expect(GRPCWeb.metrics).to receive(:time).with(
           'server.request',
-          { tags: ['service_method:SayHello'] }
+          tags: ['service_method:SayHello'],
         ).and_call_original
 
         expect(::GRPCWeb::RackHandler).to receive(:call)
@@ -106,7 +106,7 @@ RSpec.describe(::GRPCWeb::RackApp) do
       it 'calls the correct method on the instance' do
         expect(GRPCWeb.metrics).to receive(:time).with(
           'server.request',
-          { tags: ['service_method:SayHello'] }
+          tags: ['service_method:SayHello'],
         ).and_call_original
 
         expect(::GRPCWeb::RackHandler).to receive(:call)
@@ -123,7 +123,7 @@ RSpec.describe(::GRPCWeb::RackApp) do
       it 'calls the correct method on the service returned by the init block' do
         expect(GRPCWeb.metrics).to receive(:time).with(
           'server.request',
-          { tags: ['service_method:SayHello'] }
+          tags: ['service_method:SayHello'],
         ).and_call_original
 
         expect(::GRPCWeb::RackHandler).to receive(:call) do |service, service_method, env|
@@ -141,7 +141,7 @@ RSpec.describe(::GRPCWeb::RackApp) do
       it 'calls the correct method on the service returned by the init block' do
         expect(GRPCWeb.metrics).to receive(:time).with(
           'server.request',
-          { tags: ['service_method:SayHello'] }
+          tags: ['service_method:SayHello'],
         ).and_call_original
 
         expect(::GRPCWeb::RackHandler).to receive(:call) do |service, service_method, env|

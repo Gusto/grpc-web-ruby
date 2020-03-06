@@ -23,13 +23,9 @@ module GRPCWeb
       end
     end
 
-    def metrics=(obj)
-      @metrics = obj
-    end
+    attr_writer :metrics
 
-    def metrics
-      @metrics
-    end
+    attr_reader :metrics
   end
 end
 

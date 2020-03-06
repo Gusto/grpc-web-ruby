@@ -64,7 +64,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       it 'returns a 404' do
         expect(GRPCWeb.metrics).to receive(:increment).with(
           'server.error',
-          { tags: ['type:not_found_error'] }
+          tags: ['type:not_found_error'],
         )
 
         expect(call).to eq([
@@ -81,7 +81,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       it 'returns a 415' do
         expect(GRPCWeb.metrics).to receive(:increment).with(
           'server.error',
-          { tags: ['type:unsupported_media_type_error'] }
+          tags: ['type:unsupported_media_type_error'],
         )
 
         expect(call).to eq([
@@ -115,7 +115,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       it 'returns a 422' do
         expect(GRPCWeb.metrics).to receive(:increment).with(
           'server.error',
-          { tags: ['type:invalid_request_format'] }
+          tags: ['type:invalid_request_format'],
         )
         expect(call).to eq([
           422,
@@ -135,7 +135,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
     it 'returns a 500' do
       expect(GRPCWeb.metrics).to receive(:increment).with(
         'server.error',
-        { tags: ['type:internal_server_error'] }
+        tags: ['type:internal_server_error'],
       )
       expect(call).to eq([
         500,

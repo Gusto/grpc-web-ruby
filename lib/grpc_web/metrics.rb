@@ -7,12 +7,12 @@ module GRPCWeb::Metrics
   class Empty
     def increment(name, opts = {}); end
 
-    def time(name, opts = {}, &block)
-      block.call if block
+    def time(_name, _opts = {}, &block)
+      block&.call
     end
 
-    def method_missing(m, *args, &block)
-      block.call if block
+    def method_missing(_m, *_args, &block)
+      block&.call
     end
   end
 
@@ -31,7 +31,11 @@ module GRPCWeb::Metrics
       @statsd.increment(metric_name(name), opts)
     end
 
-    # Support when needed.
+    def time(name, opts = {}, &block)
+      @statsd.time(metric_name(name), opts, &block)
+    end
+
+    # Additional StatsD like functions when needed.
 
     # def decrement(name, opts = {})
     #   @statsd.decrement(metric_name(name), opts)
@@ -56,10 +60,6 @@ module GRPCWeb::Metrics
     # def set(name, value, opts = {})
     #   @statsd.set(metric_name(name), value, opts)
     # end
-
-    def time(name, opts = {}, &block)
-      @statsd.time(metric_name(name), opts, &block)
-    end
 
     # def batch(&block)
     #   @statsd.batch(&block)
