@@ -39,6 +39,14 @@ RSpec.describe(::GRPCWeb::RackApp) do
     end
   end
 
+  shared_context 'given a service module and a lazy init block' do
+    let(:handle) do
+      app.handle(HelloService) do
+        service_cache[:service_class_instance] ||= service_class.new
+      end
+    end
+  end
+
   describe 'validation' do
     subject(:handle) { handle }
 
@@ -64,6 +72,18 @@ RSpec.describe(::GRPCWeb::RackApp) do
       it 'validates the class' do
         expect(::GRPCWeb::ServiceClassValidator).to receive(:validate).with(service_class)
         handle
+      end
+    end
+
+    context 'given a service module and a lazy init block' do
+      include_context 'given a service module and a lazy init block'
+      it 'validates the class' do
+        expect(::GRPCWeb::ServiceClassValidator).to receive(:validate).with(HelloService::Service)
+        handle
+      end
+
+      it 'raises an error' do
+        expect { app.handle(HelloService) }.to raise_error(ArgumentError, 'HelloService is an abstract interface. With an abstract interface you must also provide an initializer block.')
       end
     end
 
