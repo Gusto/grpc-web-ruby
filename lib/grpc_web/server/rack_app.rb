@@ -22,12 +22,11 @@ require 'grpc_web/server/service_class_validator'
 # TODO: in-mem cache the result of lazy initialization
 class GRPCWeb::RackApp < ::Rack::Builder
   def handle(service_or_class, &lazy_init_block)
-
     if service_or_class.is_a?(Class)
       service_class = service_or_class
     elsif service_or_class.is_a?(Module)
       if lazy_init_block.nil?
-        raise(ArgumentError, "#{service_or_class} is an abstract interface. With an abstract interface you must also provide an initializer block.")
+        raise(ArgumentError, "#{service_or_class} is an abstract interface. You must also provide an initializer block.") # rubocop:disable Layout/LineLength
       end
 
       service_class = service_or_class::Service

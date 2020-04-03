@@ -83,7 +83,7 @@ RSpec.describe(::GRPCWeb::RackApp) do
       end
 
       it 'raises an error' do
-        expect { app.handle(HelloService) }.to raise_error(ArgumentError, 'HelloService is an abstract interface. With an abstract interface you must also provide an initializer block.')
+        expect { app.handle(HelloService) }.to raise_error(ArgumentError, 'HelloService is an abstract interface. You must also provide an initializer block.') # rubocop:disable Layout/LineLength
       end
     end
 
