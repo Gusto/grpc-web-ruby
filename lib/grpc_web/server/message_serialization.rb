@@ -59,7 +59,7 @@ module GRPCWeb::MessageSerialization
     def serialize_error_response(response)
       ex = response.body
       if ex.is_a?(::GRPC::BadStatus)
-        header_str = generate_headers(ex.code, ex.details)
+        header_str = generate_headers(ex.code, ex.details, ex.metadata)
       else
         header_str = generate_headers(
           ::GRPC::Core::StatusCodes::UNKNOWN,
@@ -72,13 +72,14 @@ module GRPCWeb::MessageSerialization
 
     # If needed, trailers can be appended to the response as a 2nd
     # base64 encoded string with independent framing.
-    def generate_headers(status, message)
-      [
-        "grpc-status:#{status}",
-        "grpc-message:#{message}",
-        'x-grpc-web:1',
-        nil, # for trailing newline
-      ].join("\r\n")
+    def generate_headers(status, message, metadata = {})
+      headers = {
+        "grpc-status" => status,
+        "grpc-message" => message,
+        'x-grpc-web' => '1',
+      }.merge(metadata)
+      header_lines = headers.map{|k,v| "#{k}:#{v}"}
+      header_lines.join("\r\n") + "\r\n"
     end
   end
 end
