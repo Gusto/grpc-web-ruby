@@ -31,7 +31,7 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
     let(:service) do
       Class.new(TestHelloService) do
         def say_hello(_request, _metadata = nil)
-          raise ::GRPC::InvalidArgument, 'Test message'
+          raise ::GRPC::InvalidArgument.new('Test message', { 'metadata' => 'more info', 'envoy' => 'more info' })
         end
       end
     end

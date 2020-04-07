@@ -51,6 +51,7 @@ module GRPCWeb::ClientExecutor
       end
 
       frames = ::GRPCWeb::MessageFraming.unpack_frames(resp.body)
+      binding.pry
       header_frame = frames.find(&:header?)
       headers = parse_headers(header_frame.body) if header_frame
       raise_on_error(headers)
@@ -74,7 +75,7 @@ module GRPCWeb::ClientExecutor
       status_code = status_str.to_i if status_str && status_str == status_str.to_i.to_s
 
       if status_code && status_code != 0
-        raise ::GRPC::BadStatus.new_status_exception(status_code, headers[GRPC_MESSAGE_HEADER])
+        raise ::GRPC::BadStatus.new_status_exception(status_code, headers[GRPC_MESSAGE_HEADER], headers)
       end
     end
   end
