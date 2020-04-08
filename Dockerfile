@@ -1,4 +1,4 @@
-FROM ruby:2.5.7
+FROM ruby:2.6.5
 
 # Install dependency packages
 RUN apt-get update && apt-get install -y \
@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
   libatspi2.0-0 \
   libcups2 \
   libdbus-1-3 \
+  libgbm1 \
   libgtk-3-0 \
   libnspr4 \
   libnss3 \
