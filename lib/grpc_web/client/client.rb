@@ -7,12 +7,25 @@ require 'grpc_web/client/client_executor'
 # Example usage:
 #
 # client = GRPCWeb::Client.new("http://localhost:3000/grpc", HelloService::Service)
+# client.username = "foo"
+# client.password = "password"
 # client.say_hello(name: 'James')
 class GRPCWeb::Client
   attr_reader :base_url, :service_interface
+  attr_accessor :username, :password
 
   def initialize(base_url, service_interface)
-    self.base_url = base_url
+    uri = URI(base_url)
+
+    if uri.user_info
+      self.username = uri.user
+      self.password = uri.password
+
+      uri.password = nil
+      uri.user = nil
+    end
+
+    self.base_url = uri.to_s
     self.service_interface = service_interface
 
     service_interface.rpc_descs.each do |rpc_method, rpc_desc|
@@ -28,7 +41,7 @@ class GRPCWeb::Client
     ruby_method = ::GRPC::GenericService.underscore(rpc_method.to_s).to_sym
     define_singleton_method(ruby_method) do |params = {}|
       uri = endpoint_uri(rpc_desc)
-      ::GRPCWeb::ClientExecutor.request(uri, rpc_desc, params)
+      ::GRPCWeb::ClientExecutor.request(uri, rpc_desc, username, password, params)
     end
   end
 

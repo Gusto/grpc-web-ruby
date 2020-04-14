@@ -2,6 +2,7 @@
 
 require 'json'
 require 'net/http'
+require 'uri'
 
 require 'grpc/errors'
 require 'grpc_web/content_types'
@@ -15,13 +16,13 @@ module GRPCWeb::ClientExecutor
     GRPC_STATUS_HEADER = 'grpc-status'
     GRPC_MESSAGE_HEADER = 'grpc-message'
 
-    def request(uri, rpc_desc, params = {})
+    def request(uri, rpc_desc, username, password, params = {})
       req_proto = rpc_desc.input.new(params)
       marshalled_proto = rpc_desc.marshal_proc.call(req_proto)
       frame = ::GRPCWeb::MessageFrame.payload_frame(marshalled_proto)
       request_body = ::GRPCWeb::MessageFraming.pack_frames([frame])
 
-      resp = post_request(uri, request_body)
+      resp = post_request(uri, username, password, request_body)
       resp_body = handle_response(resp)
       rpc_desc.unmarshal_proc(:output).call(resp_body)
     end
@@ -35,10 +36,16 @@ module GRPCWeb::ClientExecutor
       }
     end
 
-    def post_request(uri, request_body)
+    def post_request(uri, username, password, request_body)
       request = Net::HTTP::Post.new(uri, request_headers)
       request.body = request_body
-      request.basic_auth uri.user, uri.password if uri.userinfo
+
+      if uri.userinfo
+        password = URI.decode(uri.password)
+        user = URI.decode(uri.user)
+
+        request.basic_auth user, password
+      end
 
       Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
         http.request(request)
