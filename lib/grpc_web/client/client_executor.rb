@@ -50,9 +50,14 @@ module GRPCWeb::ClientExecutor
     end
 
     def handle_response(resp)
-      frames = ::GRPCWeb::MessageFraming.unpack_frames(resp.body)
-      headers = extract_headers(frames)
-      raise_on_response_errors(resp, headers)
+      begin
+        frames = ::GRPCWeb::MessageFraming.unpack_frames(resp.body)
+        headers = extract_headers(frames)
+      rescue StandardError
+        headers = {}
+        error_unpacking_frames = true
+      end
+      raise_on_response_errors(resp, headers, error_unpacking_frames)
 
       frames.find(&:payload?).body
     end
@@ -76,7 +81,7 @@ module GRPCWeb::ClientExecutor
       headers
     end
 
-    def raise_on_response_errors(resp, headers)
+    def raise_on_response_errors(resp, headers, error_unpacking_frames)
       status_str = headers[GRPC_STATUS_HEADER]
       status_code = status_str.to_i if status_str && status_str == status_str.to_i.to_s
 
@@ -96,7 +101,9 @@ module GRPCWeb::ClientExecutor
         when Net::HTTPTooManyRequests, Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut
           raise ::GRPC::Unavailable, resp.message
         else
-          raise ::GRPC::Unknown, resp.message unless resp.is_a? Net::HTTPSuccess
+          unless resp.is_a?(Net::HTTPSuccess) && !error_unpacking_frames
+            raise ::GRPC::Unknown, resp.message
+          end
         end
       end
     end

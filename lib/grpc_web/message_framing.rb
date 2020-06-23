@@ -27,8 +27,6 @@ module GRPCWeb::MessageFraming
         remaining_content = remaining_content[frame_end..-1]
       end
       frames
-    rescue StandardError => e
-      raise ::GRPC::Internal, e.message
     end
   end
 end
