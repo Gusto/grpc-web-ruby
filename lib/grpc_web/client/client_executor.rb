@@ -85,18 +85,18 @@ module GRPCWeb::ClientExecutor
         raise ::GRPC::BadStatus.new_status_exception(status_code, headers[GRPC_MESSAGE_HEADER])
       else
         case resp
-          when Net::HTTPBadRequest #400
-            raise ::GRPC::Internal, resp.message
-          when Net::HTTPUnauthorized #401
-            raise ::GRPC::Unauthenticated, resp.message
-          when Net::HTTPForbidden #403
-            raise ::GRPC::PermissionDenied, resp.message
-          when Net::HTTPNotFound #404
-            raise ::GRPC::Unimplemented, resp.message
-          when Net::HTTPTooManyRequests, Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut
-            raise ::GRPC::Unavailable, resp.message
-          else
-            raise ::GRPC::Unknown, resp.message unless resp.is_a? Net::HTTPSuccess
+        when Net::HTTPBadRequest # 400
+          raise ::GRPC::Internal, resp.message
+        when Net::HTTPUnauthorized # 401
+          raise ::GRPC::Unauthenticated, resp.message
+        when Net::HTTPForbidden # 403
+          raise ::GRPC::PermissionDenied, resp.message
+        when Net::HTTPNotFound # 404
+          raise ::GRPC::Unimplemented, resp.message
+        when Net::HTTPTooManyRequests, Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut
+          raise ::GRPC::Unavailable, resp.message
+        else
+          raise ::GRPC::Unknown, resp.message unless resp.is_a? Net::HTTPSuccess
         end
       end
     end

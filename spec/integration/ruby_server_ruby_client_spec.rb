@@ -79,13 +79,14 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
   end
 
   context 'for a service that is not implemented on the server' do
+    subject(:response) { client.say_goodbye(name: name) }
+
     let(:client) do
       GRPCWeb::Client.new(
         client_url,
         GoodbyeService::Service,
-        )
+      )
     end
-    subject(:response) { client.say_goodbye(name: name) }
 
     it 'raises an error' do
       expect { subject }.to raise_error(GRPC::Unimplemented, a_string_starting_with('12:Not Found'))

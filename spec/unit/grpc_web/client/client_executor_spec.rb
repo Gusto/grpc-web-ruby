@@ -108,15 +108,15 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
 
     context 'when the server returns an error' do
       [
-        {server_http_response_code: 400, expected_grpc_error: GRPC::Internal },
-        {server_http_response_code: 401, expected_grpc_error: GRPC::Unauthenticated },
-        {server_http_response_code: 403, expected_grpc_error: GRPC::PermissionDenied },
-        {server_http_response_code: 404, expected_grpc_error: GRPC::Unimplemented },
-        {server_http_response_code: 429, expected_grpc_error: GRPC::Unavailable },
-        {server_http_response_code: 502, expected_grpc_error: GRPC::Unavailable },
-        {server_http_response_code: 503, expected_grpc_error: GRPC::Unavailable },
-        {server_http_response_code: 504, expected_grpc_error: GRPC::Unavailable },
-        {server_http_response_code: 500, expected_grpc_error: GRPC::Unknown },
+        { server_http_response_code: 400, expected_grpc_error: GRPC::Internal },
+        { server_http_response_code: 401, expected_grpc_error: GRPC::Unauthenticated },
+        { server_http_response_code: 403, expected_grpc_error: GRPC::PermissionDenied },
+        { server_http_response_code: 404, expected_grpc_error: GRPC::Unimplemented },
+        { server_http_response_code: 429, expected_grpc_error: GRPC::Unavailable },
+        { server_http_response_code: 502, expected_grpc_error: GRPC::Unavailable },
+        { server_http_response_code: 503, expected_grpc_error: GRPC::Unavailable },
+        { server_http_response_code: 504, expected_grpc_error: GRPC::Unavailable },
+        { server_http_response_code: 500, expected_grpc_error: GRPC::Unknown },
       ].each do |server_http_response_code:, expected_grpc_error:|
         context "HTTP error #{server_http_response_code}" do
           let(:server_response) { { status: server_http_response_code } }
