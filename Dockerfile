@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
   libatspi2.0-0 \
   libcups2 \
   libdbus-1-3 \
+  libgbm1 \
   libgtk-3-0 \
   libnspr4 \
   libnss3 \
