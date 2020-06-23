@@ -111,7 +111,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
         let(:server_response) { { status: 500 } }
 
         it 'raises an error' do
-          expect { response }.to raise_error(RuntimeError)
+          expect { response }.to raise_error(GRPC::Unavailable)
         end
       end
 

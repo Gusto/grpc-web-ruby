@@ -88,7 +88,7 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
     subject(:response) { client.say_goodbye(name: name) }
 
     it 'raises an error' do
-      expect { subject }.to raise_error(GRPC::Unavailable, a_string_starting_with('14:Not Found'))
+      expect { subject }.to raise_error(GRPC::Unimplemented, a_string_starting_with('12:Not Found'))
     end
   end
 end
