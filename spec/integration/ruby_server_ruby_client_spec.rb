@@ -62,36 +62,10 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
   end
 
   context 'for a network error' do
-    let(:client_host) {server.host}
-    let(:client_port) {server.port}
-    let(:client_username) {basic_username}
-    let(:client_password) {basic_password}
-    let(:client_url) do
-      "http://#{client_username}:#{client_password}@#{client_host}:#{client_port}"
-    end
+    let(:client_url) { "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port + 1}" }
 
-    context 'with the wrong port' do
-      let(:client_port) {server.port + 1}
-
-      it 'raises an error' do
-        expect { subject }.to raise_error(GRPC::Unavailable, a_string_starting_with('14:Failed to open TCP connection'))
-      end
-    end
-
-    context 'with the wrong host' do
-      let(:client_host) {'not_a_real_hostname'}
-
-      it 'raises an error' do
-        expect { subject }.to raise_error(GRPC::Unavailable, a_string_starting_with('14:Failed to open TCP connection'))
-      end
-    end
-
-    context 'with the wrong host' do
-      let(:client_host) {'not_a_real_hostname'}
-
-      it 'raises an error' do
-        expect { subject }.to raise_error(GRPC::Unavailable, a_string_starting_with('14:Failed to open TCP connection'))
-      end
+    it 'raises an error' do
+      expect { subject }.to raise_error(GRPC::Unavailable, a_string_starting_with('14:Failed to open TCP connection'))
     end
   end
 end
