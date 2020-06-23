@@ -40,8 +40,12 @@ module GRPCWeb::ClientExecutor
       request.body = request_body
       request.basic_auth uri.user, uri.password if uri.userinfo
 
-      Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
-        http.request(request)
+      begin
+        Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+          http.request(request)
+        end
+      rescue StandardError => e
+        raise ::GRPC::Unavailable, e.message
       end
     end
 
@@ -53,7 +57,7 @@ module GRPCWeb::ClientExecutor
       frames = ::GRPCWeb::MessageFraming.unpack_frames(resp.body)
       header_frame = frames.find(&:header?)
       headers = parse_headers(header_frame.body) if header_frame
-      raise_on_error(headers)
+      raise_if_response_contains_error(headers)
       frames.find(&:payload?).body
     end
 
@@ -67,7 +71,7 @@ module GRPCWeb::ClientExecutor
       headers
     end
 
-    def raise_on_error(headers)
+    def raise_if_response_contains_error(headers)
       return unless headers
 
       status_str = headers[GRPC_STATUS_HEADER]
