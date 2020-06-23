@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+message GoodbyeRequest {
+  string name = 1;
+}
+
+message GoodbyeResponse {
+  string message = 1;
+}
+
+service GoodbyeService {
+  rpc SayGoodbye(GoodbyeRequest) returns (GoodbyeResponse);
+}

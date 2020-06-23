@@ -51,7 +51,12 @@ module GRPCWeb::ClientExecutor
 
     def handle_response(resp)
       unless resp.is_a?(Net::HTTPSuccess)
-        raise "Received #{resp.code} #{resp.message} response: #{resp.body}"
+        case resp
+        when Net::HTTPUnauthorized
+          raise ::GRPC::Unauthenticated, resp.message
+        else
+          raise ::GRPC::Unavailable, resp.message
+        end
       end
 
       frames = ::GRPCWeb::MessageFraming.unpack_frames(resp.body)

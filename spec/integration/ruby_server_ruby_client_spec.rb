@@ -3,6 +3,7 @@
 require 'spec_helper'
 require 'grpc_web/client/client'
 require 'hello_services_pb'
+require 'goodbye_services_pb'
 
 RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature do
   subject(:response) { client.say_hello(name: name) }
@@ -66,6 +67,28 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
 
     it 'raises an error' do
       expect { subject }.to raise_error(GRPC::Unavailable, a_string_starting_with('14:Failed to open TCP connection'))
+    end
+  end
+
+  context 'for an authentication error' do
+    let(:client_url) { "http://#{basic_username}:#{basic_password + '1'}@#{server.host}:#{server.port}" }
+
+    it 'raises an error' do
+      expect { subject }.to raise_error(GRPC::Unauthenticated, a_string_starting_with('16:Unauthorized'))
+    end
+  end
+
+  context 'for a service that is not implemented on the server' do
+    let(:client) do
+      GRPCWeb::Client.new(
+        client_url,
+        GoodbyeService::Service,
+        )
+    end
+    subject(:response) { client.say_goodbye(name: name) }
+
+    it 'raises an error' do
+      expect { subject }.to raise_error(GRPC::Unavailable, a_string_starting_with('14:Not Found'))
     end
   end
 end
