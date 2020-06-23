@@ -114,6 +114,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
           expect { response }.to raise_error(RuntimeError)
         end
       end
+      #
 
       context 'which is a grpc error' do
         let(:server_response) do
