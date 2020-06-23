@@ -51,11 +51,19 @@ module GRPCWeb::ClientExecutor
 
     def handle_response(resp)
       frames = ::GRPCWeb::MessageFraming.unpack_frames(resp.body)
-      header_frame = frames.find(&:header?)
-      headers = parse_headers(header_frame.body) if header_frame
+      headers = extract_headers(frames)
+      raise_on_response_errors(resp, headers)
+
       frames.find(&:payload?).body
-    ensure
-      handle_response_errors(resp, headers || {})
+    end
+
+    def extract_headers(frames)
+      header_frame = frames.find(&:header?)
+      if header_frame
+        parse_headers(header_frame.body)
+      else
+        {}
+      end
     end
 
     def parse_headers(header_str)
@@ -68,7 +76,7 @@ module GRPCWeb::ClientExecutor
       headers
     end
 
-    def handle_response_errors(resp, headers)
+    def raise_on_response_errors(resp, headers)
       status_str = headers[GRPC_STATUS_HEADER]
       status_code = status_str.to_i if status_str && status_str == status_str.to_i.to_s
 
@@ -77,13 +85,13 @@ module GRPCWeb::ClientExecutor
         raise ::GRPC::BadStatus.new_status_exception(status_code, headers[GRPC_MESSAGE_HEADER])
       else
         case resp
-          when Net::HTTPBadRequest
+          when Net::HTTPBadRequest #400
             raise ::GRPC::Internal, resp.message
-          when Net::HTTPUnauthorized
+          when Net::HTTPUnauthorized #401
             raise ::GRPC::Unauthenticated, resp.message
-          when Net::HTTPForbidden
+          when Net::HTTPForbidden #403
             raise ::GRPC::PermissionDenied, resp.message
-          when Net::HTTPNotFound
+          when Net::HTTPNotFound #404
             raise ::GRPC::Unimplemented, resp.message
           when Net::HTTPTooManyRequests, Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut
             raise ::GRPC::Unavailable, resp.message
