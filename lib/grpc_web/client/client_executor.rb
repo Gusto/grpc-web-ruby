@@ -101,7 +101,11 @@ module GRPCWeb::ClientExecutor
         when Net::HTTPTooManyRequests, Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut
           raise ::GRPC::Unavailable, resp.message
         else
-          unless resp.is_a?(Net::HTTPSuccess) && !error_unpacking_frames
+          if !resp.is_a?(Net::HTTPSuccess)
+            raise ::GRPC::Unknown, resp.message
+          elsif error_unpacking_frames
+            raise ::GRPC::Internal, resp.message
+          elsif status_code.nil?
             raise ::GRPC::Unknown, resp.message
           end
         end
