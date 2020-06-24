@@ -1,5 +1,8 @@
 require: rubocop-rspec
 inherit_from: .rubocop_todo.yml
+AllCops:
+  Exclude:
+    - vendor/bundle/**/*
 
 Style/TrailingCommaInArguments:
   Enabled: true
