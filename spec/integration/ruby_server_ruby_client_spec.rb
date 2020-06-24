@@ -63,18 +63,24 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
   end
 
   context 'for a network error' do
-    let(:client_url) { "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port + 1}" }
+    let(:client_url) do
+      "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port + 1}"
+    end
 
     it 'raises an error' do
-      expect { subject }.to raise_error(GRPC::Unavailable, a_string_starting_with('14:Failed to open TCP connection'))
+      expect { subject }.to
+      raise_error(GRPC::Unavailable, a_string_starting_with('14:Failed to open TCP connection'))
     end
   end
 
   context 'for an authentication error' do
-    let(:client_url) { "http://#{basic_username}:#{basic_password + '1'}@#{server.host}:#{server.port}" }
+    let(:client_url) do
+      "http://#{basic_username}:#{basic_password + '1'}@#{server.host}:#{server.port}"
+    end
 
     it 'raises an error' do
-      expect { subject }.to raise_error(GRPC::Unauthenticated, a_string_starting_with('16:Unauthorized'))
+      expect { subject }.to
+      raise_error(GRPC::Unauthenticated, a_string_starting_with('16:Unauthorized'))
     end
   end
 

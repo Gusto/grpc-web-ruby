@@ -88,27 +88,26 @@ module GRPCWeb::ClientExecutor
       # see https://github.com/grpc/grpc/blob/master/doc/http-grpc-status-mapping.md
       if status_code && status_code != 0
         raise ::GRPC::BadStatus.new_status_exception(status_code, headers[GRPC_MESSAGE_HEADER])
+      end
+
+      case resp
+      when Net::HTTPBadRequest # 400
+        raise ::GRPC::Internal, resp.message
+      when Net::HTTPUnauthorized # 401
+        raise ::GRPC::Unauthenticated, resp.message
+      when Net::HTTPForbidden # 403
+        raise ::GRPC::PermissionDenied, resp.message
+      when Net::HTTPNotFound # 404
+        raise ::GRPC::Unimplemented, resp.message
+      when Net::HTTPTooManyRequests, # 429
+          Net::HTTPBadGateway, # 502
+          Net::HTTPServiceUnavailable, # 503
+          Net::HTTPGatewayTimeOut # 504
+        raise ::GRPC::Unavailable, resp.message
       else
-        case resp
-        when Net::HTTPBadRequest # 400
-          raise ::GRPC::Internal, resp.message
-        when Net::HTTPUnauthorized # 401
-          raise ::GRPC::Unauthenticated, resp.message
-        when Net::HTTPForbidden # 403
-          raise ::GRPC::PermissionDenied, resp.message
-        when Net::HTTPNotFound # 404
-          raise ::GRPC::Unimplemented, resp.message
-        when Net::HTTPTooManyRequests, Net::HTTPBadGateway, Net::HTTPServiceUnavailable, Net::HTTPGatewayTimeOut
-          raise ::GRPC::Unavailable, resp.message
-        else
-          if !resp.is_a?(Net::HTTPSuccess)
-            raise ::GRPC::Unknown, resp.message
-          elsif error_unpacking_frames
-            raise ::GRPC::Internal, resp.message
-          elsif status_code.nil?
-            raise ::GRPC::Unknown, resp.message
-          end
-        end
+        raise ::GRPC::Unknown, resp.message unless resp.is_a?(Net::HTTPSuccess) # 200
+        raise ::GRPC::Internal, resp.message if error_unpacking_frames
+        raise ::GRPC::Unknown, resp.message if status_code.nil?
       end
     end
   end

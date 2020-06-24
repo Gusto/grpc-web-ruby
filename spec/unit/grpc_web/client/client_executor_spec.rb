@@ -121,7 +121,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
         { server_http_response_code: 200, expected_grpc_error: GRPC::Internal, body: 'something' },
       ].each do |server_http_response_code:, expected_grpc_error:, body: nil|
         context "HTTP error #{server_http_response_code}" do
-          let(:server_response) { { status: server_http_response_code, body: body} }
+          let(:server_response) { { status: server_http_response_code, body: body } }
 
           it "raises the corresponding error #{expected_grpc_error}" do
             expect { response }.to raise_error(expected_grpc_error)
@@ -147,7 +147,9 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
 
     context 'with a network error' do
       before { allow(Net::HTTP).to receive(:start).and_raise(Errno::ECONNREFUSED) }
-      let!(:server_stub) {}
+
+      let(:server_stub) {}
+
       it 'raises an unavailable error' do
         expect { response }.to raise_error(GRPC::Unavailable)
       end
