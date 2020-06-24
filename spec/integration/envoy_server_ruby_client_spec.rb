@@ -20,7 +20,7 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
   end
 
   let(:service) { TestHelloService }
-  let(:client_url) {'http://envoy:8080'}
+  let(:client_url) { 'http://envoy:8080' }
   let(:client) { GRPCWeb::Client.new(client_url, HelloService::Service) }
   let(:name) { "Jamesasdfas\u1f61ddfasdfas" }
 
@@ -62,20 +62,20 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
 
     it 'raises an error' do
       expect { subject }.to(
-        raise_error(GRPC::Unavailable, a_string_starting_with('14:Failed to open TCP connection'))
+        raise_error(GRPC::Unavailable, a_string_starting_with('14:Failed to open TCP connection')),
       )
     end
   end
 
   context 'for a service that is not implemented on the server' do
+    subject(:response) { client.say_goodbye(name: name) }
+
     let(:client) do
       GRPCWeb::Client.new(
         client_url,
         GoodbyeService::Service,
-        )
+      )
     end
-
-    subject(:response) { client.say_goodbye(name: name) }
 
     it 'raises an error' do
       expect { subject }.to raise_error(GRPC::Unimplemented, a_string_starting_with('12:'))
