@@ -78,7 +78,7 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
     subject(:response) { client.say_goodbye(name: name) }
 
     it 'raises an error' do
-      expect { subject }.to raise_error(GRPC::Unimplemented, a_string_starting_with('12:Unimplemented'))
+      expect { subject }.to raise_error(GRPC::Unimplemented, a_string_starting_with('12:'))
     end
   end
 end
