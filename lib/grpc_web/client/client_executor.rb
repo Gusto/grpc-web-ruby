@@ -40,21 +40,35 @@ module GRPCWeb::ClientExecutor
       request.body = request_body
       request.basic_auth uri.user, uri.password if uri.userinfo
 
-      Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
-        http.request(request)
+      begin
+        Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+          http.request(request)
+        end
+      rescue StandardError => e
+        raise ::GRPC::Unavailable, e.message
       end
     end
 
     def handle_response(resp)
-      unless resp.is_a?(Net::HTTPSuccess)
-        raise "Received #{resp.code} #{resp.message} response: #{resp.body}"
+      begin
+        frames = ::GRPCWeb::MessageFraming.unpack_frames(resp.body)
+        headers = extract_headers(frames)
+      rescue StandardError
+        headers = {}
+        error_unpacking_frames = true
       end
+      raise_on_response_errors(resp, headers, error_unpacking_frames)
 
-      frames = ::GRPCWeb::MessageFraming.unpack_frames(resp.body)
-      header_frame = frames.find(&:header?)
-      headers = parse_headers(header_frame.body) if header_frame
-      raise_on_error(headers)
       frames.find(&:payload?).body
+    end
+
+    def extract_headers(frames)
+      header_frame = frames.find(&:header?)
+      if header_frame
+        parse_headers(header_frame.body)
+      else
+        {}
+      end
     end
 
     def parse_headers(header_str)
@@ -67,14 +81,33 @@ module GRPCWeb::ClientExecutor
       headers
     end
 
-    def raise_on_error(headers)
-      return unless headers
-
+    def raise_on_response_errors(resp, headers, error_unpacking_frames)
       status_str = headers[GRPC_STATUS_HEADER]
       status_code = status_str.to_i if status_str && status_str == status_str.to_i.to_s
 
+      # see https://github.com/grpc/grpc/blob/master/doc/http-grpc-status-mapping.md
       if status_code && status_code != 0
         raise ::GRPC::BadStatus.new_status_exception(status_code, headers[GRPC_MESSAGE_HEADER])
+      end
+
+      case resp
+      when Net::HTTPBadRequest # 400
+        raise ::GRPC::Internal, resp.message
+      when Net::HTTPUnauthorized # 401
+        raise ::GRPC::Unauthenticated, resp.message
+      when Net::HTTPForbidden # 403
+        raise ::GRPC::PermissionDenied, resp.message
+      when Net::HTTPNotFound # 404
+        raise ::GRPC::Unimplemented, resp.message
+      when Net::HTTPTooManyRequests, # 429
+          Net::HTTPBadGateway, # 502
+          Net::HTTPServiceUnavailable, # 503
+          Net::HTTPGatewayTimeOut # 504
+        raise ::GRPC::Unavailable, resp.message
+      else
+        raise ::GRPC::Unknown, resp.message unless resp.is_a?(Net::HTTPSuccess) # 200
+        raise ::GRPC::Internal, resp.message if error_unpacking_frames
+        raise ::GRPC::Unknown, resp.message if status_code.nil?
       end
     end
   end

@@ -1,6 +1,11 @@
 require: rubocop-rspec
 inherit_from: .rubocop_todo.yml
 
+AllCops:
+  Exclude:
+    - 'spec/pb-ruby/goodbye_pb.rb'
+    - vendor/bundle/**/*
+
 Style/TrailingCommaInArguments:
   Enabled: true
   EnforcedStyleForMultiline: consistent_comma
@@ -30,6 +35,10 @@ Metrics/BlockLength:
   Enabled: false
 Metrics/AbcSize:
   Enabled: false
+Metrics/CyclomaticComplexity:
+  Max: 13
+Metrics/PerceivedComplexity:
+  Max: 13
 
 Naming/FileName:
   Exclude:

@@ -107,11 +107,25 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
     end
 
     context 'when the server returns an error' do
-      context 'which is an http error' do
-        let(:server_response) { { status: 500 } }
+      [
+        { server_http_response_code: 400, expected_grpc_error: GRPC::Internal },
+        { server_http_response_code: 401, expected_grpc_error: GRPC::Unauthenticated },
+        { server_http_response_code: 403, expected_grpc_error: GRPC::PermissionDenied },
+        { server_http_response_code: 404, expected_grpc_error: GRPC::Unimplemented },
+        { server_http_response_code: 429, expected_grpc_error: GRPC::Unavailable },
+        { server_http_response_code: 502, expected_grpc_error: GRPC::Unavailable },
+        { server_http_response_code: 503, expected_grpc_error: GRPC::Unavailable },
+        { server_http_response_code: 504, expected_grpc_error: GRPC::Unavailable },
+        { server_http_response_code: 500, expected_grpc_error: GRPC::Unknown },
+        { server_http_response_code: 200, expected_grpc_error: GRPC::Unknown },
+        { server_http_response_code: 200, expected_grpc_error: GRPC::Internal, body: 'something' },
+      ].each do |server_http_response_code:, expected_grpc_error:, body: nil|
+        context "HTTP error #{server_http_response_code}" do
+          let(:server_response) { { status: server_http_response_code, body: body } }
 
-        it 'raises an error' do
-          expect { response }.to raise_error(RuntimeError)
+          it "raises the corresponding error #{expected_grpc_error}" do
+            expect { response }.to raise_error(expected_grpc_error)
+          end
         end
       end
 
@@ -128,6 +142,16 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
         it 'raises an error' do
           expect { response }.to raise_error(GRPC::InvalidArgument)
         end
+      end
+    end
+
+    context 'with a network error' do
+      before { allow(Net::HTTP).to receive(:start).and_raise(Errno::ECONNREFUSED) }
+
+      let(:server_stub) {}
+
+      it 'raises an unavailable error' do
+        expect { response }.to raise_error(GRPC::Unavailable)
       end
     end
   end

@@ -3,6 +3,7 @@
 require 'spec_helper'
 require 'grpc_web/client/client'
 require 'hello_services_pb'
+require 'goodbye_services_pb'
 
 RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature do
   subject(:response) { client.say_hello(name: name) }
@@ -20,9 +21,10 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
   let(:browser) { Capybara::Session.new(Capybara.default_driver, rack_app) }
   let(:server) { browser.server }
 
+  let(:client_url) { "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port}" }
   let(:client) do
     GRPCWeb::Client.new(
-      "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port}",
+      client_url,
       HelloService::Service,
     )
   end
@@ -57,6 +59,45 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
 
     it 'raises an error' do
       expect { subject }.to raise_error(GRPC::Unknown, '2:RuntimeError: Some random error')
+    end
+  end
+
+  context 'for a network error' do
+    let(:client_url) do
+      "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port + 1}"
+    end
+
+    it 'raises an error' do
+      expect { subject }.to(
+        raise_error(GRPC::Unavailable, a_string_starting_with('14:Failed to open TCP connection')),
+      )
+    end
+  end
+
+  context 'for an authentication error' do
+    let(:client_url) do
+      "http://#{basic_username}:#{basic_password + '1'}@#{server.host}:#{server.port}"
+    end
+
+    it 'raises an error' do
+      expect { subject }.to(
+        raise_error(GRPC::Unauthenticated, a_string_starting_with('16:Unauthorized')),
+      )
+    end
+  end
+
+  context 'for a service that is not implemented on the server' do
+    subject(:response) { client.say_goodbye(name: name) }
+
+    let(:client) do
+      GRPCWeb::Client.new(
+        client_url,
+        GoodbyeService::Service,
+      )
+    end
+
+    it 'raises an error' do
+      expect { subject }.to raise_error(GRPC::Unimplemented, a_string_starting_with('12:Not Found'))
     end
   end
 end
