@@ -8,7 +8,7 @@ Use the `rake` command to run the entire test suite. This runs on docker due to 
 
 Unit tests can be run without docker by running `rspec spec/unit`
 
-### Commit messge format
+### Commit message format
 
 Please follow semantic release formatting
 https://semantic-release.gitbook.io/semantic-release/#commit-message-format
