@@ -38,7 +38,7 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
     let(:service) do
       Class.new(TestHelloService) do
         def say_hello(_request, _metadata = nil)
-          raise ::GRPC::InvalidArgument.new('Test message', { 'metadata' => 'more info', 'envoy' => 'more info' })
+          raise ::GRPC::InvalidArgument.new('Test message', { 'user-id' => '456', 'user-role-id' => '123' })
         end
       end
     end
