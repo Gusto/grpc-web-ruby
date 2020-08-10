@@ -81,14 +81,14 @@ module GRPCWeb::ClientExecutor
       headers
     end
 
-    def raise_on_response_errors(resp, headers, error_unpacking_frames)
-      headers.delete('x-grpc-web')
-      status_str = headers.delete(GRPC_STATUS_HEADER)
+    def raise_on_response_errors(resp, metadata, error_unpacking_frames)
+      metadata.delete('x-grpc-web')
+      status_str = metadata.delete(GRPC_STATUS_HEADER)
       status_code = status_str.to_i if status_str && status_str == status_str.to_i.to_s
 
       # see https://github.com/grpc/grpc/blob/master/doc/http-grpc-status-mapping.md
       if status_code && status_code != 0
-        raise ::GRPC::BadStatus.new_status_exception(status_code, headers.delete(GRPC_MESSAGE_HEADER), headers)
+        raise ::GRPC::BadStatus.new_status_exception(status_code, metadata.delete(GRPC_MESSAGE_HEADER), metadata)
       end
 
       case resp
