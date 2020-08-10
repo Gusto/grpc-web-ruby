@@ -73,11 +73,11 @@ module GRPCWeb::MessageSerialization
     # If needed, trailers can be appended to the response as a 2nd
     # base64 encoded string with independent framing.
     def generate_headers(status, message, metadata = {})
-      headers = metadata.merge({
+      headers = {
         "grpc-status" => status,
         "grpc-message" => message,
         'x-grpc-web' => '1',
-      })
+      }.merge(metadata) { |_, header, _| header }
       header_lines = headers.map{|k,v| "#{k}:#{v}"}
       header_lines.join("\r\n") + "\r\n"
     end
