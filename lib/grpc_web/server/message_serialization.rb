@@ -73,13 +73,18 @@ module GRPCWeb::MessageSerialization
     # If needed, trailers can be appended to the response as a 2nd
     # base64 encoded string with independent framing.
     def generate_headers(status, message, metadata = {})
-      headers = {
-        "grpc-status" => status,
-        "grpc-message" => message,
-        'x-grpc-web' => '1',
-      }.merge(metadata) { |_, header, _| header }
-      header_lines = headers.map{|k,v| "#{k}:#{v}"}
-      header_lines.join("\r\n") + "\r\n"
+      headers = [
+        "grpc-status:#{status}",
+        "grpc-message:#{message}",
+        'x-grpc-web:1',
+      ]
+      metadata.each do |name, value|
+        next if %w[grpc-status grpc-message x-grpc-web].include?(name)
+
+        headers << "#{name}:#{value}"
+      end
+      headers << nil # for trailing newline
+      headers.join("\r\n")
     end
   end
 end

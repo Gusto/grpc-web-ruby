@@ -88,7 +88,11 @@ module GRPCWeb::ClientExecutor
 
       # see https://github.com/grpc/grpc/blob/master/doc/http-grpc-status-mapping.md
       if status_code && status_code != 0
-        raise ::GRPC::BadStatus.new_status_exception(status_code, metadata.delete(GRPC_MESSAGE_HEADER), metadata)
+        raise ::GRPC::BadStatus.new_status_exception(
+          status_code,
+          metadata.delete(GRPC_MESSAGE_HEADER),
+          metadata,
+        )
       end
 
       case resp

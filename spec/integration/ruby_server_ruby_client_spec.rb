@@ -38,14 +38,18 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
     let(:service) do
       Class.new(TestHelloService) do
         def say_hello(_request, _metadata = nil)
-          raise ::GRPC::InvalidArgument.new('Test message', { 'user-id' => '456', 'user-role-id' => '123' })
+          raise ::GRPC::InvalidArgument.new(
+            'Test message',
+            'metadata' => 'more info',
+            'envoy' => 'more info',
+          )
         end
       end
     end
 
     it 'raises an error' do
       expect { subject }.to raise_error(GRPC::InvalidArgument, '3:Test message') do |e|
-        expect(e.metadata).to eq({ 'metadata' => 'more info', 'envoy' => 'more info' })
+        expect(e.metadata).to eq('metadata' => 'more info', 'envoy' => 'more info')
       end
     end
   end
