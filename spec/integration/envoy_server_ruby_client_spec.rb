@@ -39,7 +39,9 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
     end
 
     it 'raises an error' do
-      expect { subject }.to raise_error(GRPC::InvalidArgument, '3:Test message')
+      expect { subject }.to raise_error(GRPC::InvalidArgument, '3:Test message') do |e|
+        expect(e.metadata).to eq({ 'metadata' => 'more info', 'envoy' => 'more info' })
+      end
     end
   end
 
