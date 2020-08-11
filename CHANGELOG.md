@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Gusto/grpc-web-ruby/compare/v1.1.0...v1.2.0) (2020-08-11)
+
+
+### Features
+
+* error metadata handling ([#33](https://github.com/Gusto/grpc-web-ruby/issues/33)) ([ddeec69](https://github.com/Gusto/grpc-web-ruby/commit/ddeec69cbc84e46d53d47d3b52b78622d77349ba))
+
 # [1.1.0](https://github.com/Gusto/grpc-web-ruby/compare/v1.0.1...v1.1.0) (2020-07-08)
 
 
