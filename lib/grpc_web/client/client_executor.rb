@@ -14,6 +14,7 @@ module GRPCWeb::ClientExecutor
 
     GRPC_STATUS_HEADER = 'grpc-status'
     GRPC_MESSAGE_HEADER = 'grpc-message'
+    GRPC_HEADERS = %W[x-grpc-web #{GRPC_STATUS_HEADER} #{GRPC_MESSAGE_HEADER}].freeze
 
     def request(uri, rpc_desc, params = {})
       req_proto = rpc_desc.input.new(params)
@@ -82,32 +83,37 @@ module GRPCWeb::ClientExecutor
     end
 
     def raise_on_response_errors(resp, headers, error_unpacking_frames)
+      metadata = headers.reject { |key, _| GRPC_HEADERS.include?(key) }
       status_str = headers[GRPC_STATUS_HEADER]
       status_code = status_str.to_i if status_str && status_str == status_str.to_i.to_s
 
       # see https://github.com/grpc/grpc/blob/master/doc/http-grpc-status-mapping.md
       if status_code && status_code != 0
-        raise ::GRPC::BadStatus.new_status_exception(status_code, headers[GRPC_MESSAGE_HEADER])
+        raise ::GRPC::BadStatus.new_status_exception(
+          status_code,
+          headers[GRPC_MESSAGE_HEADER],
+          metadata,
+        )
       end
 
       case resp
       when Net::HTTPBadRequest # 400
-        raise ::GRPC::Internal, resp.message
+        raise ::GRPC::Internal.new(resp.message, metadata)
       when Net::HTTPUnauthorized # 401
-        raise ::GRPC::Unauthenticated, resp.message
+        raise ::GRPC::Unauthenticated.new(resp.message, metadata)
       when Net::HTTPForbidden # 403
-        raise ::GRPC::PermissionDenied, resp.message
+        raise ::GRPC::PermissionDenied.new(resp.message, metadata)
       when Net::HTTPNotFound # 404
-        raise ::GRPC::Unimplemented, resp.message
+        raise ::GRPC::Unimplemented.new(resp.message, metadata)
       when Net::HTTPTooManyRequests, # 429
           Net::HTTPBadGateway, # 502
           Net::HTTPServiceUnavailable, # 503
           Net::HTTPGatewayTimeOut # 504
-        raise ::GRPC::Unavailable, resp.message
+        raise ::GRPC::Unavailable.new(resp.message, metadata)
       else
-        raise ::GRPC::Unknown, resp.message unless resp.is_a?(Net::HTTPSuccess) # 200
-        raise ::GRPC::Internal, resp.message if error_unpacking_frames
-        raise ::GRPC::Unknown, resp.message if status_code.nil?
+        raise ::GRPC::Unknown.new(resp.message, metadata) unless resp.is_a?(Net::HTTPSuccess) # 200
+        raise ::GRPC::Internal.new(resp.message, metadata) if error_unpacking_frames
+        raise ::GRPC::Unknown.new(resp.message, metadata) if status_code.nil?
       end
     end
   end

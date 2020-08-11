@@ -115,14 +115,14 @@ RSpec.describe ::GRPCWeb::MessageSerialization do
       end
 
       context 'when response is a GRPC::BadStatus' do
-        let(:body) { ::GRPC::NotFound.new('Where am I?') }
+        let(:body) { ::GRPC::NotFound.new('Where am I?', 'user-role-id' => '123') }
 
         it_behaves_like 'generates a body without a payload frame'
 
         it_behaves_like(
           'generates a body with a header frame',
           expected_header_frame_body:
-            "grpc-status:5\r\ngrpc-message:Where am I?\r\nx-grpc-web:1\r\n",
+            "grpc-status:5\r\ngrpc-message:Where am I?\r\nx-grpc-web:1\r\nuser-role-id:123\r\n",
         )
       end
     end

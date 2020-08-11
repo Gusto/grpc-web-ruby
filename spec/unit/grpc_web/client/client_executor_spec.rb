@@ -134,13 +134,16 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
           {
             status: 200,
             body:
-              "\x80\x00\x00\x008grpc-status:#{GRPC::Core::StatusCodes::INVALID_ARGUMENT}"\
-              "\r\ngrpc-message:Test message\r\nx-grpc-web:1\r\n",
+              "\x80\x00\x00\x00Wgrpc-status:#{GRPC::Core::StatusCodes::INVALID_ARGUMENT}"\
+              "\r\ngrpc-message:Test message\r\nx-grpc-web:1"\
+              "\r\nuser-role-id:123\r\nuser-id:456\r\n",
           }
         end
 
         it 'raises an error' do
-          expect { response }.to raise_error(GRPC::InvalidArgument)
+          expect { response }.to raise_error(GRPC::InvalidArgument) do |exception|
+            expect(exception.metadata).to eq('user-role-id' => '123', 'user-id' => '456')
+          end
         end
       end
     end
