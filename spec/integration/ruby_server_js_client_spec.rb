@@ -14,6 +14,13 @@ RSpec.describe 'connecting to a ruby server from a javascript client', type: :fe
   let(:js_script) do
     <<-EOF
     var helloService = new #{js_client_class}('http://#{server.host}:#{server.port}', null, null);
+    #{js_grpc_call}
+    EOF
+  end
+
+  # JS snippet to make the gRPC-Web call
+  let(:js_grpc_call) do
+    <<-EOF
     var x = new HelloRequest();
     x.setName('#{name}');
     window.grpcResponse = null;
@@ -80,6 +87,24 @@ RSpec.describe 'connecting to a ruby server from a javascript client', type: :fe
       it 'raises an error' do
         perform_request
         expect(js_error).to include('code' => 2, 'message' => 'RuntimeError: Some random error')
+      end
+    end
+
+    context 'for a method with empty request and response protos' do
+      let(:js_grpc_call) do
+        <<-EOF
+        var x = new EmptyRequest();
+        window.grpcResponse = null;
+        helloService.sayNothing(x, {}, function(err, response){
+          window.grpcError = err;
+          window.grpcResponse = response;
+        });
+        EOF
+      end
+
+      it 'returns the expected response from the service' do
+        perform_request
+        expect(response).to eq({})
       end
     end
   end

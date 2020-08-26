@@ -8,6 +8,15 @@ message HelloResponse {
   string message = 1;
 }
 
+message EmptyRequest {
+
+}
+
+message EmptyResponse {
+
+}
+
 service HelloService {
-  rpc SayHello(HelloRequest) returns (HelloResponse);
+  rpc SayHello (HelloRequest) returns (HelloResponse);
+  rpc SayNothing (EmptyRequest) returns (EmptyResponse);
 }

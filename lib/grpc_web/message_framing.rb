@@ -15,7 +15,7 @@ module GRPCWeb::MessageFraming
     def unpack_frames(content)
       frames = []
       remaining_content = content
-      
+
       until remaining_content.empty?
         msg_length = remaining_content[1..4].unpack1('N')
         frame_end = 5 + msg_length
