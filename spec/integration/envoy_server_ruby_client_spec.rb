@@ -63,6 +63,14 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
     end
   end
 
+  context 'for a method with empty request and response protos' do
+    subject(:response) { client.say_nothing }
+
+    it 'returns the expected response from the service' do
+      expect(response).to eq(EmptyResponse.new)
+    end
+  end
+
   context 'for a network error' do
     let(:client_url) { 'http://envoy:8081' }
 

@@ -6,4 +6,8 @@ class TestHelloService < HelloService::Service
   def say_hello(request, _call = nil)
     HelloResponse.new(message: "Hello #{request.name}")
   end
+
+  def say_nothing(_request, _call = nil)
+    EmptyResponse.new
+  end
 end

@@ -68,6 +68,14 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
     end
   end
 
+  context 'for a method with empty request and response protos' do
+    subject(:response) { client.say_nothing }
+
+    it 'returns the expected response from the service' do
+      expect(response).to eq(EmptyResponse.new)
+    end
+  end
+
   context 'for a network error' do
     let(:client_url) do
       "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port + 1}"

@@ -7,12 +7,14 @@ RSpec.describe GRPCWeb::MessageFraming do
     [
       ::GRPCWeb::MessageFrame.header_frame('data in the header'),
       ::GRPCWeb::MessageFrame.payload_frame("data in the \u1f61d first frame"),
+      ::GRPCWeb::MessageFrame.payload_frame(''), # 0 length frame
       ::GRPCWeb::MessageFrame.payload_frame('data in the second frame'),
     ]
   end
   let(:packed_frames) do
     string = "\x80\x00\x00\x00\x12data in the header" \
              "\x00\x00\x00\x00\x1Cdata in the \u1f61d first frame" \
+             "\x00\x00\x00\x00\x00" + # 0 length frame
              "\x00\x00\x00\x00\x18data in the second frame"
     string.b # treat string as a byte string
   end
@@ -27,17 +29,6 @@ RSpec.describe GRPCWeb::MessageFraming do
     subject(:unpack) { described_class.unpack_frames(packed_frames) }
 
     it { is_expected.to eq unpacked_frames }
-
-    context 'when the message length is invalid' do
-      let(:packed_frames) do
-        string = "\x80\x00\x00\x00\x00data in the header"
-        string.b # treat string as a byte string
-      end
-
-      it 'raises an error' do
-        expect { unpack }.to raise_error(StandardError, 'Invalid message length')
-      end
-    end
   end
 
   describe 'pack and unpack frames' do

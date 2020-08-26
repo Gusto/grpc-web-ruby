@@ -13,9 +13,10 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
       'node',
       node_client,
       server_url,
-      name,
+      grpc_method,
       basic_username,
       basic_password,
+      name,
     ].join(' ')
   end
   let(:result) { JSON.parse(json_result) }
@@ -23,6 +24,7 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
   let(:basic_password) { 'supersecretpassword' }
   let(:basic_username) { 'supermanuser' }
   let(:service) { TestHelloService }
+  let(:grpc_method) { 'SayHello' }
   let(:rack_app) do
     app = TestGRPCWebApp.build(service)
     app.use Rack::Auth::Basic do |username, password|
@@ -68,6 +70,14 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
         'grpc-message' => ['RuntimeError: Some random error'],
         'grpc-status' => ['2'],
       )
+    end
+  end
+
+  context 'with empty request and response protos' do
+    let(:grpc_method) { 'SayNothing' }
+
+    it 'returns the expected response from the service' do
+      expect(result['response']).to eq({})
     end
   end
 end
