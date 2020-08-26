@@ -16,7 +16,7 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
       grpc_method,
       basic_username,
       basic_password,
-      name
+      name,
     ].join(' ')
   end
   let(:result) { JSON.parse(json_result) }
@@ -73,8 +73,9 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
     end
   end
 
-  context 'for a method with empty request and response protos' do
+  context 'with empty request and response protos' do
     let(:grpc_method) { 'SayNothing' }
+
     it 'returns the expected response from the service' do
       expect(result['response']).to eq({})
     end

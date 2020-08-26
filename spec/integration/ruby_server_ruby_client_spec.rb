@@ -69,7 +69,8 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
   end
 
   context 'for a method with empty request and response protos' do
-    subject(:response) { client.say_nothing() }
+    subject(:response) { client.say_nothing }
+
     it 'returns the expected response from the service' do
       expect(response).to eq(EmptyResponse.new)
     end
