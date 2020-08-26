@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/Gusto/grpc-web-ruby/compare/v1.2.0...v1.2.1) (2020-08-26)
+
+
+### Bug Fixes
+
+* Support 0 length messages ([#34](https://github.com/Gusto/grpc-web-ruby/issues/34)) ([4486cbe](https://github.com/Gusto/grpc-web-ruby/commit/4486cbedd25e6398b879427020479c96d71f9780))
+
 # [1.2.0](https://github.com/Gusto/grpc-web-ruby/compare/v1.1.0...v1.2.0) (2020-08-11)
 
 
