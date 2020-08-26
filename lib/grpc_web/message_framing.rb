@@ -15,10 +15,9 @@ module GRPCWeb::MessageFraming
     def unpack_frames(content)
       frames = []
       remaining_content = content
+      
       until remaining_content.empty?
         msg_length = remaining_content[1..4].unpack1('N')
-        raise 'Invalid message length' if msg_length <= 0
-
         frame_end = 5 + msg_length
         frames << ::GRPCWeb::MessageFrame.new(
           remaining_content[0].bytes[0],
