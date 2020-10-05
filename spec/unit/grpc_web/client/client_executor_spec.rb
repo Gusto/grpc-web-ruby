@@ -24,7 +24,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
     let(:expected_headers) do
       {
         'Accept' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
-        'Content-Type' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
+        'Content-Type' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE
       }
     end
 
@@ -62,6 +62,28 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
 
         it 'returns the rpc_desc response object' do
           expect(response).to eq(expected_response)
+        end
+      end
+
+      context 'with custom header' do
+        subject(:response) { described_class.request(request_uri, rpc_desc, params, custom_header) }
+        let(:custom_header) { {'Custom-header' => 'Meow meow'} }
+        let(:expected_headers) do
+          {
+            'Accept' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
+            'Content-Type' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
+            'Custom-header' => 'Meow meow',
+          }
+        end
+
+        it 'sends the correct headers and body' do
+          response
+          assert_requested(
+            server_stub.with(
+              headers: expected_headers,
+              body: expected_request_body,
+            ),
+          )
         end
       end
 
