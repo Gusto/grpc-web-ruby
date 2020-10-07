@@ -240,6 +240,21 @@ GRPCWeb.on_error do |ex, service, service_method|
 end
 ```
 
+## Instrumentation
+
+Currently grpc-web-ruby supports instrumentation for [dogstatsd-ruby](https://github.com/DataDog/dogstatsd-ruby) library. To start receiving out of the box default metrics, you can assign or pass
+`Datadog::Statsd` object your application is using. Example:
+
+```ruby
+require 'datadog/statsd'
+require 'grpc_web'
+
+GRPCWeb.metrics =  Datadog::Statsd.new('localhost', 8125)
+```
+
+`GRPCWeb.metrics` internally calls `Datadog::Statsd` compatible functions. Since, `Datadog::Statsd` is an extension of `StatsD` server, accordingly function calls would map as expected.
+
+
 ## Additional Notes
 
 ### CORS Middleware (for browser clients)
