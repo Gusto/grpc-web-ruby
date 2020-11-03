@@ -97,7 +97,7 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
   end
 
   context 'with a custom header' do
-    subject { client.say_hello({name: name}, {'Custom-header' => 'Meow meow'}) }
+    subject { client.say_hello({name: name}, {metadata: {'Custom-header' => 'Meow meow'}}) }
     let(:service) do
       Class.new(TestHelloService) do
         class << self
