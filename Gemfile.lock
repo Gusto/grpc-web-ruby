@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    grpc-web (1.2.2)
+    grpc-web (1.2.1)
       grpc (~> 1.0)
       rack (>= 1.6.0, < 3.0)
 
@@ -30,11 +30,11 @@ GEM
       safe_yaml (~> 1.0.0)
     diff-lcs (1.3)
     docile (1.3.2)
-    google-protobuf (3.13.0-universal-darwin)
+    google-protobuf (3.13.0)
     googleapis-common-protos-types (1.0.5)
       google-protobuf (~> 3.11)
-    grpc (1.31.1-universal-darwin)
-      google-protobuf (~> 3.12)
+    grpc (1.32.0)
+      google-protobuf (~> 3.13)
       googleapis-common-protos-types (~> 1.0)
     hashdiff (1.0.0)
     jaro_winkler (1.5.4)
