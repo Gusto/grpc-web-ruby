@@ -13,6 +13,8 @@ CLEAN.include('spec/pb-ts/*.ts')
 CLEAN.include('spec/js-client/main.js')
 CLEAN.include('spec/node-client/dist/*')
 
+NAMELY_DOCKER_IMAGE = 'namely/protoc-all:1.29_4'
+
 module RakeHelpers
   def self.compile_protos_js_cmd(mode, output_dir)
     [
@@ -37,7 +39,7 @@ task :compile_protos_ruby do
   sh [
     'docker run',
     "-v \"#{File.expand_path('spec', __dir__)}:/defs\"",
-    'namely/protoc-all',
+    NAMELY_DOCKER_IMAGE,
     '-d /defs/pb-src',
     '-o /defs/pb-ruby',
     '-l ruby',
@@ -52,7 +54,7 @@ task :compile_protos_ts do
     'docker run',
     "-v \"#{defs_dir}:/defs\"",
     '--entrypoint protoc',
-    'namely/protoc-all',
+    NAMELY_DOCKER_IMAGE,
     '--plugin=protoc-gen-ts=/usr/bin/protoc-gen-ts',
     '--js_out=import_style=commonjs,binary:/defs/pb-ts',
     '--ts_out=service=grpc-web:/defs/pb-ts',
