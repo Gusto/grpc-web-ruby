@@ -13,7 +13,7 @@ CLEAN.include('spec/pb-ts/*.ts')
 CLEAN.include('spec/js-client/main.js')
 CLEAN.include('spec/node-client/dist/*')
 
-NAMELY_DOCKER_IMAGE = 'namely/protoc-all:1.29_4'
+NAMELY_DOCKER_IMAGE = 'namely/protoc-all:1.32_4'
 
 module RakeHelpers
   def self.compile_protos_js_cmd(mode, output_dir)
