@@ -68,7 +68,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
       context 'with custom header' do
         subject(:response) { described_class.request(request_uri, rpc_desc, params, custom_header) }
 
-        let(:custom_header) { { 'Custom-header' => 'Meow meow' } }
+        let(:custom_header) { { metadata: { 'Custom-header' => 'Meow meow' } } }
         let(:expected_headers) do
           {
             'Accept' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,

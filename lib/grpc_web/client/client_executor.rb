@@ -33,7 +33,7 @@ module GRPCWeb::ClientExecutor
       {
         'Accept' => PROTO_CONTENT_TYPE,
         'Content-Type' => PROTO_CONTENT_TYPE,
-      }.merge(metadata[:metadata])
+      }.merge(metadata[:metadata] || {})
     end
 
     def post_request(uri, request_body, metadata)
