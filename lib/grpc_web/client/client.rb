@@ -26,9 +26,9 @@ class GRPCWeb::Client
 
   def define_rpc_method(rpc_method, rpc_desc)
     ruby_method = ::GRPC::GenericService.underscore(rpc_method.to_s).to_sym
-    define_singleton_method(ruby_method) do |params = {}|
+    define_singleton_method(ruby_method) do |params = {}, metadata = {}|
       uri = endpoint_uri(rpc_desc)
-      ::GRPCWeb::ClientExecutor.request(uri, rpc_desc, params)
+      ::GRPCWeb::ClientExecutor.request(uri, rpc_desc, params, metadata)
     end
   end
 

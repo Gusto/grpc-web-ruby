@@ -219,6 +219,11 @@ $client.say_hello(name: 'James')
 # => <HelloResponse: message: "Hello James">
 ```
 
+You can also pass custom headers:
+```ruby
+$client.say_hello({name: 'James'}, {metadata: {'custom-header' => 'Hello'}})
+```
+
 #### Using Basic Auth
 gRPC-Web Ruby client supports Basic Auth out of the box. You can pass in a Basic Auth comformant URL and gRPC-Web Ruby client will take care of the rest when interacting with the server.
 
