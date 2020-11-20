@@ -97,7 +97,8 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
   end
 
   context 'with a custom header' do
-    subject { client.say_hello({name: name}, {metadata: {'Custom-header' => 'Meow meow'}}) }
+    subject { client.say_hello({ name: name }, metadata: { 'Custom-header' => 'Meow meow' }) }
+
     let(:service) do
       Class.new(TestHelloService) do
         class << self
@@ -113,12 +114,12 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
 
     it 'forwards all headers to the server' do
       subject
-      expect(service.last_call.metadata).to include({
+      expect(service.last_call.metadata).to include(
         'accept' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
         'custom-header' => 'Meow meow',
         'user-agent' => 'Ruby',
         'x-forwarded-proto' => 'http',
-      })
+      )
     end
   end
 end
