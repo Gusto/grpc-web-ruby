@@ -95,4 +95,31 @@ RSpec.describe 'connecting to an envoy server from a ruby client', type: :featur
       expect { subject }.to raise_error(GRPC::Unimplemented, a_string_starting_with('12:'))
     end
   end
+
+  context 'with a custom header' do
+    subject { client.say_hello({ name: name }, metadata: { 'Custom-header' => 'Meow meow' }) }
+
+    let(:service) do
+      Class.new(TestHelloService) do
+        class << self
+          attr_accessor :last_call
+        end
+
+        def say_hello(_request, call = nil)
+          self.class.last_call = call
+          super
+        end
+      end
+    end
+
+    it 'forwards all headers to the server' do
+      subject
+      expect(service.last_call.metadata).to include(
+        'accept' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
+        'custom-header' => 'Meow meow',
+        'user-agent' => 'Ruby',
+        'x-forwarded-proto' => 'http',
+      )
+    end
+  end
 end

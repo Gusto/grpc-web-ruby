@@ -16,28 +16,28 @@ module GRPCWeb::ClientExecutor
     GRPC_MESSAGE_HEADER = 'grpc-message'
     GRPC_HEADERS = %W[x-grpc-web #{GRPC_STATUS_HEADER} #{GRPC_MESSAGE_HEADER}].freeze
 
-    def request(uri, rpc_desc, params = {})
+    def request(uri, rpc_desc, params = {}, metadata = {})
       req_proto = rpc_desc.input.new(params)
       marshalled_proto = rpc_desc.marshal_proc.call(req_proto)
       frame = ::GRPCWeb::MessageFrame.payload_frame(marshalled_proto)
       request_body = ::GRPCWeb::MessageFraming.pack_frames([frame])
 
-      resp = post_request(uri, request_body)
+      resp = post_request(uri, request_body, metadata)
       resp_body = handle_response(resp)
       rpc_desc.unmarshal_proc(:output).call(resp_body)
     end
 
     private
 
-    def request_headers
+    def request_headers(metadata)
       {
         'Accept' => PROTO_CONTENT_TYPE,
         'Content-Type' => PROTO_CONTENT_TYPE,
-      }
+      }.merge(metadata[:metadata] || {})
     end
 
-    def post_request(uri, request_body)
-      request = Net::HTTP::Post.new(uri, request_headers)
+    def post_request(uri, request_body, metadata)
+      request = Net::HTTP::Post.new(uri, request_headers(metadata))
       request.body = request_body
       request.basic_auth uri.user, uri.password if uri.userinfo
 
