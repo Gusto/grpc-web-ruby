@@ -10,3 +10,4 @@ node_modules
 
 # Workspace
 .idea
+.git/
