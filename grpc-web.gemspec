@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'grpc', '~> 1.0'
-  spec.add_dependency 'rack', '>= 1.6.0', '< 3.0'
+  spec.add_dependency 'rack', '>= 1.6.0', '< 4.0'
 
   spec.add_development_dependency 'apparition'
   spec.add_development_dependency 'pry-byebug'
