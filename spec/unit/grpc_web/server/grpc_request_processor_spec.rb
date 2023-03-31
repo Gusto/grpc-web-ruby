@@ -2,9 +2,18 @@
 
 RSpec.describe ::GRPCWeb::GRPCRequestProcessor do
   describe '#process' do
-    subject(:process) { described_class.process(initial_request) }
+    subject(:process) { described_class.process(initial_call) }
 
-    let(:initial_request) { instance_double(::GRPCWeb::GRPCWebRequest) }
+    let(:initial_call) { instance_double(::GRPCWeb::GRPCWebCall, request: initial_request) }
+    let(:initial_request) do
+      instance_double(
+        ::GRPCWeb::GRPCWebRequest,
+        service_method: service_method,
+        service: service,
+        accept: request_accept,
+        content_type: request_content_type,
+      )
+    end
 
     let(:text_coder) { ::GRPCWeb::TextCoder }
     let(:framing) { ::GRPCWeb::RequestFraming }
@@ -57,9 +66,21 @@ RSpec.describe ::GRPCWeb::GRPCRequestProcessor do
       process
     end
 
-    it 'executes the request' do
-      expect(service).to receive(:say_hello).with(deserialized_request.body)
-      process
+    context 'when handler only accepts one parameter' do
+      before { allow(service).to receive(:method).and_return(instance_double(Method, arity: 1)) }
+
+      it 'executes the request' do
+        expect(service).to receive(:say_hello).with(deserialized_request.body)
+        process
+      end
+    end
+
+    context 'when handler accepts more than one parameter' do
+
+      it 'executes the request with additional metadata' do
+        expect(service).to receive(:say_hello).with(deserialized_request.body, initial_call)
+        process
+      end
     end
 
     describe 'execution response' do
@@ -116,6 +137,7 @@ RSpec.describe ::GRPCWeb::GRPCRequestProcessor do
 
       context 'when the service raises an error' do
         let(:error) { StandardError.new('something went wrong') }
+        let(:service) { instance_double(TestHelloService) }
 
         before { allow(service).to receive(:say_hello).and_raise(error) }
 

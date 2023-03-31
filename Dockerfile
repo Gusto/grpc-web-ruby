@@ -25,7 +25,9 @@ RUN apt-get update && apt-get install -y \
   libxss1 \
   libxtst6 \
   nodejs \
-  xdg-utils
+  xdg-utils \
+  libvulkan1 \
+  libu2f-udev
 
 # Install Chrome
 RUN wget --quiet https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
@@ -46,7 +48,7 @@ WORKDIR /app
 COPY .ruby-version grpc-web.gemspec Gemfile Gemfile.lock /app/
 COPY lib/grpc_web/version.rb /app/lib/grpc_web/
 
-RUN gem install bundler \
+RUN gem install bundler -v 2.3.26 \
  && bundle config --global frozen 1 \
  && bundle install -j4 --retry 3 \
  # Remove unneeded files (cached *.gem, *.o, *.c)

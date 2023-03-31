@@ -115,7 +115,7 @@ RSpec.describe 'connecting to a ruby server from a javascript client', type: :fe
     it 'makes a request using application/grpc-web-text content type' do
       expect(GRPCWeb::GRPCRequestProcessor).to \
         receive(:process) \
-        .with(have_attributes(content_type: 'application/grpc-web-text')) \
+        .with(have_attributes(request: have_attributes(content_type: 'application/grpc-web-text'))) \
         .and_call_original
       perform_request
     end
@@ -129,7 +129,7 @@ RSpec.describe 'connecting to a ruby server from a javascript client', type: :fe
     it 'makes a request using application/grpc-web+proto content type' do
       expect(GRPCWeb::GRPCRequestProcessor).to \
         receive(:process) \
-        .with(have_attributes(content_type: 'application/grpc-web+proto')) \
+        .with(have_attributes(request: have_attributes(content_type: 'application/grpc-web+proto'))) \
         .and_call_original
       perform_request
     end
