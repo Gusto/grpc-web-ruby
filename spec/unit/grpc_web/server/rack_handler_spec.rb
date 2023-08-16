@@ -2,6 +2,7 @@
 
 require 'grpc_web/content_types'
 require 'grpc_web/server/rack_handler'
+require 'grpc_web/grpc_web_call'
 
 RSpec.describe(::GRPCWeb::RackHandler) do
   subject(:call) { described_class.call(service, service_method, env) }
@@ -14,6 +15,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
   let(:request_method) { 'POST' }
   let(:content_type) { ::GRPCWeb::ContentTypes::DEFAULT_CONTENT_TYPE }
   let(:accept_header) { '*/*' }
+  let(:metadata) { {} }
   let(:request_body) { 'request body' }
   let(:env) do
     {
@@ -45,14 +47,90 @@ RSpec.describe(::GRPCWeb::RackHandler) do
 
     it 'calls the request processor with the modified request' do
       expect(::GRPCWeb::GRPCRequestProcessor).to receive(:process)
-        .with(::GRPCWeb::GRPCWebRequest.new(
-                service,
-                service_method,
-                content_type,
-                accept_header,
-                request_body,
+        .with(::GRPCWeb::GRPCWebCall.new(
+                ::GRPCWeb::GRPCWebRequest.new(
+                  service,
+                  service_method,
+                  content_type,
+                  accept_header,
+                  request_body,
+                ),
+                metadata,
+                started: false,
               ))
       call
+    end
+
+    context 'when it contains metadata' do
+      let(:env) do
+        {
+          'PATH_INFO' => path_info,
+          'REQUEST_METHOD' => request_method,
+          'CONTENT_TYPE' => content_type,
+          'HTTP_ACCEPT' => accept_header,
+          'rack.input' => StringIO.new(request_body),
+          'HTTP_USER_NAME' => 'test_user',
+          'HTTP_PASSWORD' => 'test',
+        }
+      end
+      let(:metadata) do
+        {
+          'password' => 'test',
+          'user_name' => 'test_user',
+        }
+      end
+
+      it 'passes the metadata to the service handler' do
+        expect(::GRPCWeb::GRPCRequestProcessor).to receive(:process)
+          .with(::GRPCWeb::GRPCWebCall.new(
+                  ::GRPCWeb::GRPCWebRequest.new(
+                    service,
+                    service_method,
+                    content_type,
+                    accept_header,
+                    request_body,
+                  ),
+                  metadata,
+                  started: false,
+                ))
+        call
+      end
+
+      context 'when the metadata is in binary' do
+        let(:env) do
+          {
+            'PATH_INFO' => path_info,
+            'REQUEST_METHOD' => request_method,
+            'CONTENT_TYPE' => content_type,
+            'HTTP_ACCEPT' => accept_header,
+            'rack.input' => StringIO.new(request_body),
+            'HTTP_DATA_BIN' => Base64.encode64('\x01\x02\x03'.b),
+            'HTTP_MY_CERT_BIN' => Base64.encode64('\xD1\xD2'.b),
+          }
+        end
+        let(:metadata) do
+          {
+            'data_bin' => '\x01\x02\x03'.b,
+            'my_cert_bin' => '\xD1\xD2'.b,
+          }
+        end
+
+        it 'passes the metadata to the service handler decoded' do
+          expect(::GRPCWeb::GRPCRequestProcessor).to receive(:process)
+            .with(::GRPCWeb::GRPCWebCall.new(
+                    ::GRPCWeb::GRPCWebRequest.new(
+                      service,
+                      service_method,
+                      content_type,
+                      accept_header,
+                      request_body,
+                    ),
+                    metadata,
+                    started: false,
+                  ))
+          call
+        end
+      end
     end
   end
 

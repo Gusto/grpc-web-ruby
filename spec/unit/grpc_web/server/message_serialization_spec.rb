@@ -79,7 +79,7 @@ RSpec.describe ::GRPCWeb::MessageSerialization do
     end
     let(:body) { HelloRequest.new(name: 'Noa') }
 
-    shared_examples_for 'generates a body with a payload frame' do |expected_payload_frame_body:|
+    shared_examples_for 'generates a body with a payload frame' do |expected_payload_frame_body|
       it 'generates a body with a payload frame' do
         expect(serialized_response.body).to be_a(Array)
         expect(serialized_response.body.find(&:payload?).body).to eq expected_payload_frame_body
@@ -93,7 +93,7 @@ RSpec.describe ::GRPCWeb::MessageSerialization do
       end
     end
 
-    shared_examples_for 'generates a body with a header frame' do |expected_header_frame_body:|
+    shared_examples_for 'generates a body with a header frame' do |expected_header_frame_body|
       it 'generates a body with a header frame' do
         expect(serialized_response.body).to be_a(Array)
         expect(serialized_response.body.find(&:header?).body).to eq expected_header_frame_body
@@ -108,7 +108,6 @@ RSpec.describe ::GRPCWeb::MessageSerialization do
 
         it_behaves_like(
           'generates a body with a header frame',
-          expected_header_frame_body:
             "grpc-status:2\r\ngrpc-message:StandardError: I've made a huge mistake\r\n"\
             "x-grpc-web:1\r\n",
         )
@@ -121,7 +120,6 @@ RSpec.describe ::GRPCWeb::MessageSerialization do
 
         it_behaves_like(
           'generates a body with a header frame',
-          expected_header_frame_body:
             "grpc-status:5\r\ngrpc-message:Where am I?\r\nx-grpc-web:1\r\nuser-role-id:123\r\n",
         )
       end
@@ -132,11 +130,11 @@ RSpec.describe ::GRPCWeb::MessageSerialization do
 
       it_behaves_like(
         'generates a body with a payload frame',
-        expected_payload_frame_body: '{"name":"Noa"}',
+        '{"name":"Noa"}',
       )
       it_behaves_like(
         'generates a body with a header frame',
-        expected_header_frame_body: "grpc-status:0\r\ngrpc-message:OK\r\nx-grpc-web:1\r\n",
+        "grpc-status:0\r\ngrpc-message:OK\r\nx-grpc-web:1\r\n",
       )
 
       it_behaves_like 'serializes an exception'
@@ -147,11 +145,11 @@ RSpec.describe ::GRPCWeb::MessageSerialization do
 
       it_behaves_like(
         'generates a body with a payload frame',
-        expected_payload_frame_body: "\n\x03Noa",
+         "\n\x03Noa",
       )
       it_behaves_like(
         'generates a body with a header frame',
-        expected_header_frame_body: "grpc-status:0\r\ngrpc-message:OK\r\nx-grpc-web:1\r\n",
+         "grpc-status:0\r\ngrpc-message:OK\r\nx-grpc-web:1\r\n",
       )
 
       it_behaves_like 'serializes an exception'
