@@ -8,13 +8,13 @@ orbs:
 jobs:
   ruby-test:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/ruby:3.3.0
     steps:
       - checkout
-      - ruby/install:
-          version: '3.3.0'
-      - run: bundle install
-      - run: bundle exec rake
+      - ruby/install-deps
+      - run:
+          command: bundle exec rake
+          name: "Run tests"
       - store_artifacts:
           path: coverage
   release:
