@@ -11,6 +11,7 @@ jobs:
       - image: cimg/ruby:3.3.0
     steps:
       - checkout
+      - setup_remote_docker
       - ruby/install-deps
       - run:
           command: bundle exec rake
