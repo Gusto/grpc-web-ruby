@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'base64'
 require 'grpc_web/server/text_coder'
 
 RSpec.describe GRPCWeb::TextCoder do

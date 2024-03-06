@@ -32,7 +32,7 @@ module GRPCWeb::ClientExecutor
     def request_headers(metadata)
       {
         'Accept' => PROTO_CONTENT_TYPE,
-        'Content-Type' => PROTO_CONTENT_TYPE,
+        'content-type' => PROTO_CONTENT_TYPE,
       }.merge(metadata[:metadata] || {})
     end
 

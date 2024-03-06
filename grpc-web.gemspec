@@ -20,9 +20,10 @@ Gem::Specification.new do |spec|
   spec.files         = Dir['lib/**/*']
   spec.require_paths = ['lib']
 
+  spec.add_dependency 'base64'
   spec.add_dependency 'grpc', '~> 1.0'
   spec.add_dependency 'google-protobuf', '~> 3.13.0'
-  spec.add_dependency 'rack', '>= 1.6.0', '< 3.0'
+  spec.add_dependency 'rack', '~> 3.0'
 
   spec.add_development_dependency 'capybara'
   spec.add_development_dependency 'selenium-webdriver'
