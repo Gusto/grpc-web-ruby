@@ -2,20 +2,15 @@ version: 2.1
 
 # See latest version of Gusto orbs at https://circleci.com/orbs/registry/orb/gusto/gusto
 orbs:
-  ruby: circleci/ruby@2.1.1
   gusto: gusto/gusto@0.0.12
 
 jobs:
   ruby-test:
-    docker:
-      - image: cimg/ruby:3.3.0
+    machine:
+      image: ubuntu-2204:2024.01.1
     steps:
-      - checkout
-      - setup_remote_docker
-      - ruby/install-deps
-      - run:
-          command: bundle exec rake
-          name: "Run tests"
+      - gusto/bundle-install
+      - run: bundle exec rake
       - store_artifacts:
           path: coverage
   release:
