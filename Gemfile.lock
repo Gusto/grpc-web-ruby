@@ -2,9 +2,10 @@ PATH
   remote: .
   specs:
     grpc-web (1.2.1)
+      base64
       google-protobuf (~> 3.13.0)
       grpc (~> 1.0)
-      rack (>= 1.6.0, < 3.0)
+      rack (~> 3.0)
 
 GEM
   remote: https://rubygems.org/
@@ -70,7 +71,7 @@ GEM
       pry (>= 0.13, < 0.15)
     public_suffix (5.1.1)
     racc (1.8.1)
-    rack (2.2.13)
+    rack (3.1.12)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
     rack-test (2.2.0)
