@@ -1,7 +1,8 @@
-FROM ruby:2.5.7
+FROM ruby:2.7.8
 
 # Install dependency packages
 RUN apt-get update && apt-get install -y \
+  chromium \
   curl \
   fonts-liberation \
   libappindicator3-1 \
@@ -15,6 +16,7 @@ RUN apt-get update && apt-get install -y \
   libgtk-3-0 \
   libnspr4 \
   libnss3 \
+  libvulkan1 \
   libx11-xcb1 \
   libxcomposite1 \
   libxcursor1 \
@@ -28,10 +30,10 @@ RUN apt-get update && apt-get install -y \
   xdg-utils
 
 # Install Chrome
-RUN wget --quiet https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && dpkg -i google-chrome-stable_current_amd64.deb \
-    && apt-get -f install \
-    && rm -f /google-chrome-stable_current_amd64.deb
+# RUN wget --quiet https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    # && dpkg -i google-chrome-stable_current_amd64.deb \
+    # && apt-get -f install \
+    # && rm -f /google-chrome-stable_current_amd64.deb
 
 # Install Yarn
 ENV PATH=/root/.yarn/bin:$PATH
@@ -46,7 +48,7 @@ WORKDIR /app
 COPY .ruby-version grpc-web.gemspec Gemfile Gemfile.lock /app/
 COPY lib/grpc_web/version.rb /app/lib/grpc_web/
 
-RUN gem install bundler \
+RUN gem install bundler -v 2.3.27 \
  && bundle config --global frozen 1 \
  && bundle install -j4 --retry 3 \
  # Remove unneeded files (cached *.gem, *.o, *.c)
