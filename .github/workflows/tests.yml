@@ -3,20 +3,14 @@ name: Test Suite
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    services:
-      docker:
-        image: docker:19.03.12
-        options: >-
-          --privileged
 
     steps:
       - name: Checkout code
@@ -27,8 +21,10 @@ jobs:
         with:
           ruby-version: 2.7
 
-      - name: Install Docker
+      - name: Install Docker and Docker Compose
         run: |
+          # Remove conflicting containerd package if it exists
+          sudo apt-get remove -y containerd
           sudo apt-get update
           sudo apt-get install -y docker.io docker-compose
 
