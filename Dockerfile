@@ -42,7 +42,7 @@ WORKDIR /app
 COPY .ruby-version grpc-web.gemspec Gemfile Gemfile.lock /app/
 COPY lib/grpc_web/version.rb /app/lib/grpc_web/
 
-RUN gem install bundler -v 2.3.27 \
+RUN gem install bundler -v 2.4.22 \
  && bundle config --global frozen 1 \
  && bundle install -j4 --retry 3 \
  # Remove unneeded files (cached *.gem, *.o, *.c)
