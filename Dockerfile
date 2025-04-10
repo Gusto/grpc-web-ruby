@@ -29,12 +29,6 @@ RUN apt-get update && apt-get install -y \
   nodejs \
   xdg-utils
 
-# Install Chrome
-# RUN wget --quiet https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    # && dpkg -i google-chrome-stable_current_amd64.deb \
-    # && apt-get -f install \
-    # && rm -f /google-chrome-stable_current_amd64.deb
-
 # Install Yarn
 ENV PATH=/root/.yarn/bin:$PATH
 RUN touch ~/.bashrc && \
