@@ -1,4 +1,4 @@
-name: CI
+name: Test Suite
 
 on:
   push:
@@ -17,7 +17,6 @@ jobs:
         image: docker:19.03.12
         options: >-
           --privileged
-          --network host
 
     steps:
       - name: Checkout code
