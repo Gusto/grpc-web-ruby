@@ -23,10 +23,10 @@ jobs:
 
       - name: Install Docker and Docker Compose
         run: |
-          # Remove conflicting containerd package if it exists
-          sudo apt-get remove -y containerd
-          sudo apt-get update
-          sudo apt-get install -y docker.io docker-compose
+          # Install Docker using the official convenience script
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sh get-docker.sh
+          sudo apt-get install -y docker-compose
 
       - name: Build Docker image
         run: docker-compose build
