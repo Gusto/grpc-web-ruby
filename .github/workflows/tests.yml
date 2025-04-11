@@ -32,7 +32,7 @@ jobs:
         run: docker-compose build
 
       - name: Install gemset
-        run: gem install bundler -v 2.4.22 && bundle install
+        run: bundle install
 
       - name: Run tests
         run: rake
