@@ -4,10 +4,14 @@ services:
     entrypoint: ./entrypoint.rb
     expose:
       - 9090 # Envoy connects to ruby gRPC Server on 9090
+      - 8200
     volumes:
       - .:/app
+    environment:
+      CHROME_URL: http://chrome:3333
     depends_on:
       - envoy
+      - chrome
     networks:
       default:
         aliases:
@@ -24,6 +28,21 @@ services:
       default:
         aliases:
           - envoy
+  chrome:
+    image: browserless/chrome:1.31-chrome-stable
+    ports:
+      - 3333:3333
+    # Mount application source code to support file uploading
+    # (otherwise Chrome won't be able to find files).
+    # NOTE: Make sure you use absolute paths in `#attach_file`.
+    volumes:
+      - .:/app:cached # change it for your rails' container directory
+    environment:
+      # By default, it uses 3000, which is typically used by Rails.
+      PORT: 3333
+      # Set connection timeout to avoid timeout exception during debugging
+      # https://docs.browserless.io/docs/docker.html#connection-timeout
+      CONNECTION_TIMEOUT: 600000
 
 networks:
   default:

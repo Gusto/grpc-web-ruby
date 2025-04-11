@@ -13,7 +13,7 @@ RSpec.describe 'connecting to a ruby server from a javascript client', type: :fe
   # Script to initialize a JS client in the browser and make a request
   let(:js_script) do
     <<-EOF
-    var helloService = new #{js_client_class}('http://#{server.host}:#{server.port}', null, null);
+    var helloService = new #{js_client_class}('http://#{server_host}:#{server_port}', null, null);
     #{js_grpc_call}
     EOF
   end
@@ -48,8 +48,8 @@ RSpec.describe 'connecting to a ruby server from a javascript client', type: :fe
 
   let(:service) { TestHelloService }
   let(:rack_app) { TestGRPCWebApp.build(service) }
-  let(:browser) { Capybara::Session.new(Capybara.default_driver, rack_app) }
-  let(:server) { browser.server }
+  let(:server_host) { Capybara.server_host }
+  let(:server_port) { Capybara.server_port }
 
   let(:test_page) { "file://#{File.expand_path('../js-client/test.html', __dir__)}" }
   let(:name) { "James\u1f61d" }
