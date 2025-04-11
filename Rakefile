@@ -68,7 +68,7 @@ task compile_js_client: [:compile_protos_js] do
   sh [
     'docker-compose down',
     'docker-compose build',
-    "docker-compose run --use-aliases ruby #{compile_js_cmd}",
+    "docker-compose run --use-aliases --remove-orphans ruby #{compile_js_cmd}",
     'docker-compose down',
   ].join(' && ')
 end
@@ -78,7 +78,7 @@ task compile_node_client: [:compile_protos_ts] do
   sh [
     'docker-compose down',
     'docker-compose build',
-    "docker-compose run --use-aliases ruby #{compile_node_cmd}",
+    "docker-compose run --use-aliases --remove-orphans ruby #{compile_node_cmd}",
     'docker-compose down',
   ].join(' && ')
 end
@@ -87,7 +87,7 @@ task :run_specs_in_docker do
   sh [
     'docker-compose down',
     'docker-compose build',
-    'docker-compose run --use-aliases ruby rspec',
+    'docker-compose run --use-aliases --remove-orphans ruby rspec',
     'docker-compose down',
   ].join(' && ')
 end
