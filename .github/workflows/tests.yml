@@ -20,7 +20,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
-        run: gem install bundler -v 2.4.22 && bundle install
 
       - name: Install Docker and Docker Compose
         run: |
@@ -32,5 +31,8 @@ jobs:
       - name: Build Docker image
         run: docker-compose build
 
-      - name: Run Rake tasks
+      - name: Install gemset
+        run: gem install bundler -v 2.4.22 && bundle install
+
+      - name: Run tests
         run: rake
