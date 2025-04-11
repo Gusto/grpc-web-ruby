@@ -31,8 +31,8 @@ jobs:
       - name: Build Docker image
         run: docker-compose build
 
-      - name: Install gemset
-        run: bundle install
+      - name: Install environment support
+        run: gem install rake rspec
 
       - name: Run tests
         run: rake
