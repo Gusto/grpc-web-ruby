@@ -11,7 +11,7 @@ RSpec.describe ::GRPCWeb::ServiceClassValidator do
     end
 
     it 'returns true' do
-      expect(validate).to eq true
+      expect(validate).to be true
     end
   end
 
