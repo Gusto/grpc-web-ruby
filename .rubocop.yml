@@ -1,4 +1,4 @@
-require: rubocop-rspec
+plugins: rubocop-rspec
 inherit_from: .rubocop_todo.yml
 
 AllCops:
@@ -61,5 +61,5 @@ RSpec/ExampleLength:
   Max: 15
 RSpec/NestedGroups:
   Max: 5
-RSpec/FilePath:
-  Enabled: false
+# RSpec/FilePath:
+  # Enabled: false
