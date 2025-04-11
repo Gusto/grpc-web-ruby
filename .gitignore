@@ -8,6 +8,8 @@ coverage
 
 node_modules
 .bundle
+.yarn*
 
 # Workspace
 .idea
+mise.toml
