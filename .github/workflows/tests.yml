@@ -1,0 +1,38 @@
+name: Test Suite
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby 2.7
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+
+      - name: Install Docker and Docker Compose
+        run: |
+          # Install Docker using the official convenience script
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sh get-docker.sh
+          sudo apt-get install -y docker-compose
+
+      - name: Build Docker image
+        run: docker-compose build
+
+      - name: Install environment support
+        run: gem install rake rspec
+
+      - name: Run tests
+        run: rake
