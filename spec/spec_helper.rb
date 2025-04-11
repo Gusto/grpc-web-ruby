@@ -109,18 +109,10 @@ RSpec.configure do |config|
     require 'test_grpc_web_app'
     Capybara.app = TestGRPCWebApp.build
 
-    require 'capybara/apparition'
-    Capybara.register_driver :apparition do |app|
-      opts = {
-        headless: true,
-        browser_options: [
-          :no_sandbox,
-          { disable_features: 'VizDisplayCompositor' },
-          :disable_gpu,
-        ],
-      }
-      Capybara::Apparition::Driver.new(app, opts)
+    require "capybara/cuprite"
+    Capybara.javascript_driver = :cuprite
+    Capybara.register_driver(:cuprite) do |app|
+      Capybara::Cuprite::Driver.new(app, browser_options: { 'no-sandbox': nil })
     end
-    Capybara.default_driver = :apparition
   end
 end

@@ -3,73 +3,84 @@ PATH
   specs:
     grpc-web (1.2.1)
       base64
-      google-protobuf (~> 3.13.0)
-      grpc (~> 1.0)
-      rack (~> 3.0)
+      grpc (>= 1.71)
+      rack (>= 3, <= 4)
 
 GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
-    apparition (0.6.0)
-      capybara (~> 3.13, < 4)
-      websocket-driver (>= 0.6.5)
     ast (2.4.3)
     base64 (0.2.0)
     bigdecimal (3.1.9)
-    byebug (11.1.3)
-    capybara (3.39.2)
+    byebug (12.0.0)
+    capybara (3.40.0)
       addressable
       matrix
       mini_mime (>= 0.1.3)
-      nokogiri (~> 1.8)
+      nokogiri (~> 1.11)
       rack (>= 1.6.0)
       rack-test (>= 0.6.3)
       regexp_parser (>= 1.5, < 3.0)
       xpath (~> 3.2)
     coderay (1.1.3)
+    concurrent-ruby (1.3.5)
     crack (1.0.0)
       bigdecimal
       rexml
+    cuprite (0.15.1)
+      capybara (~> 3.0)
+      ferrum (~> 0.15.0)
     diff-lcs (1.6.1)
     docile (1.4.1)
-    google-protobuf (3.13.0)
-    google-protobuf (3.13.0-universal-darwin)
-    google-protobuf (3.13.0-x86_64-linux)
-    googleapis-common-protos-types (1.0.5)
-      google-protobuf (~> 3.11)
-    grpc (1.34.0)
-      google-protobuf (~> 3.13)
+    ferrum (0.15)
+      addressable (~> 2.5)
+      concurrent-ruby (~> 1.1)
+      webrick (~> 1.7)
+      websocket-driver (~> 0.7)
+    google-protobuf (4.30.2-aarch64-linux)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.30.2-arm64-darwin)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.30.2-x86_64-linux)
+      bigdecimal
+      rake (>= 13)
+    googleapis-common-protos-types (1.19.0)
+      google-protobuf (>= 3.18, < 5.a)
+    grpc (1.71.0-aarch64-linux)
+      google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
-    grpc (1.34.0-universal-darwin)
-      google-protobuf (~> 3.13)
+    grpc (1.71.0-arm64-darwin)
+      google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
-    grpc (1.34.0-x86_64-linux)
-      google-protobuf (~> 3.13)
+    grpc (1.71.0-x86_64-linux)
+      google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
     hashdiff (1.1.2)
     jaro_winkler (1.5.6)
     matrix (0.4.2)
     method_source (1.1.0)
     mini_mime (1.1.5)
-    nokogiri (1.15.7-aarch64-linux)
+    nokogiri (1.18.7-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.15.7-arm64-darwin)
+    nokogiri (1.18.7-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.15.7-x86_64-linux)
+    nokogiri (1.18.7-x86_64-linux-gnu)
       racc (~> 1.4)
     parallel (1.26.3)
     parser (3.3.7.4)
       ast (~> 2.4.1)
       racc
-    pry (0.14.2)
+    pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry-byebug (3.10.1)
-      byebug (~> 11.0)
-      pry (>= 0.13, < 0.15)
-    public_suffix (5.1.1)
+    pry-byebug (3.11.0)
+      byebug (~> 12.0)
+      pry (>= 0.13, < 0.16)
+    public_suffix (6.0.1)
     racc (1.8.1)
     rack (3.1.12)
     rack-cors (2.0.2)
@@ -114,6 +125,7 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
+    webrick (1.9.1)
     websocket-driver (0.7.7)
       base64
       websocket-extensions (>= 0.1.0)
@@ -127,7 +139,8 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  apparition
+  capybara (~> 3.40)
+  cuprite
   grpc-web!
   pry-byebug
   rack-cors
@@ -139,4 +152,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.4.22
+   2.6.7

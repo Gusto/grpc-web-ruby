@@ -1,10 +1,8 @@
-FROM ruby:2.7.8
+FROM ruby:3.4.2
 
-# Install dependency packages
 RUN apt-get update && apt-get install -y \
   chromium \
   curl \
-  fonts-liberation \
   libappindicator3-1 \
   libasound2 \
   libatk-bridge2.0-0 \
@@ -26,13 +24,18 @@ RUN apt-get update && apt-get install -y \
   libxrandr2 \
   libxss1 \
   libxtst6 \
-  nodejs \
   xdg-utils
 
-# Install Yarn
-ENV PATH=/root/.yarn/bin:$PATH
-RUN touch ~/.bashrc && \
-    curl -o- -L https://yarnpkg.com/install.sh | sh
+# Install Node, Yarn
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh \
+  && bash nodesource_setup.sh \
+  && apt-get install -y nodejs \
+  && npm i -g corepack \
+  && corepack enable \
+  && corepack prepare yarn \
+  && yarn set version berry \
+  && yarn config set --home enableTelemetry 0
+
 
 # Setup project home directory
 RUN mkdir /app
@@ -42,7 +45,7 @@ WORKDIR /app
 COPY .ruby-version grpc-web.gemspec Gemfile Gemfile.lock /app/
 COPY lib/grpc_web/version.rb /app/lib/grpc_web/
 
-RUN gem install bundler -v 2.4.22 \
+RUN gem install bundler \
  && bundle config --global frozen 1 \
  && bundle install -j4 --retry 3 \
  # Remove unneeded files (cached *.gem, *.o, *.c)

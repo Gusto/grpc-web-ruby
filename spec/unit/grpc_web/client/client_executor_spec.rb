@@ -142,12 +142,12 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
         { server_http_response_code: 500, expected_grpc_error: GRPC::Unknown },
         { server_http_response_code: 200, expected_grpc_error: GRPC::Unknown },
         { server_http_response_code: 200, expected_grpc_error: GRPC::Internal, body: 'something' },
-      ].each do |server_http_response_code:, expected_grpc_error:, body: nil|
-        context "HTTP error #{server_http_response_code}" do
-          let(:server_response) { { status: server_http_response_code, body: body } }
+      ].each do |options|
+        context "HTTP error #{options[:server_http_response_code]}" do
+          let(:server_response) { { status: options[:server_http_response_code], body: options[:body] } }
 
-          it "raises the corresponding error #{expected_grpc_error}" do
-            expect { response }.to raise_error(expected_grpc_error)
+          it "raises the corresponding error #{options[:expected_grpc_error]}" do
+            expect { response }.to raise_error(options[:expected_grpc_error])
           end
         end
       end

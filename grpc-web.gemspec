@@ -21,11 +21,12 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'base64'
-  spec.add_dependency 'grpc', '~> 1.0'
-  spec.add_dependency 'google-protobuf', '~> 3.13.0'
-  spec.add_dependency 'rack', '~> 3.0'
+  spec.add_dependency 'grpc'
+  spec.add_dependency 'google-protobuf', '3.25.4'
+  spec.add_dependency 'rack', '>= 3', '<= 4'
 
-  spec.add_development_dependency 'apparition'
+spec.add_development_dependency 'capybara', '~> 3.40'
+  spec.add_development_dependency 'cuprite'
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'rack-cors'
   spec.add_development_dependency 'rake'
