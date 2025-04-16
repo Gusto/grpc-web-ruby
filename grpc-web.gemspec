@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'base64'
-  spec.add_dependency 'google-protobuf', '3.25.4'
+  spec.add_dependency 'google-protobuf'
   spec.add_dependency 'grpc'
   spec.add_dependency 'rack', '>= 3', '<= 4'
 
