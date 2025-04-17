@@ -1,0 +1,18 @@
+FROM namely/protoc-all:latest
+
+RUN apt-get update && apt-get -y install \
+  unzip
+
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh \
+  && bash nodesource_setup.sh \
+  && apt-get -y install nodejs \
+  && npm i -g npm \
+  && npm i -g ts-protoc-gen --force
+
+RUN PROTOC_ZIP=protoc-28.0-linux-x86_64.zip \
+  && curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v28.0/$PROTOC_ZIP \
+  && unzip -o $PROTOC_ZIP -d /usr/local bin/protoc \
+  && unzip -o $PROTOC_ZIP -d /usr/local 'include/*' \
+  && rm -f $PROTOC_ZIP
+
+ENTRYPOINT []
