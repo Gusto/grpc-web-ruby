@@ -33,7 +33,9 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
     app
   end
 
-  let(:server_url) { "http://#{Capybara.server_host}:#{Capybara.server_port}" }
+  let(:browser) { Capybara::Session.new(Capybara.default_driver, rack_app) }
+  let(:server) { browser.server }
+  let(:server_url) { "http://#{server.host}:#{server.port}" }
   let(:name) { "James\u1f61d" }
 
   it 'returns the expected response from the service' do
