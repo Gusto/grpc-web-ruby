@@ -63,29 +63,26 @@ end
 task compile_js_client: [:compile_protos_js] do
   compile_js_cmd = '"cd spec/js-client-src; yarn install; yarn run webpack"'
   sh [
-    'docker-compose down',
-    'docker-compose build',
-    "docker-compose run --use-aliases --remove-orphans ruby #{compile_js_cmd}",
-    'docker-compose down',
+    'docker compose down',
+    'docker compose build',
+    "docker compose run --use-aliases --remove-orphans ruby #{compile_js_cmd}",
   ].join(' && ')
 end
 
 task compile_node_client: [:compile_protos_ts] do
   compile_node_cmd = '"cd spec/node-client; yarn install; yarn build"'
   sh [
-    'docker-compose down',
-    'docker-compose build',
-    "docker-compose run --use-aliases --remove-orphans ruby #{compile_node_cmd}",
-    'docker-compose down',
+    'docker compose down',
+    'docker compose build',
+    "docker compose run --use-aliases --remove-orphans ruby #{compile_node_cmd}",
   ].join(' && ')
 end
 
 task :run_specs_in_docker do
   sh [
-    'docker-compose down',
-    'docker-compose build',
-    'docker-compose run --use-aliases --remove-orphans ruby rspec',
-    'docker-compose down',
+    'docker compose down',
+    'docker compose build',
+    'docker compose run --use-aliases --remove-orphans ruby rspec',
   ].join(' && ')
 end
 
