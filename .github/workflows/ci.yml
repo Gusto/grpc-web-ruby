@@ -35,4 +35,8 @@ jobs:
         run: gem install rake rspec
 
       - name: Run tests
-        run: rake clean compile_protos_ruby compile_js_client compile_node_client run_specs_in_docker
+        run: |
+          rake compile_protos_ruby
+          rake compile_js_client
+          rake compile_node_client
+          rake run_specs_in_docker
