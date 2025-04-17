@@ -16,13 +16,6 @@ require 'webmock/rspec'
 require 'grpc-web'
 require 'grpc_web/client/client'
 
-LOCAL_PORT = 8200
-LOCAL_IP = if ENV['CHROME_URL']
-             Socket.ip_address_list.find(&:ipv4_private?)&.ip_address
-           else
-             'localhost'
-           end
-
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
@@ -116,21 +109,18 @@ RSpec.configure do |config|
     require 'test_grpc_web_app'
     Capybara.app = TestGRPCWebApp.build
 
-    require "capybara/cuprite"
-    Capybara.register_driver(:cuprite) do |app|
-      Capybara::Cuprite::Driver.new(
-        app,
-        window_size: [1200, 800],
-        browser_options: { 'no-sandbox': nil },
-        inspector: true,
-        url: ENV['CHROME_URL']
-      )
+    require 'capybara/apparition'
+    Capybara.register_driver :apparition do |app|
+      opts = {
+        headless: true,
+        browser_options: [
+          :no_sandbox,
+          { disable_features: 'VizDisplayCompositor' },
+          :disable_gpu,
+        ],
+      }
+      Capybara::Apparition::Driver.new(app, opts)
     end
-
-    Capybara.javascript_driver = :cuprite
-    Capybara.app_host = "http://#{LOCAL_IP}:#{LOCAL_PORT}"
-    Capybara.server_host = LOCAL_IP
-    Capybara.server_port = LOCAL_PORT
-    Capybara.always_include_port = true
+    Capybara.default_driver = :apparition
   end
 end
