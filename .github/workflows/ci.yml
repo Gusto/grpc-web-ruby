@@ -32,7 +32,7 @@ jobs:
         run: docker-compose build
 
       - name: Install environment support
-        run: gem install rake
+        run: gem install rake rspec
 
       - name: Run tests
         run: rake clean compile_protos_ruby compile_js_client compile_node_client run_specs_in_docker
