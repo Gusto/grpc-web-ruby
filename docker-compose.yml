@@ -17,6 +17,13 @@ services:
         aliases:
           - ruby
 
+  protoc:
+    build:
+      context: .
+      dockerfile: Dockerfile.protoc
+    volumes:
+      - ./spec:/defs
+
   # Used as a reference gRPC-Web server to test against
   envoy:
     image: envoyproxy/envoy:v1.33-latest
