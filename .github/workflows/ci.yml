@@ -35,4 +35,4 @@ jobs:
         run: gem install rake
 
       - name: Run tests
-        run: rake
+        run: rake clean compile_protos_ruby compile_js_client compile_node_client run_specs_in_docker
