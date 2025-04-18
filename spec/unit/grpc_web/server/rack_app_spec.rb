@@ -2,7 +2,6 @@
 
 require 'rack/mock'
 require 'grpc_web/server/rack_app'
-require 'test_hello_service'
 
 RSpec.describe(::GRPCWeb::RackApp) do
   let(:app) { described_class.new }

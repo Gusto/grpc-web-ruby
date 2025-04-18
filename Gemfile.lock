@@ -31,8 +31,16 @@ GEM
       rexml
     diff-lcs (1.6.1)
     docile (1.4.1)
-    google-protobuf (3.25.4)
-    googleapis-common-protos-types (1.20.0)
+    google-protobuf (4.30.2-aarch64-linux)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.30.2-arm64-darwin)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.30.2-x86_64-linux)
+      bigdecimal
+      rake (>= 13)
+    googleapis-common-protos-types (1.19.0)
       google-protobuf (>= 3.18, < 5.a)
     grpc (1.76.0)
       google-protobuf (>= 3.25, < 5.0)
@@ -47,7 +55,10 @@ GEM
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
     hashdiff (1.1.2)
-    jaro_winkler (1.5.6)
+    json (2.10.2)
+    language_server-protocol (3.17.0.4)
+    lint_roller (1.1.0)
+    logger (1.7.0)
     matrix (0.4.2)
     method_source (1.1.0)
     mini_mime (1.1.5)
@@ -59,7 +70,8 @@ GEM
     parser (3.3.8.0)
       ast (~> 2.4.1)
       racc
-    pry (0.14.2)
+    prism (1.4.0)
+    pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
     pry-byebug (3.10.1)
@@ -89,18 +101,28 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-support (3.13.2)
-    rubocop (0.79.0)
-      jaro_winkler (~> 1.5.1)
+    rubocop (1.75.2)
+      json (~> 2.3)
+      language_server-protocol (~> 3.17.0.2)
+      lint_roller (~> 1.1.0)
       parallel (~> 1.10)
-      parser (>= 2.7.0.1)
+      parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 2.9.3, < 3.0)
+      rubocop-ast (>= 1.44.0, < 2.0)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 1.7)
-    rubocop-rspec (1.41.0)
-      rubocop (>= 0.68.1)
+      unicode-display_width (>= 2.4.0, < 4.0)
+    rubocop-ast (1.44.1)
+      parser (>= 3.3.7.2)
+      prism (~> 1.4)
+    rubocop-rspec (3.6.0)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
     ruby-progressbar (1.13.0)
     rubyzip (2.4.1)
-    selenium-webdriver (4.9.0)
+    selenium-webdriver (4.31.0)
+      base64 (~> 0.2)
+      logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
@@ -110,7 +132,9 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.13.1)
     simplecov_json_formatter (0.1.4)
-    unicode-display_width (1.6.1)
+    unicode-display_width (3.1.4)
+      unicode-emoji (~> 4.0, >= 4.0.4)
+    unicode-emoji (4.0.4)
     webmock (3.25.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
@@ -131,8 +155,8 @@ DEPENDENCIES
   pry-byebug
   rack-cors
   rake
-  rspec (~> 3.3)
-  rubocop (~> 0.79.0)
+  rspec
+  rubocop
   rubocop-rspec
   selenium-webdriver
   simplecov

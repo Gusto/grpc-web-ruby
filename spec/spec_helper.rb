@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-support_path = File.expand_path('support', __dir__)
 pb_path = File.expand_path('pb-ruby', __dir__)
 lib = File.expand_path('../lib', __dir__)
-$LOAD_PATH.unshift(support_path) unless $LOAD_PATH.include?(support_path)
 $LOAD_PATH.unshift(pb_path) unless $LOAD_PATH.include?(pb_path)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
@@ -15,6 +13,8 @@ require 'rspec'
 require 'webmock/rspec'
 require 'grpc-web'
 require 'grpc_web/client/client'
+
+Dir[File.expand_path('./support/**/*.rb', __dir__)].each { require it }
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
