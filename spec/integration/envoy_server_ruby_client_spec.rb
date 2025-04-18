@@ -3,10 +3,6 @@
 require 'spec_helper'
 
 require 'grpc_web/client/client'
-require 'hello_services_pb'
-require 'test_grpc_server'
-require 'test_hello_service'
-require 'goodbye_services_pb'
 
 RSpec.describe 'connecting to an envoy server from a ruby client', type: :feature do
   subject { client.say_hello(name: name) }
