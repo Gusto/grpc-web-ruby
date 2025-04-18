@@ -29,7 +29,7 @@ module GRPCWeb::RackHandler
       request = GRPCWeb::GRPCWebRequest.new(service, service_method, content_type, accept, body)
       response = GRPCWeb::GRPCRequestProcessor.process(request)
 
-      [200, { 'Content-Type' => response.content_type }, [response.body]]
+      [200, { 'content-type' => response.content_type }, [response.body]]
     rescue Google::Protobuf::ParseError => e
       invalid_response(e.message)
     rescue StandardError => e
@@ -51,7 +51,7 @@ module GRPCWeb::RackHandler
     def not_found_response(path)
       [
         NOT_FOUND,
-        { 'Content-Type' => 'text/plain', 'X-Cascade' => 'pass' },
+        { 'content-type' => 'text/plain', 'x-cascade' => 'pass' },
         ["Not Found: #{path}"],
       ]
     end
@@ -59,19 +59,19 @@ module GRPCWeb::RackHandler
     def unsupported_media_type_response
       [
         UNSUPPORTED_MEDIA_TYPE,
-        { 'Content-Type' => 'text/plain' },
+        { 'content-type' => 'text/plain' },
         ['Unsupported Media Type: Invalid Content-Type or Accept header'],
       ]
     end
 
     def invalid_response(message)
-      [422, { 'Content-Type' => 'text/plain' }, ["Invalid request format: #{message}"]]
+      [422, { 'content-type' => 'text/plain' }, ["Invalid request format: #{message}"]]
     end
 
     def error_response
       [
         INTERNAL_SERVER_ERROR,
-        { 'Content-Type' => 'text/plain' },
+        { 'content-type' => 'text/plain' },
         ['Request failed with an unexpected error.'],
       ]
     end

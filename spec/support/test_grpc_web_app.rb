@@ -3,8 +3,6 @@
 require 'rack'
 require 'rack/cors'
 require 'grpc-web'
-require 'hello_services_pb'
-require 'test_hello_service'
 
 # Used to build a Rack app hosting the HelloService for integration testing.
 module TestGRPCWebApp

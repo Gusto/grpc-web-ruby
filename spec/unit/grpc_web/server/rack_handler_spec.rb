@@ -38,7 +38,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
     it 'returns a 200' do
       expect(call).to eq([
         200,
-        { 'Content-Type' => response_content_type },
+        { 'content-type' => response_content_type },
         [response_body],
       ])
     end
@@ -63,7 +63,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       it 'returns a 404' do
         expect(call).to eq([
           404,
-          { 'Content-Type' => 'text/plain', 'X-Cascade' => 'pass' },
+          { 'content-type' => 'text/plain', 'x-cascade' => 'pass' },
           ["Not Found: #{path_info}"],
         ])
       end
@@ -75,7 +75,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       it 'returns a 415' do
         expect(call).to eq([
           415,
-          { 'Content-Type' => 'text/plain' },
+          { 'content-type' => 'text/plain' },
           ['Unsupported Media Type: Invalid Content-Type or Accept header'],
         ])
       end
@@ -87,7 +87,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       it 'returns a 415' do
         expect(call).to eq([
           415,
-          { 'Content-Type' => 'text/plain' },
+          { 'content-type' => 'text/plain' },
           ['Unsupported Media Type: Invalid Content-Type or Accept header'],
         ])
       end
@@ -104,7 +104,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
       it 'returns a 422' do
         expect(call).to eq([
           422,
-          { 'Content-Type' => 'text/plain' },
+          { 'content-type' => 'text/plain' },
           ["Invalid request format: #{error_message}"],
         ])
       end
@@ -120,7 +120,7 @@ RSpec.describe(::GRPCWeb::RackHandler) do
     it 'returns a 500' do
       expect(call).to eq([
         500,
-        { 'Content-Type' => 'text/plain' },
+        { 'content-type' => 'text/plain' },
         ['Request failed with an unexpected error.'],
       ])
     end

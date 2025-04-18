@@ -20,16 +20,18 @@ Gem::Specification.new do |spec|
   spec.files         = Dir['lib/**/*']
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'grpc', '~> 1.0'
-  spec.add_dependency 'google-protobuf', '~> 3.13.0'
-  spec.add_dependency 'rack', '>= 1.6.0', '< 3.0'
+  spec.add_dependency 'base64'
+  spec.add_dependency 'google-protobuf'
+  spec.add_dependency 'grpc'
+  spec.add_dependency 'rack', '>= 3', '<= 4'
 
-  spec.add_development_dependency 'apparition'
+  spec.add_development_dependency 'capybara'
+  spec.add_development_dependency 'selenium-webdriver'
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'rack-cors'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec', '~> 3.3'
-  spec.add_development_dependency 'rubocop', '~> 0.79.0'
+  spec.add_development_dependency 'rspec'
+  spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'rubocop-rspec'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'webmock'

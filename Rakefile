@@ -13,8 +13,6 @@ CLEAN.include('spec/pb-ts/*.ts')
 CLEAN.include('spec/js-client/main.js')
 CLEAN.include('spec/node-client/dist/*')
 
-NAMELY_DOCKER_IMAGE = 'namely/protoc-all:1.31_2'
-
 module RakeHelpers
   def self.compile_protos_js_cmd(mode, output_dir)
     [
@@ -37,9 +35,9 @@ end
 
 task :compile_protos_ruby do
   sh [
-    'docker run',
-    "-v \"#{File.expand_path('spec', __dir__)}:/defs\"",
-    NAMELY_DOCKER_IMAGE,
+    'docker compose down &&',
+    'docker compose build &&',
+    'docker compose run --remove-orphans --entrypoint entrypoint.sh protoc',
     '-d /defs/pb-src',
     '-o /defs/pb-ruby',
     '-l ruby',
@@ -49,12 +47,11 @@ end
 task :compile_protos_ts do
   defs_dir = File.expand_path('spec', __dir__)
   proto_files = Dir[File.join(defs_dir, 'pb-src/**/*.proto')]
-  proto_input_files = proto_files.map { |f| f.gsub(defs_dir, '/defs') }
+  proto_input_files = proto_files.map { it.gsub(defs_dir, '/defs') }
   sh [
-    'docker run',
-    "-v \"#{defs_dir}:/defs\"",
-    '--entrypoint protoc',
-    NAMELY_DOCKER_IMAGE,
+    'docker compose down &&',
+    'docker compose build &&',
+    'docker compose run --remove-orphans --entrypoint protoc protoc',
     '--plugin=protoc-gen-ts=/usr/bin/protoc-gen-ts',
     '--js_out=import_style=commonjs,binary:/defs/pb-ts',
     '--ts_out=service=grpc-web:/defs/pb-ts',
@@ -66,29 +63,26 @@ end
 task compile_js_client: [:compile_protos_js] do
   compile_js_cmd = '"cd spec/js-client-src; yarn install; yarn run webpack"'
   sh [
-    'docker-compose down',
-    'docker-compose build',
-    "docker-compose run --use-aliases ruby #{compile_js_cmd}",
-    'docker-compose down',
+    'docker compose down',
+    'docker compose build',
+    "docker compose run --use-aliases --remove-orphans ruby #{compile_js_cmd}",
   ].join(' && ')
 end
 
 task compile_node_client: [:compile_protos_ts] do
   compile_node_cmd = '"cd spec/node-client; yarn install; yarn build"'
   sh [
-    'docker-compose down',
-    'docker-compose build',
-    "docker-compose run --use-aliases ruby #{compile_node_cmd}",
-    'docker-compose down',
+    'docker compose down',
+    'docker compose build',
+    "docker compose run --use-aliases --remove-orphans ruby #{compile_node_cmd}",
   ].join(' && ')
 end
 
 task :run_specs_in_docker do
   sh [
-    'docker-compose down',
-    'docker-compose build',
-    'docker-compose run --use-aliases ruby rspec',
-    'docker-compose down',
+    'docker compose down',
+    'docker compose build',
+    'docker compose run --use-aliases --remove-orphans ruby rspec',
   ].join(' && ')
 end
 

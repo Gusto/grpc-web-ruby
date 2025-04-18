@@ -1,4 +1,4 @@
-name: Test Suite
+name: CI
 
 on:
   push:
@@ -16,10 +16,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Ruby 2.7
+      - name: Set up Ruby 3.4
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7
+          ruby-version: 3.4
 
       - name: Install Docker and Docker Compose
         run: |
@@ -35,4 +35,8 @@ jobs:
         run: gem install rake rspec
 
       - name: Run tests
-        run: rake
+        run: |
+          rake compile_protos_ruby
+          rake compile_js_client
+          rake compile_node_client
+          rake run_specs_in_docker

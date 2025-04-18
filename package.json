@@ -3,12 +3,13 @@
   "private": true,
   "license": "MIT",
   "devDependencies": {
-    "@semantic-release/changelog": "^3.0.4",
-    "@semantic-release/exec": "^3.3.5",
-    "@semantic-release/git": "^7.0.16",
-    "semantic-release": "^15.13.19"
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "semantic-release": "^24.2.3"
   },
   "scripts": {
     "semantic-release": "semantic-release"
-  }
+  },
+  "packageManager": "yarn@4.9.1"
 }
