@@ -3,7 +3,7 @@ services:
     build: .
     entrypoint: ./entrypoint.rb
     environment:
-      DOCKER: true
+      DOCKER: 'true'
       SELENIUM_HOST: selenium
       SELENIUM_PORT: 4444
     expose:
