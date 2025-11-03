@@ -109,18 +109,25 @@ RSpec.configure do |config|
     require 'test_grpc_web_app'
     Capybara.app = TestGRPCWebApp.build
 
-    require 'capybara/apparition'
-    Capybara.register_driver :apparition do |app|
-      opts = {
-        headless: true,
-        browser_options: [
-          :no_sandbox,
-          { disable_features: 'VizDisplayCompositor' },
-          :disable_gpu,
-        ],
-      }
-      Capybara::Apparition::Driver.new(app, opts)
+    require 'selenium-webdriver'
+
+    Capybara.register_driver :selenium_chrome_headless do |app|
+      options = Selenium::WebDriver::Chrome::Options.new
+      # Run Chrome without a GUI, necessary for CI/Docker environments
+      options.add_argument('--headless')
+      # Disable Chrome sandbox, required when running as root in Docker containers
+      options.add_argument('--no-sandbox')
+      # Prevent Chrome from using /dev/shm which can be too small in Docker, causing crashes
+      options.add_argument('--disable-dev-shm-usage')
+      # Disable GPU hardware acceleration to prevent crashes in headless mode
+      options.add_argument('--disable-gpu')
+
+      Capybara::Selenium::Driver.new(
+        app,
+        browser: :chrome,
+        options: options
+      )
     end
-    Capybara.default_driver = :apparition
+    Capybara.default_driver = :selenium_chrome_headless
   end
 end
