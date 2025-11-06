@@ -3,6 +3,7 @@ FROM ruby:2.7.8
 # Install dependency packages
 RUN apt-get update && apt-get install -y \
   chromium \
+  chromium-driver \
   curl \
   fonts-liberation \
   libappindicator3-1 \

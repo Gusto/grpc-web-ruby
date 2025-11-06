@@ -24,7 +24,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'google-protobuf', '~> 3.13.0'
   spec.add_dependency 'rack', '>= 1.6.0', '< 3.0'
 
-  spec.add_development_dependency 'apparition'
+  spec.add_development_dependency 'capybara'
+  spec.add_development_dependency 'selenium-webdriver'
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'rack-cors'
   spec.add_development_dependency 'rake'
