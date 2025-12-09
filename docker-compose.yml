@@ -6,6 +6,7 @@ services:
       DOCKER: 'true'
       SELENIUM_HOST: selenium
       SELENIUM_PORT: 4444
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
     expose:
       - 9090 # Envoy connects to ruby gRPC Server on 9090
     volumes:
@@ -23,9 +24,12 @@ services:
       - ./spec/support/envoy.yml:/etc/envoy/envoy.yaml
 
   protoc:
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile.protoc
+      platforms:
+        - linux/amd64
     volumes:
       - ./spec:/defs
 

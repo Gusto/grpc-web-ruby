@@ -27,20 +27,21 @@ RUN apt-get update && apt-get install -y \
   libxtst6 \
   xdg-utils
 
-# Install Node, Yarn
+# Install Node, Yarn (but don't set version berry yet - that creates package.json in cwd)
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh \
   && bash nodesource_setup.sh \
   && apt-get install -y nodejs \
   && npm i -g corepack \
   && corepack enable \
-  && corepack prepare yarn \
-  && yarn set version berry \
-  && yarn config set --home enableTelemetry 0
-
+  && corepack prepare yarn
 
 # Setup project home directory
 RUN mkdir /app
 WORKDIR /app
+
+# Now set yarn version in /app to avoid creating /package.json at root
+RUN yarn set version berry \
+  && yarn config set --home enableTelemetry 0
 
 # Add Gemfile and cache results of bundle install
 COPY .ruby-version grpc-web.gemspec Gemfile Gemfile.lock /app/

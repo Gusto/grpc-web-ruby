@@ -18,10 +18,11 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
     end
     app
   end
-  let(:browser) { Capybara::Session.new(Capybara.default_driver, rack_app) }
-  let(:server) { browser.server }
+  # Use Capybara::Server directly instead of creating a session that would use WebDriver
+  let(:server) { Capybara::Server.new(rack_app).tap(&:boot) }
 
-  let(:client_url) { "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port}" }
+  let(:server_host) { CapybaraServerHelper.server_host_for_client(server) }
+  let(:client_url) { "http://#{basic_username}:#{basic_password}@#{server_host}:#{server.port}" }
   let(:client) do
     GRPCWeb::Client.new(
       client_url,
@@ -78,7 +79,7 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
 
   context 'for a network error' do
     let(:client_url) do
-      "http://#{basic_username}:#{basic_password}@#{server.host}:#{server.port + 1}"
+      "http://#{basic_username}:#{basic_password}@#{server_host}:#{server.port + 1}"
     end
 
     it 'raises an error' do
@@ -90,7 +91,7 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
 
   context 'for an authentication error' do
     let(:client_url) do
-      "http://#{basic_username}:#{basic_password + '1'}@#{server.host}:#{server.port}"
+      "http://#{basic_username}:#{basic_password + '1'}@#{server_host}:#{server.port}"
     end
 
     it 'raises an error' do

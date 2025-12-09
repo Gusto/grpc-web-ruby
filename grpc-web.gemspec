@@ -26,6 +26,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rack', '>= 3', '<= 4'
 
   spec.add_development_dependency 'capybara'
+  spec.add_development_dependency 'rackup'
+  spec.add_development_dependency 'webrick'
   spec.add_development_dependency 'selenium-webdriver'
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'rack-cors'
