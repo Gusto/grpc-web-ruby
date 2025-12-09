@@ -105,20 +105,4 @@ RSpec.configure do |config|
       # Ignore cleanup errors
     end
   end
-
-  # Print browser console logs on test failure for debugging
-  config.after(type: :feature) do |example|
-    if example.exception && page.driver.browser.respond_to?(:logs)
-      begin
-        logs = page.driver.browser.logs.get(:browser)
-        if logs.any?
-          puts "\n=== Browser Console Logs ==="
-          logs.each { |log| puts "  [#{log.level}] #{log.message}" }
-          puts "=== End Browser Console Logs ===\n"
-        end
-      rescue StandardError => e
-        puts "Could not retrieve browser logs: #{e.message}"
-      end
-    end
-  end
 end
