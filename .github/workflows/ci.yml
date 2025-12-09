@@ -21,15 +21,8 @@ jobs:
         with:
           ruby-version: 3.4
 
-      - name: Install Docker and Docker Compose
-        run: |
-          # Install Docker using the official convenience script
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sh get-docker.sh
-          sudo apt-get install -y docker-compose
-
       - name: Build Docker image
-        run: docker-compose build
+        run: docker compose build
 
       - name: Install environment support
         run: gem install rake rspec
