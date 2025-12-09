@@ -5,6 +5,8 @@ spec/pb-js-grpc-web-text/*.js
 spec/js-client/main.js
 spec/node-client/dist
 coverage
+**/*.cjs
+**/*.mjs
 
 node_modules
 .bundle

@@ -99,7 +99,7 @@ task :run_specs_in_docker do
     'docker compose down',
     'docker compose build',
     'docker compose up -d selenium envoy',
-    'docker compose run --use-aliases --remove-orphans ruby rspec --fail-fast --seed 1234 --format documentation',
+    'docker compose run --use-aliases --remove-orphans ruby rspec',
     'docker compose down',
   ].join(' && ')
 end
