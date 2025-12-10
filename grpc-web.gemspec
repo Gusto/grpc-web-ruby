@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'base64'
   spec.add_dependency 'google-protobuf'
   spec.add_dependency 'grpc'
-  spec.add_dependency 'rack', '>= 3', '<= 4'
+  spec.add_dependency 'rack', '>= 2', '< 4'
 
   spec.add_development_dependency 'capybara'
   spec.add_development_dependency 'rackup'
