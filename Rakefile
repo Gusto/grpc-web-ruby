@@ -13,89 +13,80 @@ CLEAN.include('spec/pb-ts/*.ts')
 CLEAN.include('spec/js-client/main.js')
 CLEAN.include('spec/node-client/dist/*')
 
-NAMELY_DOCKER_IMAGE = 'namely/protoc-all:1.31_2'
-
-module RakeHelpers
-  def self.compile_protos_js_cmd(mode, output_dir)
-    [
-      'docker run',
-      "-v \"#{File.expand_path('spec/pb-src', __dir__)}:/protofile\"",
-      "-v \"#{File.expand_path('spec', __dir__)}:/spec\"",
-      '-e "protofile=hello.proto"',
-      "-e \"output=#{output_dir}\"",
-      '-e "import_style=commonjs"',
-      "-e \"mode=#{mode}\"",
-      'juanjodiaz/grpc-web-generator',
-    ].join(' ')
-  end
+task :down do
+  sh 'docker compose down'
 end
 
-task :compile_protos_js do
-  sh RakeHelpers.compile_protos_js_cmd('grpcwebtext', '/spec/pb-js-grpc-web-text')
-  sh RakeHelpers.compile_protos_js_cmd('grpcweb', '/spec/pb-js-grpc-web')
+task :build do
+  sh 'docker compose build'
+end
+
+def protoc(output_opts)
+  proto_files = Dir[File.join(File.expand_path('spec', __dir__), 'pb-src/**/*.proto')]
+
+  # Generate grpc-web (binary format) JS files
+  sh [
+       'docker compose run --rm --remove-orphans --entrypoint protoc protoc',
+       '--plugin=protoc-gen-js=/usr/lib/node_modules/protoc-gen-js/bin/protoc-gen-js',
+       '--plugin=protoc-gen-ts=/usr/bin/protoc-gen-ts',
+       '--plugin=protoc-gen-grpc-web=/usr/local/bin/protoc-gen-grpc-web',
+       '--plugin=protoc-gen-grpc-ruby=/usr/local/bin/grpc_tools_ruby_protoc_plugin',
+       output_opts,
+       '-I /defs/pb-src',
+       proto_files.map { File.basename(it) }
+     ].flatten.join(' ')
+end
+
+task compile_protos_js: [:down, :build] do
+  protoc %w[
+  --js_out=import_style=commonjs:/defs/pb-js-grpc-web
+  --grpc-web_out=import_style=commonjs,mode=grpcweb:/defs/pb-js-grpc-web
+  ]
+
+  protoc %w[
+  --js_out=import_style=commonjs:/defs/pb-js-grpc-web-text
+  --grpc-web_out=import_style=commonjs,mode=grpcwebtext:/defs/pb-js-grpc-web-text
+  ]
 end
 
 task :compile_protos_ruby do
-  sh [
-    'docker run',
-    "-v \"#{File.expand_path('spec', __dir__)}:/defs\"",
-    NAMELY_DOCKER_IMAGE,
-    '-d /defs/pb-src',
-    '-o /defs/pb-ruby',
-    '-l ruby',
-  ].join(' ')
+  protoc %w[
+  --ruby_out=/defs/pb-ruby
+  --grpc-ruby_out=/defs/pb-ruby
+  ]
 end
 
 task :compile_protos_ts do
-  defs_dir = File.expand_path('spec', __dir__)
-  proto_files = Dir[File.join(defs_dir, 'pb-src/**/*.proto')]
-  proto_input_files = proto_files.map { |f| f.gsub(defs_dir, '/defs') }
-  sh [
-    'docker run',
-    "-v \"#{defs_dir}:/defs\"",
-    '--entrypoint protoc',
-    NAMELY_DOCKER_IMAGE,
-    '--plugin=protoc-gen-ts=/usr/bin/protoc-gen-ts',
-    '--js_out=import_style=commonjs,binary:/defs/pb-ts',
-    '--ts_out=service=grpc-web:/defs/pb-ts',
-    '-I /defs/pb-src',
-    proto_input_files.join(' '),
-  ].join(' ')
+  protoc %w[
+  --js_out=import_style=commonjs,binary:/defs/pb-ts
+  --ts_out=service=grpc-web:/defs/pb-ts
+  ]
 end
 
-task compile_js_client: [:compile_protos_js] do
+task compile_protos: [:compile_protos_js, :compile_protos_ts, :compile_protos_ruby]
+
+task compile_js_client: [:down, :build, :compile_protos_js] do
   compile_js_cmd = '"cd spec/js-client-src; yarn install; yarn run webpack"'
-  sh [
-    'docker-compose down',
-    'docker-compose build',
-    "docker-compose run --use-aliases ruby #{compile_js_cmd}",
-    'docker-compose down',
-  ].join(' && ')
+  sh "docker compose run --rm --use-aliases --remove-orphans ruby #{compile_js_cmd}"
 end
 
-task compile_node_client: [:compile_protos_ts] do
+task compile_node_client: [:down, :build, :compile_protos_ts] do
   compile_node_cmd = '"cd spec/node-client; yarn install; yarn build"'
-  sh [
-    'docker-compose down',
-    'docker-compose build',
-    "docker-compose run --use-aliases ruby #{compile_node_cmd}",
-    'docker-compose down',
-  ].join(' && ')
+  sh "docker compose run --use-aliases --remove-orphans ruby #{compile_node_cmd}"
 end
+
+task compile_clients: [:compile_js_client, :compile_node_client]
+
+task compile: [:compile_protos, :compile_clients]
 
 task :run_specs_in_docker do
-  sh [
-    'docker-compose down',
-    'docker-compose build',
-    'docker-compose run --use-aliases ruby rspec',
-    'docker-compose down',
-  ].join(' && ')
+  sh 'docker compose run --rm --use-aliases --remove-orphans ruby rspec'
 end
 
 task default: %i[
   clean
-  compile_protos_ruby
-  compile_js_client
-  compile_node_client
+  down
+  build
+  compile
   run_specs_in_docker
 ]

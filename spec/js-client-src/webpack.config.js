@@ -7,10 +7,13 @@ module.exports = {
     modules: [
       path.resolve(__dirname),
       path.resolve(__dirname, "node_modules"),
+      "node_modules",
     ],
     alias: {
       'pb-grpc-web': path.resolve(__dirname, '../pb-js-grpc-web'),
-      'pb-grpc-web-text': path.resolve(__dirname, '../pb-js-grpc-web-text')
+      'pb-grpc-web-text': path.resolve(__dirname, '../pb-js-grpc-web-text'),
+      'grpc-web': require.resolve('grpc-web'),
+      'google-protobuf': path.dirname(require.resolve('google-protobuf')),
     }
   },
   output: {

@@ -24,7 +24,7 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
     let(:expected_headers) do
       {
         'Accept' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
-        'Content-Type' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
+        'content-type' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
       }
     end
 
@@ -68,11 +68,11 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
       context 'with custom header' do
         subject(:response) { described_class.request(request_uri, rpc_desc, params, custom_header) }
 
-        let(:custom_header) { { metadata: { 'Custom-header' => 'Meow meow' } } }
+        let(:custom_header) { { metadata: { 'custom-header' => 'Meow meow' } } }
         let(:expected_headers) do
           {
             'Accept' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
-            'Content-Type' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
+            'content-type' => GRPCWeb::ContentTypes::PROTO_CONTENT_TYPE,
             'Custom-header' => 'Meow meow',
           }
         end
@@ -142,12 +142,12 @@ RSpec.describe ::GRPCWeb::ClientExecutor do
         { server_http_response_code: 500, expected_grpc_error: GRPC::Unknown },
         { server_http_response_code: 200, expected_grpc_error: GRPC::Unknown },
         { server_http_response_code: 200, expected_grpc_error: GRPC::Internal, body: 'something' },
-      ].each do |server_http_response_code:, expected_grpc_error:, body: nil|
-        context "HTTP error #{server_http_response_code}" do
-          let(:server_response) { { status: server_http_response_code, body: body } }
+      ].each do |options|
+        context "HTTP error #{options[:server_http_response_code]}" do
+          let(:server_response) { { status: options[:server_http_response_code], body: options[:body] } }
 
-          it "raises the corresponding error #{expected_grpc_error}" do
-            expect { response }.to raise_error(expected_grpc_error)
+          it "raises the corresponding error #{options[:expected_grpc_error]}" do
+            expect { response }.to raise_error(options[:expected_grpc_error])
           end
         end
       end

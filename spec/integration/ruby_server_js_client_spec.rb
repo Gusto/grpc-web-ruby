@@ -13,7 +13,7 @@ RSpec.describe 'connecting to a ruby server from a javascript client', type: :fe
   # Script to initialize a JS client in the browser and make a request
   let(:js_script) do
     <<-EOF
-    var helloService = new #{js_client_class}('http://#{server.host}:#{server.port}', null, null);
+    var helloService = new #{js_client_class}('http://#{server_host}:#{server.port}', null, null);
     #{js_grpc_call}
     EOF
   end
@@ -48,10 +48,16 @@ RSpec.describe 'connecting to a ruby server from a javascript client', type: :fe
 
   let(:service) { TestHelloService }
   let(:rack_app) { TestGRPCWebApp.build(service) }
-  let(:browser) { Capybara::Session.new(Capybara.default_driver, rack_app) }
-  let(:server) { browser.server }
 
-  let(:test_page) { "file://#{File.expand_path('../js-client/test.html', __dir__)}" }
+  # Use Capybara's built-in server instead of creating a separate session.
+  # This avoids creating multiple WebDriver connections that exhaust Selenium's capacity.
+  let(:server) do
+    # Start a Capybara server for our rack app
+    Capybara::Server.new(rack_app).tap(&:boot)
+  end
+  let(:server_host) { Socket.gethostname }
+
+  let(:test_page) { "http://#{server_host}:#{server.port}/js-client/test.html" }
   let(:name) { "James\u1f61d" }
 
   shared_context 'javascript integration' do

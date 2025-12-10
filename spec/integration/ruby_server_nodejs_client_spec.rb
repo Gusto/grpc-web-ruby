@@ -7,11 +7,10 @@ require 'hello_services_pb'
 RSpec.describe 'connecting to a ruby server from a nodejs client', type: :feature do
   subject(:json_result) { `#{node_cmd}` }
 
-  let(:node_client) { File.expand_path('../node-client/dist/client.js', __dir__) }
+  let(:node_client_dir) { File.expand_path('../node-client', __dir__) }
   let(:node_cmd) do
     [
-      'node',
-      node_client,
+      "cd #{node_client_dir} && node dist/client.js",
       server_url,
       grpc_method,
       basic_username,
@@ -33,9 +32,10 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
     app
   end
 
-  let(:browser) { Capybara::Session.new(Capybara.default_driver, rack_app) }
-  let(:server) { browser.server }
-  let(:server_url) { "http://#{server.host}:#{server.port}" }
+  # Use Capybara::Server directly instead of creating a session that would use WebDriver
+  let(:server) { Capybara::Server.new(rack_app).tap(&:boot) }
+  let(:server_host) { '127.0.0.1' }
+  let(:server_url) { "http://#{server_host}:#{server.port}" }
   let(:name) { "James\u1f61d" }
 
   it 'returns the expected response from the service' do

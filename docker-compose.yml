@@ -2,28 +2,44 @@ services:
   ruby:
     build: .
     entrypoint: ./entrypoint.rb
+    environment:
+      DOCKER: 'true'
+      SELENIUM_HOST: selenium
+      SELENIUM_PORT: 4444
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
     expose:
       - 9090 # Envoy connects to ruby gRPC Server on 9090
     volumes:
       - .:/app
     depends_on:
       - envoy
-    networks:
-      default:
-        aliases:
-          - ruby
+      - selenium
 
   # Used as a reference gRPC-Web server to test against
   envoy:
-    image: envoyproxy/envoy:v1.12.2
+    image: envoyproxy/envoy:v1.33-latest
     expose:
       - 8080
     volumes:
       - ./spec/support/envoy.yml:/etc/envoy/envoy.yaml
-    networks:
-      default:
-        aliases:
-          - envoy
+
+  protoc:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile.protoc
+      platforms:
+        - linux/amd64
+    volumes:
+      - ./spec:/defs
+
+  selenium:
+    image: selenium/standalone-chromium
+    restart: unless-stopped
+    expose:
+      - 4444
+      - 5900
+      - 7900
 
 networks:
   default:

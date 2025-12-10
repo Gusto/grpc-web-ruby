@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-support_path = File.expand_path('support', __dir__)
 pb_path = File.expand_path('pb-ruby', __dir__)
 lib = File.expand_path('../lib', __dir__)
-$LOAD_PATH.unshift(support_path) unless $LOAD_PATH.include?(support_path)
 $LOAD_PATH.unshift(pb_path) unless $LOAD_PATH.include?(pb_path)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
@@ -15,6 +13,8 @@ require 'rspec'
 require 'webmock/rspec'
 require 'grpc-web'
 require 'grpc_web/client/client'
+
+Dir[File.expand_path('./support/**/*.rb', __dir__)].each { require it }
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -100,34 +100,13 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 
+  # WebMock resets after each example by default, so we need to allow net_connect
+  # before each example, not just before the context
+  config.before :each, type: :feature do
+    WebMock.allow_net_connect!
+  end
+
   config.before :context, type: :feature do
     WebMock.allow_net_connect!
-
-    require 'capybara/rspec'
-    Capybara.server = :webrick
-
-    require 'test_grpc_web_app'
-    Capybara.app = TestGRPCWebApp.build
-
-    require 'selenium-webdriver'
-
-    Capybara.register_driver :selenium_chrome_headless do |app|
-      options = Selenium::WebDriver::Chrome::Options.new
-      # Run Chrome without a GUI, necessary for CI/Docker environments
-      options.add_argument('--headless')
-      # Disable Chrome sandbox, required when running as root in Docker containers
-      options.add_argument('--no-sandbox')
-      # Prevent Chrome from using /dev/shm which can be too small in Docker, causing crashes
-      options.add_argument('--disable-dev-shm-usage')
-      # Disable GPU hardware acceleration to prevent crashes in headless mode
-      options.add_argument('--disable-gpu')
-
-      Capybara::Selenium::Driver.new(
-        app,
-        browser: :chrome,
-        options: options
-      )
-    end
-    Capybara.default_driver = :selenium_chrome_headless
   end
 end
