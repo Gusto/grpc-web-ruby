@@ -9,10 +9,8 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
 
   let(:node_client_dir) { File.expand_path('../node-client', __dir__) }
   let(:node_cmd) do
-    # Use npm for dependency management (avoids yarn workspace detection issues)
-    # Run npm install first to ensure dependencies are available
     [
-      "cd #{node_client_dir} && npm install --silent 2>/dev/null && node dist/client.js",
+      "cd #{node_client_dir} && node dist/client.js",
       server_url,
       grpc_method,
       basic_username,
