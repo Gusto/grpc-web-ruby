@@ -10,7 +10,8 @@ coverage
 
 node_modules
 .bundle
-.yarn*
+.yarn/
+.pnp.*
 
 # Workspace
 .idea
