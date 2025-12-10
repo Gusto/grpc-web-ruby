@@ -55,7 +55,7 @@ RSpec.describe 'connecting to a ruby server from a javascript client', type: :fe
     # Start a Capybara server for our rack app
     Capybara::Server.new(rack_app).tap(&:boot)
   end
-  let(:server_host) { CapybaraServerHelper.server_host_for_browser(server) }
+  let(:server_host) { Socket.gethostname }
 
   let(:test_page) { "http://#{server_host}:#{server.port}/js-client/test.html" }
   let(:name) { "James\u1f61d" }

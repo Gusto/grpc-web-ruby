@@ -50,21 +50,9 @@ Capybara.configure do |config|
   config.server = :webrick
   config.always_include_port = true
 
-  if ENV['CI'] || ENV['DOCKER']
-    # In Docker/CI, bind to all interfaces
-    # Use the container's hostname which docker compose --use-aliases makes resolvable
-    config.server_host = '0.0.0.0'
-    config.default_driver = :selenium_chrome_standalone
-    config.javascript_driver = :selenium_chrome_standalone
-  else
-    config.server_host = IPSocket.getaddress(Socket.gethostname)
-    config.app_host = "http://#{Socket.gethostname}"
-    if ENV['CHROME']
-      config.javascript_driver = :selenium_chrome
-    else
-      config.javascript_driver = :selenium_chrome_headless
-    end
-  end
+  config.server_host = '0.0.0.0'
+  config.default_driver = :selenium_chrome_standalone
+  config.javascript_driver = :selenium_chrome_standalone
 
   puts "Capybara is using the #{config.javascript_driver} driver for javascript tests"
 end
@@ -72,27 +60,6 @@ end
 # Remove when Capybara is updated
 # https://github.com/puzzle/skills/issues/800
 Selenium::WebDriver.logger.ignore(:clear_local_storage, :clear_session_storage)
-
-# Helper module for getting the correct server host in different environments
-module CapybaraServerHelper
-  def self.server_host_for_client(server)
-    # In Docker, use localhost since client runs in same container as server
-    if ENV['CI'] || ENV['DOCKER']
-      '127.0.0.1'
-    else
-      server.host
-    end
-  end
-
-  def self.server_host_for_browser(_server)
-    # In Docker, use the container's hostname since docker compose --use-aliases makes it resolvable
-    if ENV['CI'] || ENV['DOCKER']
-      Socket.gethostname
-    else
-      Capybara.server_host
-    end
-  end
-end
 
 RSpec.configure do |config|
   config.before(type: :feature) { Capybara.app = TestGRPCWebApp.build }

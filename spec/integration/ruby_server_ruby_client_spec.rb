@@ -21,7 +21,7 @@ RSpec.describe 'connecting to a ruby server from a ruby client', type: :feature 
   # Use Capybara::Server directly instead of creating a session that would use WebDriver
   let(:server) { Capybara::Server.new(rack_app).tap(&:boot) }
 
-  let(:server_host) { CapybaraServerHelper.server_host_for_client(server) }
+  let(:server_host) { '127.0.0.1' }
   let(:client_url) { "http://#{basic_username}:#{basic_password}@#{server_host}:#{server.port}" }
   let(:client) do
     GRPCWeb::Client.new(

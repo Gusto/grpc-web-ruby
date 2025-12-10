@@ -36,7 +36,7 @@ RSpec.describe 'connecting to a ruby server from a nodejs client', type: :featur
 
   # Use Capybara::Server directly instead of creating a session that would use WebDriver
   let(:server) { Capybara::Server.new(rack_app).tap(&:boot) }
-  let(:server_host) { CapybaraServerHelper.server_host_for_client(server) }
+  let(:server_host) { '127.0.0.1' }
   let(:server_url) { "http://#{server_host}:#{server.port}" }
   let(:name) { "James\u1f61d" }
 
